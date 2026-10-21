@@ -1,0 +1,413 @@
+[
+  {
+    "inf": "ser",
+    "en": "to be",
+    "cz": "být",
+    "type": "irregular",
+    "presente": { "yo": "soy", "tú": "eres", "él/ella/usted": "es", "nosotros": "somos", "vosotros": "sois", "ellos/ustedes": "son" },
+    "pretérito": { "yo": "fui", "tú": "fuiste", "él/ella/usted": "fue", "nosotros": "fuimos", "vosotros": "fuisteis", "ellos/ustedes": "fueron" },
+    "futuro_ir_a": "voy a ser",
+    "participio": "sido",
+    "example": { "es": "Yo soy estudiante.", "en": "I am a student." }
+  },
+  {
+    "inf": "estar",
+    "en": "to be (state/location)",
+    "cz": "být (stav/místo)",
+    "type": "irregular",
+    "presente": { "yo": "estoy", "tú": "estás", "él/ella/usted": "está", "nosotros": "estamos", "vosotros": "estáis", "ellos/ustedes": "están" },
+    "pretérito": { "yo": "estuve", "tú": "estuviste", "él/ella/usted": "estuvo", "nosotros": "estuvimos", "vosotros": "estuvisteis", "ellos/ustedes": "estuvieron" },
+    "futuro_ir_a": "voy a estar",
+    "participio": "estado",
+    "example": { "es": "Estoy en casa.", "en": "I am at home." }
+  },
+  {
+    "inf": "tener",
+    "en": "to have",
+    "cz": "mít",
+    "type": "irregular (go, stem change)",
+    "presente": { "yo": "tengo", "tú": "tienes", "él/ella/usted": "tiene", "nosotros": "tenemos", "vosotros": "tenéis", "ellos/ustedes": "tienen" },
+    "pretérito": { "yo": "tuve", "tú": "tuviste", "él/ella/usted": "tuvo", "nosotros": "tuvimos", "vosotros": "tuvisteis", "ellos/ustedes": "tuvieron" },
+    "futuro_ir_a": "voy a tener",
+    "participio": "tenido",
+    "example": { "es": "Tengo un coche rojo.", "en": "I have a red car." }
+  },
+  {
+    "inf": "hacer",
+    "en": "to do/make",
+    "cz": "dělat",
+    "type": "irregular (go, z→c)",
+    "presente": { "yo": "hago", "tú": "haces", "él/ella/usted": "hace", "nosotros": "hacemos", "vosotros": "hacéis", "ellos/ustedes": "hacen" },
+    "pretérito": { "yo": "hice", "tú": "hiciste", "él/ella/usted": "hizo", "nosotros": "hicimos", "vosotros": "hicisteis", "ellos/ustedes": "hicieron" },
+    "futuro_ir_a": "voy a hacer",
+    "participio": "hecho",
+    "example": { "es": "Hago la tarea.", "en": "I do the homework." }
+  },
+  {
+    "inf": "ir",
+    "en": "to go",
+    "cz": "jít",
+    "type": "irregular",
+    "presente": { "yo": "voy", "tú": "vas", "él/ella/usted": "va", "nosotros": "vamos", "vosotros": "vais", "ellos/ustedes": "van" },
+    "pretérito": { "yo": "fui", "tú": "fuiste", "él/ella/usted": "fue", "nosotros": "fuimos", "vosotros": "fuisteis", "ellos/ustedes": "fueron" },
+    "futuro_ir_a": "voy a ir",
+    "participio": "ido",
+    "example": { "es": "Voy al mercado.", "en": "I go to the market." }
+  },
+  {
+    "inf": "poder",
+    "en": "to be able to/can",
+    "cz": "moct",
+    "type": "irregular (o→ue, u-stem)",
+    "presente": { "yo": "puedo", "tú": "puedes", "él/ella/usted": "puede", "nosotros": "podemos", "vosotros": "podéis", "ellos/ustedes": "pueden" },
+    "pretérito": { "yo": "pude", "tú": "pudiste", "él/ella/usted": "pudo", "nosotros": "pudimos", "vosotros": "pudisteis", "ellos/ustedes": "pudieron" },
+    "futuro_ir_a": "voy a poder",
+    "participio": "podido",
+    "example": { "es": "Puedo hablar español.", "en": "I can speak Spanish." }
+  }
+,
+  {
+    "inf": "decir",
+    "en": "to say/tell",
+    "cz": "říkat",
+    "type": "irregular (go, e→i, j-stem)",
+    "presente": { "yo": "digo", "tú": "dices", "él/ella/usted": "dice", "nosotros": "decimos", "vosotros": "decís", "ellos/ustedes": "dicen" },
+    "pretérito": { "yo": "dije", "tú": "dijiste", "él/ella/usted": "dijo", "nosotros": "dijimos", "vosotros": "dijisteis", "ellos/ustedes": "dijeron" },
+    "futuro_ir_a": "voy a decir",
+    "participio": "dicho",
+    "example": { "es": "Digo la verdad.", "en": "I tell the truth." }
+  },
+  {
+    "inf": "ver",
+    "en": "to see",
+    "cz": "vidět",
+    "type": "irregular",
+    "presente": { "yo": "veo", "tú": "ves", "él/ella/usted": "ve", "nosotros": "vemos", "vosotros": "veis", "ellos/ustedes": "ven" },
+    "pretérito": { "yo": "vi", "tú": "viste", "él/ella/usted": "vio", "nosotros": "vimos", "vosotros": "visteis", "ellos/ustedes": "vieron" },
+    "futuro_ir_a": "voy a ver",
+    "participio": "visto",
+    "example": { "es": "Veo la televisión.", "en": "I watch TV." }
+  },
+  {
+    "inf": "dar",
+    "en": "to give",
+    "cz": "dávat",
+    "type": "irregular",
+    "presente": { "yo": "doy", "tú": "das", "él/ella/usted": "da", "nosotros": "damos", "vosotros": "dáis", "ellos/ustedes": "dan" },
+    "pretérito": { "yo": "di", "tú": "diste", "él/ella/usted": "dio", "nosotros": "dimos", "vosotros": "disteis", "ellos/ustedes": "dieron" },
+    "futuro_ir_a": "voy a dar",
+    "participio": "dado",
+    "example": { "es": "Te doy un regalo.", "en": "I give you a gift." }
+  },
+  {
+    "inf": "saber",
+    "en": "to know (facts)",
+    "cz": "vědět",
+    "type": "irregular (go, u-stem)",
+    "presente": { "yo": "sé", "tú": "sabes", "él/ella/usted": "sabe", "nosotros": "sabemos", "vosotros": "sabéis", "ellos/ustedes": "saben" },
+    "pretérito": { "yo": "supe", "tú": "supiste", "él/ella/usted": "supo", "nosotros": "supimos", "vosotros": "supisteis", "ellos/ustedes": "supieron" },
+    "futuro_ir_a": "voy a saber",
+    "participio": "sabido",
+    "example": { "es": "Sé la respuesta.", "en": "I know the answer." }
+  },
+  {
+    "inf": "querer",
+    "en": "to want/love",
+    "cz": "chtít/mít rád",
+    "type": "irregular (e→ie, u-stem)",
+    "presente": { "yo": "quiero", "tú": "quieres", "él/ella/usted": "quiere", "nosotros": "queremos", "vosotros": "queréis", "ellos/ustedes": "quieren" },
+    "pretérito": { "yo": "quise", "tú": "quisiste", "él/ella/usted": "quiso", "nosotros": "quisimos", "vosotros": "quisisteis", "ellos/ustedes": "quisieron" },
+    "futuro_ir_a": "voy a querer",
+    "participio": "querido",
+    "example": { "es": "Quiero aprender español.", "en": "I want to learn Spanish." }
+  },
+  {
+    "inf": "llegar",
+    "en": "to arrive",
+    "cz": "příjet",
+    "type": "regular -ar",
+    "presente": { "yo": "llego", "tú": "llegas", "él/ella/usted": "llega", "nosotros": "llegamos", "vosotros": "llegáis", "ellos/ustedes": "llegan" },
+    "pretérito": { "yo": "llegué", "tú": "llegaste", "él/ella/usted": "llegó", "nosotros": "llegamos", "vosotros": "llegasteis", "ellos/ustedes": "llegaron" },
+    "futuro_ir_a": "voy a llegar",
+    "participio": "llegado",
+    "example": { "es": "Llegué tarde.", "en": "I arrived late." }
+  },
+  {
+    "inf": "pasar",
+    "en": "to pass/spend time",
+    "cz": "procházet/trávit čas",
+    "type": "regular -ar",
+    "presente": { "yo": "paso", "tú": "pasas", "él/ella/usted": "pasa", "nosotros": "pasamos", "vosotros": "pasáis", "ellos/ustedes": "pasan" },
+    "pretérito": { "yo": "pasé", "tú": "pasaste", "él/ella/usted": "pasó", "nosotros": "pasamos", "vosotros": "pasasteis", "ellos/ustedes": "pasaron" },
+    "futuro_ir_a": "voy a pasar",
+    "participio": "pasado",
+    "example": { "es": "Pasé el verano en España.", "en": "I spent the summer in Spain." }
+  }
+,
+  {
+    "inf": "deber",
+    "en": "must/should/owe",
+    "cz": "muset/mít povinnost",
+    "type": "regular -er",
+    "presente": { "yo": "debo", "tú": "debes", "él/ella/usted": "debe", "nosotros": "debemos", "vosotros": "debéis", "ellos/ustedes": "deben" },
+    "pretérito": { "yo": "debí", "tú": "debiste", "él/ella/usted": "debió", "nosotros": "debimos", "vosotros": "debisteis", "ellos/ustedes": "debieron" },
+    "futuro_ir_a": "voy a deber",
+    "participio": "debido",
+    "example": { "es": "Debo estudiar más.", "en": "I must study more." }
+  },
+  {
+    "inf": "poner",
+    "en": "to put/place",
+    "cz": "dávat/položit",
+    "type": "irregular (go, u-stem)",
+    "presente": { "yo": "pongo", "tú": "pones", "él/ella/usted": "pone", "nosotros": "ponemos", "vosotros": "ponéis", "ellos/ustedes": "ponen" },
+    "pretérito": { "yo": "puse", "tú": "pusiste", "él/ella/usted": "puso", "nosotros": "pusimos", "vosotros": "pusisteis", "ellos/ustedes": "pusieron" },
+    "futuro_ir_a": "voy a poner",
+    "participio": "puesto",
+    "example": { "es": "Pongo la mesa.", "en": "I set the table." }
+  },
+  {
+    "inf": "parecer",
+    "en": "to seem/appear",
+    "cz": "zdát se",
+    "type": "regular -er",
+    "presente": { "yo": "parezco", "tú": "pareces", "él/ella/usted": "parece", "nosotros": "parecemos", "vosotros": "parecéis", "ellos/ustedes": "parecen" },
+    "pretérito": { "yo": "parecí", "tú": "pareciste", "él/ella/usted": "pareció", "nosotros": "parecimos", "vosotros": "parecisteis", "ellos/ustedes": "parecieron" },
+    "futuro_ir_a": "voy a parecer",
+    "participio": "parecido",
+    "example": { "es": "Parece cansado.", "en": "He seems tired." }
+  },
+  {
+    "inf": "quedar",
+    "en": "to stay/remain/meet",
+    "cz": "zůstávat/setkat se",
+    "type": "regular -ar",
+    "presente": { "yo": "quedo", "tú": "quedas", "él/ella/usted": "queda", "nosotros": "quedamos", "vosotros": "quedáis", "ellos/ustedes": "quedan" },
+    "pretérito": { "yo": "quedé", "tú": "quedaste", "él/ella/usted": "quedó", "nosotros": "quedamos", "vosotros": "quedasteis", "ellos/ustedes": "quedaron" },
+    "futuro_ir_a": "voy a quedar",
+    "participio": "quedado",
+    "example": { "es": "Me quedo en casa.", "en": "I stay at home." }
+  },
+  {
+    "inf": "creer",
+    "en": "to believe/think",
+    "cz": "věřit/myslet",
+    "type": "regular -er (i→y in preterite)",
+    "presente": { "yo": "creo", "tú": "crees", "él/ella/usted": "cree", "nosotros": "creemos", "vosotros": "creéis", "ellos/ustedes": "creen" },
+    "pretérito": { "yo": "creí", "tú": "creíste", "él/ella/usted": "creyó", "nosotros": "creímos", "vosotros": "creísteis", "ellos/ustedes": "creyeron" },
+    "futuro_ir_a": "voy a creer",
+    "participio": "creído",
+    "example": { "es": "Creo que sí.", "en": "I think so." }
+  },
+  {
+    "inf": "hablar",
+    "en": "to speak/talk",
+    "cz": "mluvit",
+    "type": "regular -ar",
+    "presente": { "yo": "hablo", "tú": "hablas", "él/ella/usted": "habla", "nosotros": "hablamos", "vosotros": "habláis", "ellos/ustedes": "hablan" },
+    "pretérito": { "yo": "hablé", "tú": "hablaste", "él/ella/usted": "habló", "nosotros": "hablamos", "vosotros": "hablasteis", "ellos/ustedes": "hablaron" },
+    "futuro_ir_a": "voy a hablar",
+    "participio": "hablado",
+    "example": { "es": "Hablo español.", "en": "I speak Spanish." }
+  },
+  {
+    "inf": "llevar",
+    "en": "to carry/wear/take",
+    "cz": "nést/nosit/vézt",
+    "type": "regular -ar",
+    "presente": { "yo": "llevo", "tú": "llevas", "él/ella/usted": "lleva", "nosotros": "llevamos", "vosotros": "lleváis", "ellos/ustedes": "llevan" },
+    "pretérito": { "yo": "llevé", "tú": "llevaste", "él/ella/usted": "llevó", "nosotros": "llevamos", "vosotros": "llevasteis", "ellos/ustedes": "llevaron" },
+    "futuro_ir_a": "voy a llevar",
+    "participio": "llevado",
+    "example": { "es": "Llevo una mochila.", "en": "I carry a backpack." }
+  },
+  {
+    "inf": "dejar",
+    "en": "to leave/let/allow",
+    "cz": "opustit/nechat",
+    "type": "regular -ar",
+    "presente": { "yo": "dejo", "tú": "dejas", "él/ella/usted": "deja", "nosotros": "dejamos", "vosotros": "dejáis", "ellos/ustedes": "dejan" },
+    "pretérito": { "yo": "deje", "tú": "dejaste", "él/ella/usted": "dejó", "nosotros": "dejamos", "vosotros": "dejasteis", "ellos/ustedes": "dejaron" },
+    "futuro_ir_a": "voy a dejar",
+    "participio": "dejado",
+    "example": { "es": "Dejo el libro en la mesa.", "en": "I leave the book on the table." }
+  }
+,
+  {
+    "inf": "seguir",
+    "en": "to follow/continue",
+    "cz": "následovat/pokračovat",
+    "type": "irregular (e→i, stem change)",
+    "presente": { "yo": "sigo", "tú": "sigues", "él/ella/usted": "sigue", "nosotros": "seguimos", "vosotros": "seguís", "ellos/ustedes": "siguen" },
+    "pretérito": { "yo": "seguí", "tú": "seguiste", "él/ella/usted": "siguió", "nosotros": "seguimos", "vosotros": "seguisteis", "ellos/ustedes": "siguieron" },
+    "futuro_ir_a": "voy a seguir",
+    "participio": "seguido",
+    "example": { "es": "Sigo estudiando.", "en": "I keep studying." }
+  },
+  {
+    "inf": "encontrar",
+    "en": "to find/meet",
+    "cz": "najít/setkat se",
+    "type": "irregular (o→ue)",
+    "presente": { "yo": "encuentro", "tú": "encuentras", "él/ella/usted": "encuentra", "nosotros": "encontramos", "vosotros": "encontráis", "ellos/ustedes": "encuentran" },
+    "pretérito": { "yo": "encontré", "tú": "encontraste", "él/ella/usted": "encontró", "nosotros": "encontramos", "vosotros": "encontrasteis", "ellos/ustedes": "encontraron" },
+    "futuro_ir_a": "voy a encontrar",
+    "participio": "encontrado",
+    "example": { "es": "Encontré las llaves.", "en": "I found the keys." }
+  },
+  {
+    "inf": "llamar",
+    "en": "to call",
+    "cz": "volat/zavolat",
+    "type": "regular -ar",
+    "presente": { "yo": "llamo", "tú": "llamas", "él/ella/usted": "llama", "nosotros": "llamamos", "vosotros": "llamáis", "ellos/ustedes": "llaman" },
+    "pretérito": { "yo": "llamé", "tú": "llamaste", "él/ella/usted": "llamó", "nosotros": "llamamos", "vosotros": "llamasteis", "ellos/ustedes": "llamaron" },
+    "futuro_ir_a": "voy a llamar",
+    "participio": "llamado",
+    "example": { "es": "Te llamo mañana.", "en": "I'll call you tomorrow." }
+  },
+  {
+    "inf": "venir",
+    "en": "to come",
+    "cz": "přijít",
+    "type": "irregular (go, e→ie, u-stem)",
+    "presente": { "yo": "vengo", "tú": "vienes", "él/ella/usted": "viene", "nosotros": "venimos", "vosotros": "venís", "ellos/ustedes": "vienen" },
+    "pretérito": { "yo": "vine", "tú": "viniste", "él/ella/usted": "vino", "nosotros": "vinimos", "vosotros": "vinisteis", "ellos/ustedes": "vinieron" },
+    "futuro_ir_a": "voy a venir",
+    "participio": "venido",
+    "example": { "es": "Vengo de Madrid.", "en": "I come from Madrid." }
+  },
+  {
+    "inf": "pensar",
+    "en": "to think/plan",
+    "cz": "myslet/plánovat",
+    "type": "irregular (e→ie)",
+    "presente": { "yo": "pienso", "tú": "piensas", "él/ella/usted": "piensa", "nosotros": "pensamos", "vosotros": "pensáis", "ellos/ustedes": "piensan" },
+    "pretérito": { "yo": "pensé", "tú": "pensaste", "él/ella/usted": "pensó", "nosotros": "pensamos", "vosotros": "pensasteis", "ellos/ustedes": "pensaron" },
+    "futuro_ir_a": "voy a pensar",
+    "participio": "pensado",
+    "example": { "es": "Pienso en ti.", "en": "I'm thinking of you." }
+  },
+  {
+    "inf": "salir",
+    "en": "to leave/go out",
+    "cz": "odejít/vyjít",
+    "type": "irregular (go)",
+    "presente": { "yo": "salgo", "tú": "sales", "él/ella/usted": "sale", "nosotros": "salimos", "vosotros": "salís", "ellos/ustedes": "salen" },
+    "pretérito": { "yo": "salí", "tú": "saliste", "él/ella/usted": "salió", "nosotros": "salimos", "vosotros": "salisteis", "ellos/ustedes": "salieron" },
+    "futuro_ir_a": "voy a salir",
+    "participio": "salido",
+    "example": { "es": "Salgo a las ocho.", "en": "I leave at eight." }
+  },
+  {
+    "inf": "volver",
+    "en": "to return",
+    "cz": "vrátit se",
+    "type": "irregular (o→ue)",
+    "presente": { "yo": "vuelvo", "tú": "vuelves", "él/ella/usted": "vuelve", "nosotros": "volvemos", "vosotros": "volvéis", "ellos/ustedes": "vuelven" },
+    "pretérito": { "yo": "volví", "tú": "volviste", "él/ella/usted": "volvió", "nosotros": "volvimos", "vosotros": "volvisteis", "ellos/ustedes": "volvieron" },
+    "futuro_ir_a": "voy a volver",
+    "participio": "vuelto",
+    "example": { "es": "Vuelvo pronto.", "en": "I'll be back soon." }
+  },
+  {
+    "inf": "tomar",
+    "en": "to take/drink",
+    "cz": "vzít/pít",
+    "type": "regular -ar",
+    "presente": { "yo": "tomo", "tú": "tomas", "él/ella/usted": "toma", "nosotros": "tomamos", "vosotros": "tomáis", "ellos/ustedes": "toman" },
+    "pretérito": { "yo": "tomé", "tú": "tomaste", "él/ella/usted": "tomó", "nosotros": "tomamos", "vosotros": "tomasteis", "ellos/ustedes": "tomaron" },
+    "futuro_ir_a": "voy a tomar",
+    "participio": "tomado",
+    "example": { "es": "Tomo un café.", "en": "I have a coffee." }
+  }
+,
+  {
+    "inf": "conocer",
+    "en": "to know (people/places)",
+    "cz": "znát (osoby/místa)",
+    "type": "irregular (zco)",
+    "presente": { "yo": "conozco", "tú": "conoces", "él/ella/usted": "conoce", "nosotros": "conocemos", "vosotros": "conocéis", "ellos/ustedes": "conocen" },
+    "pretérito": { "yo": "conocí", "tú": "conociste", "él/ella/usted": "conoció", "nosotros": "conocimos", "vosotros": "conocisteis", "ellos/ustedes": "conocieron" },
+    "futuro_ir_a": "voy a conocer",
+    "participio": "conocido",
+    "example": { "es": "Conozco a María.", "en": "I know María." }
+  },
+  {
+    "inf": "oír",
+    "en": "to hear",
+    "cz": "slyšet",
+    "type": "irregular (go, i→y)",
+    "presente": { "yo": "oigo", "tú": "oyes", "él/ella/usted": "oye", "nosotros": "oímos", "vosotros": "oís", "ellos/ustedes": "oyen" },
+    "pretérito": { "yo": "oí", "tú": "oíste", "él/ella/usted": "oyó", "nosotros": "oímos", "vosotros": "oísteis", "ellos/ustedes": "oyeron" },
+    "futuro_ir_a": "voy a oír",
+    "participio": "oído",
+    "example": { "es": "Oigo música.", "en": "I hear music." }
+  },
+  {
+    "inf": "traer",
+    "en": "to bring",
+    "cz": "přinést",
+    "type": "irregular (go, j-stem)",
+    "presente": { "yo": "traigo", "tú": "traes", "él/ella/usted": "trae", "nosotros": "traemos", "vosotros": "traéis", "ellos/ustedes": "traen" },
+    "pretérito": { "yo": "traje", "tú": "trajiste", "él/ella/usted": "trajo", "nosotros": "trajimos", "vosotros": "trajisteis", "ellos/ustedes": "trajeron" },
+    "futuro_ir_a": "voy a traer",
+    "participio": "traído",
+    "example": { "es": "Traigo el café.", "en": "I bring the coffee." }
+  },
+  {
+    "inf": "conducir",
+    "en": "to drive",
+    "cz": "řidit",
+    "type": "irregular (zco)",
+    "presente": { "yo": "conduzco", "tú": "conduces", "él/ella/usted": "conduce", "nosotros": "conducimos", "vosotros": "conducís", "ellos/ustedes": "conducen" },
+    "pretérito": { "yo": "conduje", "tú": "condujiste", "él/ella/usted": "condujo", "nosotros": "condujimos", "vosotros": "condujisteis", "ellos/ustedes": "condujeron" },
+    "futuro_ir_a": "voy a conducir",
+    "participio": "conducido",
+    "example": { "es": "Conduzco un coche.", "en": "I drive a car." }
+  },
+  {
+    "inf": "producir",
+    "en": "to produce",
+    "cz": "vyrobit",
+    "type": "irregular (zco, j-stem)",
+    "presente": { "yo": "produzco", "tú": "produces", "él/ella/usted": "produce", "nosotros": "producimos", "vosotros": "producís", "ellos/ustedes": "producen" },
+    "pretérito": { "yo": "produje", "tú": "produjiste", "él/ella/usted": "produjo", "nosotros": "produjimos", "vosotros": "produjisteis", "ellos/ustedes": "produjeron" },
+    "futuro_ir_a": "voy a producir",
+    "participio": "producido",
+    "example": { "es": "Producen vino.", "en": "They produce wine." }
+  },
+  {
+    "inf": "traducir",
+    "en": "to translate",
+    "cz": "přeložit",
+    "type": "irregular (zco, j-stem)",
+    "presente": { "yo": "traduzco", "tú": "traduces", "él/ella/usted": "traduce", "nosotros": "traducimos", "vosotros": "traducís", "ellos/ustedes": "traducen" },
+    "pretérito": { "yo": "traduje", "tú": "tradujiste", "él/ella/usted": "tradujo", "nosotros": "tradujimos", "vosotros": "tradujisteis", "ellos/ustedes": "tradujeron" },
+    "futuro_ir_a": "voy a traducir",
+    "participio": "traducido",
+    "example": { "es": "Traduzco el texto.", "en": "I translate the text." }
+  },
+  {
+    "inf": "dormir",
+    "en": "to sleep",
+    "cz": "spát",
+    "type": "irregular (o→ue, u)",
+    "presente": { "yo": "duermo", "tú": "duermes", "él/ella/usted": "duerme", "nosotros": "dormimos", "vosotros": "dormís", "ellos/ustedes": "duermen" },
+    "pretérito": { "yo": "dormí", "tú": "dormiste", "él/ella/usted": "durmió", "nosotros": "dormimos", "vosotros": "dormisteis", "ellos/ustedes": "durmieron" },
+    "futuro_ir_a": "voy a dormir",
+    "participio": "dormido",
+    "example": { "es": "Duermo ocho horas.", "en": "I sleep eight hours." }
+  },
+  {
+    "inf": "pedir",
+    "en": "to ask for/request",
+    "cz": "žádat/požadovat",
+    "type": "irregular (e→i, i)",
+    "presente": { "yo": "pido", "tú": "pides", "él/ella/usted": "pide", "nosotros": "pedimos", "vosotros": "pedís", "ellos/ustedes": "piden" },
+    "pretérito": { "yo": "pedí", "tú": "pediste", "él/ella/usted": "pidió", "nosotros": "pedimos", "vosotros": "pedisteis", "ellos/ustedes": "pidieron" },
+    "futuro_ir_a": "voy a pedir",
+    "participio": "pedido",
+    "example": { "es": "Pido la cuenta.", "en": "I ask for the bill." }
+  }
+]
