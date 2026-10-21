@@ -184,6 +184,13 @@
       <main class="tab-content">
 
         <div class="panel">
+          <h2>Účet a synchronizace</h2>
+          <div id="sync-body">
+            <p class="hint">Načítám…</p>
+          </div>
+        </div>
+
+        <div class="panel">
           <h2>Nastavení</h2>
           <label class="setting-row">
             <span>Režim zobrazení</span>
@@ -264,6 +271,8 @@
   <div class="toast" id="toast" aria-live="assertive" hidden style="display:none"></div>
 
   <script src="./app.js"></script>
+  <script src="./firebase-config.js"></script>
+  <script type="module" src="./sync.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

@@ -110,6 +110,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .header-progress, .hint { color: var(--muted); font-size: .85rem; }
 .hint { margin: 8px 0 0; }
+code {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: .92em;
+}
 
 /* ---------- Theme toggle ---------- */
 .theme-btn {

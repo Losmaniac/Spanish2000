@@ -1,9 +1,11 @@
-const CACHE_NAME = 'es-v4';
+const CACHE_NAME = 'es-v5';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
+  './firebase-config.js',
+  './sync.js',
   './manifest.webmanifest',
   './words.json',
   './grammar.json',

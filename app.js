@@ -67,7 +67,8 @@ function defaultState() {
     dailyGoal: 20,
     doneToday: 0,
     grammarDone: {},    // { lessonId: true }
-    settings: { tts: true, newPerSession: 10, theme: 'auto' }
+    settings: { tts: true, newPerSession: 10, theme: 'auto' },
+    updatedAt: 0        // ms timestamp poslední lokální změny (kvůli synchronizaci)
   };
 }
 
@@ -94,16 +95,23 @@ function loadState() {
       newPerSession: Number(p.settings && p.settings.newPerSession) || 10,
       theme: (p.settings && p.settings.theme) || 'auto'
     };
+    s.updatedAt = Number(p.updatedAt) || 0;
     state = s;
   } catch (e) {
     console.warn('Nepodařilo se načíst stav:', e);
   }
 }
 
-function saveState() {
+// silent = true → neupozorňovat cloudovou synchronizaci (používá se při
+// zápisu dat stažených z cloudu, aby nevznikl nekonečný cyklus push/pull).
+function saveState(silent) {
   if (!storageEnabled) return;
+  if (!silent) state.updatedAt = Date.now();
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   catch (e) { console.warn('Nepodařilo se uložit stav:', e); }
+  if (!silent && window.S2000 && typeof window.S2000.onLocalSave === 'function') {
+    window.S2000.onLocalSave();
+  }
 }
 /* ---------------- Téma (světlý / tmavý režim) ---------------- */
 function systemTheme() {
@@ -1518,18 +1526,90 @@ function init() {
   applyTheme();
   wire();
 
-  loadData().then(function () {
+  // window.appReady čeká sync.js, aby nesynchronizoval dřív, než jsou data načtená
+  window.appReady = loadData().then(function () {
     if (!words.length) toast('Slovíček se nepodařilo načíst 😕', 6000);
     renderHome();
     renderLearnStart();
     if (location.search.indexOf('test=1') !== -1) runTests();
   });
+  return window.appReady;
 }
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
   init();
+}
+
+/* ============================================================
+   SLOUČENÍ POKROKU (pro cloudovou synchronizaci)
+   Pravidlo: nikdy nepřepisovat naslepo — o pokrok nesmí přijít
+   ani jedno zařízení.
+   ============================================================ */
+function mergeProgress(local, remote) {
+  var L = local || defaultState();
+  var R = remote || defaultState();
+  var out = defaultState();
+
+  // cards: u každého ranku ponech záznam, který je „více procvičený“
+  var ranks = {};
+  Object.keys(L.cards || {}).forEach(function (r) { ranks[r] = 1; });
+  Object.keys(R.cards || {}).forEach(function (r) { ranks[r] = 1; });
+  Object.keys(ranks).forEach(function (r) {
+    var a = (L.cards || {})[r];
+    var b = (R.cards || {})[r];
+    if (a && !b) { out.cards[r] = a; return; }
+    if (b && !a) { out.cards[r] = b; return; }
+    var as = Number(a.seen) || 0, bs = Number(b.seen) || 0;
+    if (as !== bs) { out.cards[r] = as > bs ? a : b; return; }
+    out.cards[r] = (Number(a.box) || 0) >= (Number(b.box) || 0) ? a : b;
+  });
+
+  // grammarDone: sjednocení
+  Object.keys(L.grammarDone || {}).forEach(function (k) { out.grammarDone[k] = true; });
+  Object.keys(R.grammarDone || {}).forEach(function (k) { out.grammarDone[k] = true; });
+
+  // xp: maximum (součet by dvojitě počítal stejné session)
+  out.xp = Math.max(Number(L.xp) || 0, Number(R.xp) || 0);
+
+  // denní série: použij záznam s novějším lastDay
+  var lDay = L.lastDay || '', rDay = R.lastDay || '';
+  var winner = rDay > lDay ? R : L;
+  out.lastDay = winner.lastDay || '';
+  out.streak = Number(winner.streak) || 0;
+  out.doneToday = (lDay && lDay === rDay)
+    ? Math.max(Number(L.doneToday) || 0, Number(R.doneToday) || 0)
+    : (Number(winner.doneToday) || 0);
+
+  // nastavení: vyhrává lokální zařízení
+  out.settings = {
+    tts: !(L.settings && L.settings.tts === false),
+    newPerSession: Number(L.settings && L.settings.newPerSession) || 10,
+    theme: (L.settings && L.settings.theme) || 'auto'
+  };
+
+  out.dailyGoal = Number(L.dailyGoal) || Number(R.dailyGoal) || 20;
+  out.updatedAt = Math.max(Number(L.updatedAt) || 0, Number(R.updatedAt) || 0);
+  return out;
+}
+
+function renderAll() {
+  applyTheme();
+  renderHome();
+  if (!session.active) renderLearnStart();   // nesmí přerušit běžící session
+  renderGrammar();
+  renderVerbs();
+  renderMore();
+}
+
+// Aplikuje stav z cloudu (sloučený s lokálním) bez zbytečných push cyklů.
+function applyRemoteState(remote) {
+  var merged = mergeProgress(state, remote);
+  state = merged;
+  saveState(true);          // silent → neodesílat hned zpět
+  renderAll();
+  return merged;
 }
 
 // Přístup z konzole pro ladění
@@ -1540,6 +1620,22 @@ window.app = {
   verbs: function () { return verbs; },
   session: function () { return session; },
   runTests: runTests
+};
+
+// Most pro sync.js (cloudová synchronizace)
+window.S2000 = {
+  onLocalSave: null,                       // nastaví sync.js
+  getState: function () { return state; },
+  snapshot: function () { return JSON.parse(JSON.stringify(state)); },
+  merge: mergeProgress,
+  applyRemote: applyRemoteState,
+  setState: function (obj) { state = obj; saveState(true); renderAll(); },
+  renderAll: renderAll,
+  isSessionActive: function () { return !!session.active; },
+  toast: toast,
+  today: todayStr,
+  fmt: fmt,
+  storageDisabled: function () { return !storageEnabled; }
 };
 
 

@@ -160,3 +160,43 @@ Ruční test: nová karta → mini-kvíz → opakování → refresh stránky (s
 ## Pořadí práce
 
 1. Kostra (`index.html`, záložky, načtení `words.json`, stav + storage) → 2. Učit + Opakovat + SRS → 3. Domů/XP/streak → 4. Gramatika + slovesa (obsah + UI) → 5. PWA (manifest, sw, ikony) → 6. Asserty a ruční test.
+
+---
+
+## 11. Dodatečné rozšíření: cloudová synchronizace
+
+> **Pozn.:** §10 původně stavělo „účty a cloud sync" mimo rozsah. Na přání uživatele
+> bylo toto rozšíření doplněno dodatečně. Ostatní body zadání zůstávají v platnosti.
+
+**Nové soubory**
+
+```
+firebase-config.js   # konfigurace Firebase; dokud je null, sync je vypnutý
+sync.js              # ES modul: Firebase Auth (Google) + Cloud Firestore
+```
+
+**Jak to funguje**
+
+- `localStorage` zůstává **zdrojem pravdy** → offline-first z §7/§8 není nijak dotčen.
+- Pokrok se zrcadlí do dokumentu `progress/{uid}` ve Firestore (jeden JSON blob).
+- Při přihlášení se cloudový stav s lokálním **slučuje** funkcí `mergeProgress()`
+  v `app.js` — nikdy se naslepo nepřepisuje:
+  | pole | pravidlo |
+  |---|---|
+  | `cards` | u každého ranku vyhrává více procvičený záznam (`seen`), při shodě vyšší `box` |
+  | `grammarDone` | sjednocení |
+  | `xp` | maximum (součet by dvojitě počítal stejné session) |
+  | `streak`, `lastDay`, `doneToday` | z novějšího `lastDay`; při shodě `doneToday = max` |
+  | `settings` | vyhrává lokální zařízení |
+- Zápis do cloudu: ~2,5 s po poslední změně (debounce) + při `pagehide`.
+- Živé změny z jiného zařízení se aplikují přes `onSnapshot` (vlastní zápisy se
+  ignorují podle `device` id).
+- UI: panel **„Účet a synchronizace"** v záložce ⚙️ Víc + ruční „⬆ Nahrát" / „⬇ Stáhnout".
+
+**Bezpečnost**
+
+- Hodnoty ve `firebase-config.js` **nejsou tajné** (Google je označuje za veřejné identifikátory).
+  Ochranu tvoří Firestore Security Rules (`allow read, write: if request.auth.uid == userId;`)
+  a seznam povolených domén v Authentication → Authorized domains.
+- Bez vyplněné konfigurace se nenačítá ani CDN Firebase a aplikace funguje beze změny.
+
