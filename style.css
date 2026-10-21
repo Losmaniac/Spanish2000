@@ -62,6 +62,12 @@
 /* ---------- Reset & base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+/* KRITICKÉ: prvek s atributem [hidden] musí být vždy skrytý.
+   Výchozí prohlížečové pravidlo [hidden]{display:none} totiž NENÍ !important,
+   takže by ho přebila naše vlastní "display" pravidla (např. .modal{display:flex},
+   .btn{display:inline-flex}) a skryté prvky by zůstaly na obrazovce. */
+[hidden] { display: none !important; }
 body {
   margin: 0;
   font-family: var(--font);

@@ -257,10 +257,20 @@ function loadData() {
 function $(sel, root) { return (root || document).querySelector(sel); }
 function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
 
-// POZOR: vlastnost .hidden má v prohlížeči display:none !important,
-// proto vždy pracujeme s atributem přes tyto pomocníky.
-function hide(el) { if (el) el.setAttribute('hidden', ''); }
-function show(el) { if (el) el.removeAttribute('hidden'); }
+// POZOR: vlastnost .hidden (a ani atribut [hidden]) nemusí stačit —
+// naše CSS pravidla jako .modal{display:flex} nebo .btn{display:inline-flex}
+// přebíjejí výchozí [hidden]{display:none} z prohlížeče. Proto nastavujeme
+// i inline display, který je nejsilnější a funguje i se starou cache CSS.
+function hide(el) {
+  if (!el) return;
+  el.setAttribute('hidden', '');
+  el.style.display = 'none';
+}
+function show(el) {
+  if (!el) return;
+  el.removeAttribute('hidden');
+  el.style.display = '';
+}
 
 var toastTimer = null;
 function toast(msg, ms) {
@@ -1493,10 +1503,18 @@ function runTests() {
   return results;
 }
 
+/* Skryje vše, co má v HTML atribut [hidden]. Chráníme se tím proti tomu,
+   kdyby v prohlížeči zůstalo v cache staré CSS bez [hidden]{display:none!important}
+   a naše .btn/.modal display pravidla by skryté prvky zobrazila. */
+function applyHiddenStyles() {
+  $$('[hidden]').forEach(function (el) { el.style.display = 'none'; });
+}
+
 /* ---------------- Start aplikace ---------------- */
 function init() {
   loadState();
   touchStreak();          // jednou za den: streak + reset denního pokroku
+  applyHiddenStyles();
   applyTheme();
   wire();
 
