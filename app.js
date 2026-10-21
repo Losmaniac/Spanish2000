@@ -266,6 +266,11 @@ function renderSession() {
   $('#session-progress-label').textContent = `${session.currentIndex + 1} / ${session.cards.length}`;
   
   const phase = PHASES[card.phase];
+  $('#phase-indicator').textContent = phase.charAt(0).toUpperCase() + phase.slice(1);
+  
+  renderCard(card, phase);
+}
+
 function renderCard(card, phase) {
   const w = card.word;
   const container = $('#card-container');
@@ -349,6 +354,9 @@ function nextPhase() {
     nextCard();
   } else {
     renderSession();
+  }
+}
+
 function checkMeaning(idx, option) {
   const card = session.cards[session.currentIndex];
   const correct = normalize(card.word.en) === normalize(option);
@@ -534,6 +542,9 @@ function renderTable(table) {
     html += '</tr>';
   }
   html += '</tbody></table>';
+  return html;
+}
+
 function renderExercise(ex, id) {
   let html = `<div class="exercise" id="ex-${id}"><div class="exercise-q">${ex.q}</div>`;
   
@@ -549,7 +560,7 @@ function renderExercise(ex, id) {
     const words = [...ex.words].sort(() => Math.random() - 0.5);
     html += '<div class="sentence-builder">';
     words.forEach((w, i) => html += `<button class="word-chip" data-word="${w}" onclick="addWordToSentence('${id}', '${w.replace(/'/g, "\\'").replace(/"/g, '\\"')}', this)">${w}</button>`);
-    html += '</div><div class="sentence-target" id="ex-target-${id}"></div><button class="btn btn-primary" style="margin-top:8px" onclick="checkOrder(\'${id}\', ${JSON.stringify(ex.words).replace(/"/g, '"')})">Ověřit</button>';
+    html += `</div><div class="sentence-target" id="ex-target-${id}"></div><button class="btn btn-primary" style="margin-top:8px" onclick="checkOrder('${id}', ${JSON.stringify(ex.words).replace(/"/g, '\\"')})">Ověřit</button>`;
   }
   
   html += `<div class="exercise-feedback" id="ex-fb-${id}"></div></div>`;
@@ -601,12 +612,17 @@ function showExerciseFeedback(id, correct, why) {
   const fb = document.getElementById(`ex-fb-${id}`);
   fb.textContent = (correct ? 'Správně! ' : 'Špatně. ') + (why || '');
   fb.className = 'exercise-feedback show ' + (correct ? 'correct' : 'wrong');
-}
-
 window.addWordToSentence = function(id, word, btn) {
   const target = document.getElementById(`ex-target-${id}`);
   const chip = document.createElement('button');
   chip.className = 'word-chip';
+  chip.dataset.word = word;
+  chip.textContent = word;
+  chip.onclick = () => { target.removeChild(chip); btn.classList.remove('used'); };
+  target.appendChild(chip);
+  btn.classList.add('used');
+};
+
 // --- Verbs Tab ---
 function renderVerbs() {
   const container = $('#verbs-list');
@@ -687,6 +703,12 @@ function filterVerbs(query) {
 
 function filterGrammar(query) {
   const q = normalize(query);
+  $$('.accordion-item').forEach(item => {
+    const title = normalize(item.querySelector('.accordion-header').textContent);
+    item.style.display = title.includes(q) ? '' : 'none';
+  });
+}
+
 // --- Event Listeners ---
 function initEventListeners() {
   // Tab navigation
@@ -790,56 +812,5 @@ document.addEventListener('DOMContentLoaded', init);
 
 // Export for debugging
 window.app = { state, words, grammar, verbs, normalize, todayStr, addDays };
-  $$('.accordion-item').forEach(item => {
-    const title = normalize(item.querySelector('.accordion-header').textContent);
-    item.style.display = title.includes(q) ? '' : 'none';
-  });
-}
-  chip.dataset.word = word;
-  chip.textContent = word;
-  chip.onclick = () => { target.removeChild(chip); btn.classList.remove('used'); };
-  target.appendChild(chip);
-  btn.classList.add('used');
-}
-  return html;
-}
-function endSessionEarly() {
-  show($('#session-start'));
-  hide($('#session-active'));
-  hide($('#session-summary'));
-  hide($('#btn-end-session'));
-}
-  $('#phase-indicator').textContent = phase.charAt(0).toUpperCase() + phase.slice(1);
   
-  renderCard(card, phase);
-}
-function speak(text) {
-  if (!state.settings.tts || !('speechSynthesis' in window)) return;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'es-ES';
-  utter.rate = 0.9;
-  speechSynthesis.speak(utter);
-}
-
-// --- UI Helpers ---
-function $(sel) { return document.querySelector(sel); }
-function $$(sel) { return document.querySelectorAll(sel); }
-function hide(el) { if (el) el.setAttribute('hidden', ''); }
-function show(el) { if (el) el.removeAttribute('hidden'); }
-
-function showTab(tabId) {
-  $$('.tab-panel').forEach(p => { p.setAttribute('hidden', ''); p.classList.remove('active'); });
-  $$('.nav-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
-  const panel = $('#tab-' + tabId);
-  const btn = $('#btn-' + tabId);
-  if (panel) { panel.removeAttribute('hidden'); panel.classList.add('active'); }
-  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); }
-}
-
-function showError(msg) {
-  const div = document.createElement('div');
-  div.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--error);color:white;padding:16px 24px;border-radius:var(--radius);z-index:1000;box-shadow:var(--shadow-lg);';
-  div.textContent = msg;
-  document.body.appendChild(div);
-  setTimeout(() => div.remove(), 5000);
 }
