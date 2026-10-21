@@ -1,0 +1,25 @@
+rules_version = '2';
+
+// ============================================================
+//  Firestore Security Rules — Spanish 2000
+// ============================================================
+//  Každý uživatel smí číst a zapisovat POUZE svůj vlastní
+//  dokument v kolekci "progress". Uživatel se identifikuje
+//  přes Firebase Auth (Google) — request.auth.uid == userId.
+//
+//  Toto je SKUTEČNÁ ochrana dat. Konfigurace v firebase-config.js
+//  (apiKey apod.) je veřejná, bez těchto pravidel by databáze
+//  byla buď otevřená všem, nebo nepoužitelná.
+// ============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /progress/{userId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+
+    // Vše ostatní je zakázané (výchozí chování = deny).
+  }
+}

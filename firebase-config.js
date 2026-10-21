@@ -1,62 +1,29 @@
 /* ============================================================
-   KONFIGURACE FIREBASE  —  TADY DOPLŇ SVÉ ÚDAJE
+   KONFIGURACE FIREBASE  —  projekt spanish2000-91271
    ============================================================
+   Tento soubor obsahuje VEŘEJNÉ identifikátory Firebase.
+   Nejsou to tajné údaje — Google je sám označuje jako veřejné.
+   Skutečnou ochranu tvoří:
+     • Firestore Security Rules  (viz firestore.rules, už nasazeno)
+     • seznam povolených domén   (Authentication → Authorized domains)
 
-   Postup (jednorázově, ~5 minut):
+   ZBÝVAJÍ 2 RUČNÍ KROKY (v CLI pro ně neexistuje příkaz):
+     https://console.firebase.google.com/project/spanish2000-91271/authentication/providers
+       1) Authentication → Sign-in method → Google → Povolit → Uložit
+       2) Authentication → Settings → Authorized domains → Add domain
+            • losmaniac.github.io     (bez https:// a bez cesty!)
+            • localhost               (jen pokud testuješ lokálně)
 
-   1) https://console.firebase.google.com  →  „Add project"
-      (Google Analytics můžeš přeskočit)
-
-   2) V projektu: Build → Authentication → Get started
-        • Sign-in method → Google → Enable → Save
-
-   3) Authentication → Settings → Authorized domains → Add domain
-        • losmaniac.github.io            (bez https:// a bez cesty!)
-        • localhost                      (pro lokální testování)
-
-   4) Build → Firestore Database → Create database
-        • zvol produkční režim (Production mode) a region (např. europe-west3)
-
-   5) Firestore → Rules → vlož a publikuj (Publish) tyto zásady:
-
-        rules_version = '2';
-        service cloud.firestore {
-          match /databases/{database}/documents {
-            match /progress/{userId} {
-              allow read, write: if request.auth != null
-                                 && request.auth.uid == userId;
-            }
-          }
-        }
-
-      ⚠️ Bez těchto pravidel je databáze buď otevřená všem, nebo zamčená.
-      Tato pravidla zaručují, že každý uživatel vidí jen SVŮJ dokument.
-
-   6) Project settings (ozubené kolo) → Your apps → Web app (</>)
-        • Zaregistruj webovou aplikaci, zkopíruj objekt „firebaseConfig"
-        • Vlož ho níže místo null
-
-   POZNÁMKA K BEZPEČNOSTI:
-   Hodnoty níže (apiKey apod.) NEJSOU tajné — Google je sám označuje jako
-   veřejné identifikátory. Skutečnou ochranu tvoří Firestore Rules (krok 5)
-   a seznam povolených domén (krok 3). Klidně je můžeš mít ve veřejném repu.
-
-   Dokud je hodnota null, appka funguje úplně normálně — jen bez synchronizace
-   a v záložce „Víc" se zobrazí upozornění, že cloud není nastavený.
+   Dokud nejsou hotové, appka funguje normálně, ale přihlášení
+   skončí chybou "auth/unauthorized-domain" nebo "auth/operation-not-allowed".
    ============================================================ */
 
-window.FIREBASE_CONFIG = null;
-
-/* Až budeš mít údaje z konzole, nahraď řádek výše tímto a odkomentuj:
-
 window.FIREBASE_CONFIG = {
-  apiKey: "AIza....",
-  authDomain: "tvuj-projekt.firebaseapp.com",
-  projectId: "tvuj-projekt",
-  storageBucket: "tvuj-projekt.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abcdef1234567890",
-  measurementId: "G-XXXXXXX"          // volitelné
+  projectId: "spanish2000-91271",
+  appId: "1:701707240029:web:cc989489b2c771ac2483b4",
+  storageBucket: "spanish2000-91271.firebasestorage.app",
+  apiKey: "AIzaSyAuuFq_pRjyCBFM0dCvIVZSFd4M_Rg8djc",
+  authDomain: "spanish2000-91271.firebaseapp.com",
+  messagingSenderId: "701707240029"
 };
 
-*/
