@@ -6,6 +6,7 @@ Postav **jednoduchou, funkční, offline PWA** pro češtinu mluvícího začát
 
 ## 1. Soubory (přesně tyto)
 
+
 ```
 index.html        # shell + <nav> se 4 záložkami
 style.css         # mobile-first, světlý/tmavý režim přes prefers-color-scheme
