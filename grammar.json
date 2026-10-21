@@ -1,24 +1,264 @@
 [
   {
+    "id": "articles-gender",
+    "title": "Articles & Noun Gender (el/la, un/una)",
+    "text": "Every Spanish noun is masculine or feminine. Learn the article with the word.\n\nMasculine: **el** libro, **un** libro (mostly words ending in **-o**)\nFeminine: **la** casa, **una** casa (mostly words ending in **-a**)\n\n**Exceptions to watch:**\n- *el día*, *el mapa*, *el problema*, *el tema* (masculine despite -a)\n- *la mano*, *la foto*, *la moto* (feminine despite -o)\n\nEndings that are usually masculine: -or, -aje, -ma (Greek origin).\nEndings usually feminine: -dad, -tad, -ción, -sión, -umbre.",
+    "table": [
+      [
+        "",
+        "Masculine",
+        "Feminine"
+      ],
+      [
+        "singular",
+        "el libro / un libro",
+        "la casa / una casa"
+      ],
+      [
+        "plural",
+        "los libros / unos libros",
+        "las casas / unas casas"
+      ],
+      [
+        "typical ending",
+        "-o, -or, -aje",
+        "-a, -dad, -ción"
+      ]
+    ],
+    "exercises": [
+      {
+        "type": "choice",
+        "q": "____ casa es grande.",
+        "options": [
+          "El",
+          "La"
+        ],
+        "answer": "La",
+        "why": "casa ends in -a → feminine"
+      },
+      {
+        "type": "choice",
+        "q": "____ problema es difícil.",
+        "options": [
+          "El",
+          "La"
+        ],
+        "answer": "El",
+        "why": "problema is a Greek-origin -ma word → masculine"
+      },
+      {
+        "type": "fill",
+        "q": "____ mano (the hand)",
+        "answer": "la",
+        "why": "mano is an exception: feminine"
+      }
+    ]
+  },
+  {
+    "id": "plural-nouns",
+    "title": "Plural of Nouns",
+    "text": "Add **-s** if the word ends in a vowel, **-es** if it ends in a consonant.\n\n- libro → libro**s**\n- casa → casa**s**\n- ciudad → ciudad**es**\n- pared → pared**es**\n\nWords ending in **-z** change z → c: *lápiz → lápices*, *vez → veces*.\nWords ending in **-ión** lose the accent: *canción → canciones*.\n\nIf the last syllable is stressed and ends in a vowel, add **-es**: *rubí → rubíes*.",
+    "table": [
+      [
+        "Singular",
+        "Plural",
+        "Rule"
+      ],
+      [
+        "libro",
+        "libros",
+        "vowel → +s"
+      ],
+      [
+        "casa",
+        "casas",
+        "vowel → +s"
+      ],
+      [
+        "ciudad",
+        "ciudades",
+        "consonant → +es"
+      ],
+      [
+        "lápiz",
+        "lápices",
+        "z → c + es"
+      ],
+      [
+        "canción",
+        "canciones",
+        "-ión → -iones"
+      ]
+    ],
+    "exercises": [
+      {
+        "type": "fill",
+        "q": "el lápiz → los ____",
+        "answer": "lápices",
+        "why": "z → c + es"
+      },
+      {
+        "type": "choice",
+        "q": "la ciudad → las ____",
+        "options": [
+          "ciudads",
+          "ciudades"
+        ],
+        "answer": "ciudades",
+        "why": "consonant ending → +es"
+      },
+      {
+        "type": "order",
+        "words": [
+          "los",
+          "libros",
+          "son",
+          "nuevos"
+        ],
+        "answer": "los libros son nuevos"
+      }
+    ]
+  },
+  {
+    "id": "ser-estar",
+    "title": "Ser vs. Estar",
+    "text": "Both mean **to be**, but they are not interchangeable.\n\n**SER** = permanent / essential: identity, origin, time, possession, material.\n- *Soy estudiante.* · *Es de México.* · *Son las tres.* · *Es mi libro.*\n\n**ESTAR** = temporary / state / location.\n- *Estoy cansado.* · *Está en casa.* · *Estoy estudiando.*\n\nMnemonic: **\"For how you feel or where you are, always use the verb estar.\"**\nSome adjectives change meaning: *ser listo* (clever) vs *estar listo* (ready); *ser aburrido* (boring) vs *estar aburrido* (bored).",
+    "table": [
+      [
+        "Person",
+        "ser",
+        "estar"
+      ],
+      [
+        "yo",
+        "soy",
+        "estoy"
+      ],
+      [
+        "tú",
+        "eres",
+        "estás"
+      ],
+      [
+        "él/ella/usted",
+        "es",
+        "está"
+      ],
+      [
+        "nosotros",
+        "somos",
+        "estamos"
+      ],
+      [
+        "vosotros",
+        "sois",
+        "estáis"
+      ],
+      [
+        "ellos/ustedes",
+        "son",
+        "están"
+      ]
+    ],
+    "exercises": [
+      {
+        "type": "choice",
+        "q": "Ella ____ médica.",
+        "options": [
+          "es",
+          "está"
+        ],
+        "answer": "es",
+        "why": "profession = permanent → ser"
+      },
+      {
+        "type": "choice",
+        "q": "Nosotros ____ cansados.",
+        "options": [
+          "somos",
+          "estamos"
+        ],
+        "answer": "estamos",
+        "why": "temporary state → estar"
+      },
+      {
+        "type": "choice",
+        "q": "Madrid ____ la capital de España.",
+        "options": [
+          "es",
+          "está"
+        ],
+        "answer": "es",
+        "why": "identity/fact → ser"
+      },
+      {
+        "type": "fill",
+        "q": "El libro ____ en la mesa.",
+        "answer": "está",
+        "why": "location → estar"
+      }
+    ]
+  },
+  {
     "id": "present-regular",
     "title": "Present Tense: Regular Verbs",
-    "text": "Spanish verbs are grouped into three conjugations by their infinitive ending: **-ar**, **-er**, **-ir**. To conjugate in present tense, drop the ending and add the appropriate suffix.\n\n**Regular -ar (hablar - to speak):**\nyo hablo, tú hablas, él/ella/usted habla, nosotros hablamos, vosotros habláis, ellos/ustedes hablan\n\n**Regular -er (comer - to eat):**\nyo como, tú comes, él/ella/usted come, nosotros comemos, vosotros coméis, ellos/ustedes comen\n\n**Regular -ir (vivir - to live):**\nyo vivo, tú vives, él/ella/usted vive, nosotros vivimos, vosotros vivís, ellos/ustedes viven",
+    "text": "Three groups by infinitive ending: **-ar**, **-er**, **-ir**. Drop the ending and add the personal suffix.\n\n**-ar (hablar):** hablo, hablas, habla, hablamos, habláis, hablan\n**-er (comer):** como, comes, come, comemos, coméis, comen\n**-ir (vivir):** vivo, vives, vive, vivimos, vivís, viven\n\nNote: **-er** and **-ir** differ only in the nosotros/vosotros forms.",
     "table": [
-      ["Person", "-ar (hablar)", "-er (comer)", "-ir (vivir)"],
-      ["yo", "hablo", "como", "vivo"],
-      ["tú", "hablas", "comes", "vives"],
-      ["él/ella/usted", "habla", "come", "vive"],
-      ["nosotros", "hablamos", "comemos", "vivimos"],
-      ["vosotros", "habláis", "coméis", "vivís"],
-      ["ellos/ustedes", "hablan", "comen", "viven"]
+      [
+        "Person",
+        "-ar hablar",
+        "-er comer",
+        "-ir vivir"
+      ],
+      [
+        "yo",
+        "hablo",
+        "como",
+        "vivo"
+      ],
+      [
+        "tú",
+        "hablas",
+        "comes",
+        "vives"
+      ],
+      [
+        "él/ella/usted",
+        "habla",
+        "come",
+        "vive"
+      ],
+      [
+        "nosotros",
+        "hablamos",
+        "comemos",
+        "vivimos"
+      ],
+      [
+        "vosotros",
+        "habláis",
+        "coméis",
+        "vivís"
+      ],
+      [
+        "ellos/ustedes",
+        "hablan",
+        "comen",
+        "viven"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
         "q": "Nosotros ____ (hablar) español.",
-        "options": ["hablamos", "habláis", "habla", "hablo"],
+        "options": [
+          "hablamos",
+          "habláis",
+          "habla",
+          "hablo"
+        ],
         "answer": "hablamos",
-        "why": "nosotros + -amos for -ar verbs"
+        "why": "nosotros + -amos"
       },
       {
         "type": "fill",
@@ -27,314 +267,940 @@
         "why": "ellos + -en for -er verbs"
       },
       {
+        "type": "fill",
+        "q": "Tú ____ (vivir) en Madrid.",
+        "answer": "vives",
+        "why": "tú + -es for -ir verbs"
+      },
+      {
         "type": "order",
-        "words": ["yo", "vivo", "en", "Madrid"],
+        "words": [
+          "yo",
+          "vivo",
+          "en",
+          "Madrid"
+        ],
         "answer": "yo vivo en Madrid"
       }
     ]
   },
   {
-    "id": "ser-estar",
-    "title": "Ser vs Estar",
-    "text": "Both mean **\"to be\"** but are used differently:\n\n**SER** - permanent/essential characteristics:\n- Identity: *Soy profesor* (I am a teacher)\n- Origin: *Es de México* (He is from Mexico)\n- Time: *Son las tres* (It is three o'clock)\n- Possession: *Es mi libro* (It is my book)\n- Material: *La mesa es de madera* (The table is wood)\n\n**ESTAR** - temporary states/locations:\n- Location: *Estoy en casa* (I am at home)\n- Condition: *Está cansado* (He is tired)\n- Progressive: *Estoy estudiando* (I am studying)\n- Result of action: *La puerta está abierta* (The door is open)\n\n**Mnemonic:** *For how you feel or where you are, always use the verb **estar**.*",
+    "id": "irregular-essentials",
+    "title": "Tener, Ir, Hacer, Querer, Poder",
+    "text": "Five irregular verbs you will use constantly.\n\n- **tener** (to have): tengo, tienes, tiene, tenemos, tenéis, tienen — *tener que* + inf. = \"to have to\"\n- **ir** (to go): voy, vas, va, vamos, vais, van\n- **hacer** (to do/make): hago, haces, hace, hacemos, hacéis, hacen\n- **querer** (to want): quiero, quieres, quiere, queremos, queréis, quieren (e→ie)\n- **poder** (can): puedo, puedes, puede, podemos, podéis, pueden (o→ue)\n\n**yo** forms ending in **-go**: tengo, hago, pongo, salgo, traigo, vengo.",
     "table": [
-      ["Person", "Ser", "Estar"],
-      ["yo", "soy", "estoy"],
-      ["tú", "eres", "estás"],
-      ["él/ella/usted", "es", "está"],
-      ["nosotros", "somos", "estamos"],
-      ["vosotros", "sois", "estáis"],
-      ["ellos/ustedes", "son", "están"]
+      [
+        "Verb",
+        "yo",
+        "tú",
+        "él/ella",
+        "nosotros",
+        "ellos"
+      ],
+      [
+        "tener",
+        "tengo",
+        "tienes",
+        "tiene",
+        "tenemos",
+        "tienen"
+      ],
+      [
+        "ir",
+        "voy",
+        "vas",
+        "va",
+        "vamos",
+        "van"
+      ],
+      [
+        "hacer",
+        "hago",
+        "haces",
+        "hace",
+        "hacemos",
+        "hacen"
+      ],
+      [
+        "querer",
+        "quiero",
+        "quieres",
+        "quiere",
+        "queremos",
+        "quieren"
+      ],
+      [
+        "poder",
+        "puedo",
+        "puedes",
+        "puede",
+        "podemos",
+        "pueden"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
-        "q": "Ella ____ médica.",
-        "options": ["es", "está"],
-        "answer": "es",
-        "why": "Profession = permanent characteristic → ser"
-      },
-      {
-        "type": "choice",
-        "q": "Nosotros ____ cansados.",
-        "options": ["somos", "estamos"],
-        "answer": "estamos",
-        "why": "Temporary state → estar"
+        "q": "Yo ____ veinte años.",
+        "options": [
+          "tengo",
+          "soy"
+        ],
+        "answer": "tengo",
+        "why": "age uses tener, not ser"
       },
       {
         "type": "fill",
-        "q": "Madrid ____ la capital de España.",
-        "answer": "es",
-        "why": "Identity/fact → ser"
+        "q": "Yo ____ (hacer) la tarea.",
+        "answer": "hago",
+        "why": "hacer → hago (yo, -go form)"
+      },
+      {
+        "type": "choice",
+        "q": "Nosotros ____ ir al cine.",
+        "options": [
+          "queremos",
+          "quieramos",
+          "queren"
+        ],
+        "answer": "queremos",
+        "why": "querer e→ie except nosotros: queremos"
+      },
+      {
+        "type": "order",
+        "words": [
+          "yo",
+          "voy",
+          "a",
+          "la",
+          "escuela"
+        ],
+        "answer": "yo voy a la escuela"
       }
     ]
-  }
-]
-,
+  },
+  {
+    "id": "hay-estar",
+    "title": "Hay vs. Está / Están",
+    "text": "**hay** = \"there is / there are\" — existence, unspecified things. It never changes.\n**está / están** = \"is / are located\" — a specific, known thing.\n\n- *Hay un banco en la calle.* (There is a bank on the street — any bank)\n- *El banco está en la calle Mayor.* (The bank is on Main Street — that specific bank)\n\nQuestions about existence use **hay**: *¿Hay un hospital aquí?*\nLocation of the known object uses **estar**: *¿Dónde está el hospital?*",
+    "table": [
+      [
+        "Use",
+        "Form",
+        "Example"
+      ],
+      [
+        "existence",
+        "hay",
+        "Hay dos libros en la mesa"
+      ],
+      [
+        "existence (question)",
+        "hay",
+        "¿Hay leche en la nevera?"
+      ],
+      [
+        "location (specific)",
+        "está",
+        "El libro está en la mesa"
+      ],
+      [
+        "location (specific plural)",
+        "están",
+        "Los libros están en la mesa"
+      ]
+    ],
+    "exercises": [
+      {
+        "type": "choice",
+        "q": "____ una farmacia cerca?",
+        "options": [
+          "Hay",
+          "Está"
+        ],
+        "answer": "Hay",
+        "why": "asking about existence → hay"
+      },
+      {
+        "type": "choice",
+        "q": "¿Dónde ____ mi teléfono?",
+        "options": [
+          "hay",
+          "está"
+        ],
+        "answer": "está",
+        "why": "specific object → está"
+      },
+      {
+        "type": "fill",
+        "q": "____ muchos turistas en la playa.",
+        "answer": "hay",
+        "why": "unspecified quantity → hay"
+      }
+    ]
+  },
+  {
+    "id": "ir-a-futuro",
+    "title": "Near Future: ir a + Infinitive",
+    "text": "The most common way to talk about the near future: **ir** + **a** + **infinitive**.\n\n- *Voy a estudiar.* — I am going to study.\n- *¿Qué vas a hacer?* — What are you going to do?\n- *Vamos a comer paella.* — We are going to eat paella.\n\nOnly **ir** is conjugated; the second verb stays in the infinitive.\nFor a promise/prediction you can also use the simple future (add endings to the infinitive: hablaré, comerás, vivirá...).",
+    "table": [
+      [
+        "Person",
+        "ir a + inf.",
+        "Example"
+      ],
+      [
+        "yo",
+        "voy a",
+        "Voy a viajar a España"
+      ],
+      [
+        "tú",
+        "vas a",
+        "¿Vas a venir?"
+      ],
+      [
+        "él/ella/usted",
+        "va a",
+        "Va a llover"
+      ],
+      [
+        "nosotros",
+        "vamos a",
+        "Vamos a empezar"
+      ],
+      [
+        "vosotros",
+        "vais a",
+        "¿Vais a salir?"
+      ],
+      [
+        "ellos/ustedes",
+        "van a",
+        "Van a llegar tarde"
+      ]
+    ],
+    "exercises": [
+      {
+        "type": "choice",
+        "q": "Mañana yo ____ español.",
+        "options": [
+          "voy a estudiar",
+          "estudio a",
+          "voy estudiar"
+        ],
+        "answer": "voy a estudiar",
+        "why": "ir a + infinitive"
+      },
+      {
+        "type": "fill",
+        "q": "Nosotros ____ comer a las dos.",
+        "answer": "vamos a",
+        "why": "nosotros → vamos a"
+      },
+      {
+        "type": "order",
+        "words": [
+          "voy",
+          "a",
+          "ver",
+          "una",
+          "pelicula"
+        ],
+        "answer": "voy a ver una pelicula"
+      }
+    ]
+  },
+  {
+    "id": "reflexive-verbs",
+    "title": "Reflexive Verbs",
+    "text": "The action returns to the subject: **me, te, se, nos, os, se**.\n\n- *Me lavo.* (I wash myself) · *Se llama Ana.* (She calls herself Ana)\n- *Me levanto a las siete.* (I get up at seven)\n\nPlacement: before a conjugated verb, or attached to an infinitive/gerund:\n*Voy a **acostarme*** = *Me voy a **acostar*** = *Estoy **acostándome***.\n\nCareful: *llamarse* = \"to be called\"; *despertarse* (e→ie) = \"to wake up\".",
+    "table": [
+      [
+        "Person",
+        "levantarse",
+        "llamarse",
+        "irse"
+      ],
+      [
+        "yo",
+        "me levanto",
+        "me llamo",
+        "me voy"
+      ],
+      [
+        "tú",
+        "te levantas",
+        "te llamas",
+        "te vas"
+      ],
+      [
+        "él/ella/usted",
+        "se levanta",
+        "se llama",
+        "se va"
+      ],
+      [
+        "nosotros",
+        "nos levantamos",
+        "nos llamamos",
+        "nos vamos"
+      ],
+      [
+        "vosotros",
+        "os levantáis",
+        "os llamáis",
+        "os vais"
+      ],
+      [
+        "ellos/ustedes",
+        "se levantan",
+        "se llaman",
+        "se van"
+      ]
+    ],
+    "exercises": [
+      {
+        "type": "choice",
+        "q": "Yo ____ Ana.",
+        "options": [
+          "me llamo",
+          "llamo"
+        ],
+        "answer": "me llamo",
+        "why": "llamarse needs the reflexive pronoun"
+      },
+      {
+        "type": "fill",
+        "q": "Ella ____ (levantarse) a las seis.",
+        "answer": "se levanta",
+        "why": "él/ella → se + levanta"
+      },
+      {
+        "type": "order",
+        "words": [
+          "me",
+          "voy",
+          "a",
+          "acostar"
+        ],
+        "answer": "me voy a acostar"
+      }
+    ]
+  },
   {
     "id": "gustar",
     "title": "Gustar and Similar Verbs",
-    "text": "**Gustar** works backwards: the thing liked is the **subject**, the person liking is the **indirect object**.\n\nStructure: **Me/Te/Le/Nos/Os/Les + gusta/gustan + noun/infinitive**\n\n- *Me gusta el café* (Coffee pleases me → I like coffee)\n- *Me gustan los libros* (Books please me → I like books)\n- *Me gusta leer* (Reading pleases me → I like to read)\n\n**Similar verbs:**\n- **encantar** (to love) - *Me encanta la música*\n- **interesar** (to interest) - *Nos interesa el arte*\n- **importar** (to matter) - *No me importa*\n- **doler** (to hurt) - *Me duele la cabeza* (sg) / *Me duelen los pies* (pl)\n- **fascinar** (to fascinate) - *Le fascina la historia*\n- **molestar** (to bother) - *Nos molesta el ruido*",
+    "text": "**Gustar** literally means \"to please\": the thing liked is the subject.\n\n- *Me gusta el café.* (Coffee pleases me → I like coffee)\n- *Me gustan los libros.* (plural → gustan)\n- *Me gusta leer.* (an infinitive is singular)\n\nPronouns: **me, te, le, nos, os, les**.\nSame pattern: *encantar* (love), *interesar*, *importar*, *doler* (hurt — *me duele la cabeza*), *faltar*, *apetecer*.\n\nWith a clarifying phrase: *A mí me gusta...*, *A él le gusta...*",
     "table": [
-      ["Pronoun", "Singular subject", "Plural subject"],
-      ["me", "gusta", "gustan"],
-      ["te", "gusta", "gustan"],
-      ["le", "gusta", "gustan"],
-      ["nos", "gusta", "gustan"],
-      ["os", "gusta", "gustan"],
-      ["les", "gusta", "gustan"]
+      [
+        "Pronoun",
+        "singular (gusta)",
+        "plural (gustan)"
+      ],
+      [
+        "me",
+        "Me gusta el té",
+        "Me gustan las flores"
+      ],
+      [
+        "te",
+        "Te gusta el cine",
+        "Te gustan los gatos"
+      ],
+      [
+        "le",
+        "Le gusta viajar",
+        "Le gustan las películas"
+      ],
+      [
+        "nos",
+        "Nos gusta la música",
+        "Nos gustan los deportes"
+      ],
+      [
+        "os",
+        "Os gusta bailar",
+        "Os gustan las fiestas"
+      ],
+      [
+        "les",
+        "Les gusta el arte",
+        "Les gustan los museos"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
         "q": "A mí ____ las manzanas.",
-        "options": ["gusta", "gustan"],
+        "options": [
+          "gusta",
+          "gustan"
+        ],
         "answer": "gustan",
-        "why": "las manzanas is plural subject"
+        "why": "las manzanas is plural"
       },
       {
         "type": "fill",
         "q": "No ____ importa el dinero.",
         "answer": "me",
-        "why": "importar works like gustar; me = to me"
+        "why": "importar works like gustar"
+      },
+      {
+        "type": "choice",
+        "q": "____ duele la cabeza.",
+        "options": [
+          "Me",
+          "Yo"
+        ],
+        "answer": "Me",
+        "why": "doler uses indirect object pronouns"
       },
       {
         "type": "order",
-        "words": ["nos", "encanta", "viajar"],
+        "words": [
+          "nos",
+          "encanta",
+          "viajar"
+        ],
         "answer": "nos encanta viajar"
       }
     ]
   },
   {
-    "id": "present-progressive",
-    "title": "Present Progressive (Estar + Gerundio)",
-    "text": "Used for actions happening **right now**. Form with **estar** + **gerundio** (-ando/-iendo).\n\n**Forming the gerundio:**\n- -ar verbs: drop -ar, add **-ando** → *hablar → hablando*\n- -er/-ir verbs: drop -er/-ir, add **-iendo** → *comer → comiendo, vivir → viviendo*\n\n**Irregular gerunds (stem change):**\n- *ir → yendo* (not *iendo*)\n- *leer → leyendo*, *oír → oyendo*, *construir → construyendo* (i → y between vowels)\n- *dormir → durmiendo*, *pedir → pidiendo*, *decir → diciendo* (o→u, e→i stem changes)\n\n**Examples:**\n- *Estoy comiendo* (I am eating)\n- *¿Qué estás haciendo?* (What are you doing?)\n- *Ellos están durmiendo* (They are sleeping)",
+    "id": "por-para",
+    "title": "Por vs. Para",
+    "text": "Both translate as \"for\", but the meaning differs.\n\n**POR** — cause, exchange, means, movement through, duration:\n- *Gracias **por** tu ayuda.* · *Pagué 10 euros **por** el libro.* · *Hablamos **por** teléfono.* · *Caminamos **por** el parque.*\n\n**PARA** — purpose, destination, recipient, deadline, opinion:\n- *Estudio **para** aprender.* · *Salgo **para** Madrid.* · *Es **para** ti.* · ***Para** el lunes.* · ***Para** mí, es difícil.*\n\nTrick: **para** looks forward (goal), **por** looks back (cause).",
     "table": [
-      ["Verb", "Gerundio", "Example"],
-      ["hablar", "hablando", "Estoy hablando por teléfono"],
-      ["comer", "comiendo", "Estamos comiendo paella"],
-      ["vivir", "viviendo", "Viven viviendo en Barcelona"],
-      ["dormir", "durmiendo", "El bebé está durmiendo"],
-      ["pedir", "pidiendo", "Estoy pidiendo la cuenta"],
-      ["ir", "yendo", "Voy yendo al mercado"]
+      [
+        "Use",
+        "Preposition",
+        "Example"
+      ],
+      [
+        "cause / reason",
+        "por",
+        "Lo hice por ti"
+      ],
+      [
+        "exchange / price",
+        "por",
+        "Pagué 10 euros por eso"
+      ],
+      [
+        "through / along",
+        "por",
+        "Caminamos por el parque"
+      ],
+      [
+        "duration",
+        "por",
+        "Viví allí por dos años"
+      ],
+      [
+        "purpose / goal",
+        "para",
+        "Estudio para aprender"
+      ],
+      [
+        "destination",
+        "para",
+        "Salgo para Madrid"
+      ],
+      [
+        "recipient",
+        "para",
+        "Es para mi madre"
+      ],
+      [
+        "deadline",
+        "para",
+        "Lo necesito para mañana"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
-        "q": "Ahora mismo yo ____ (leer) un libro.",
-        "options": ["estoy leyendo", "estoy leiendo", "leo", "leo"],
-        "answer": "estoy leyendo",
-        "why": "leer → leyendo (i→y between vowels)"
+        "q": "Este regalo es ____ ti.",
+        "options": [
+          "por",
+          "para"
+        ],
+        "answer": "para",
+        "why": "recipient → para"
       },
-      {
-        "type": "fill",
-        "q": "Ellos ____ (dormir) la siesta.",
-        "answer": "están durmiendo",
-        "why": "dormir → durmiendo (o→u stem change)"
-      },
-      {
-        "type": "order",
-        "words": ["estamos", "aprendiendo", "español"],
-        "answer": "estamos aprendiendo español"
-      }
-    ]
-  }
-,
-  {
-    "id": "reflexive-verbs",
-    "title": "Reflexive Verbs",
-    "text": "Reflexive verbs indicate the subject performs the action **on themselves**. They use reflexive pronouns:\n\n**Pronouns:** me, te, se, nos, os, se\n\n**Placement:**\n- Before conjugated verb: *Me lavo las manos*\n- Attached to infinitive: *Voy a lavarme*\n- Attached to gerund: *Estoy lavándome* (accent on á)\n\n**Common reflexive verbs:**\n- *lavarse* (to wash up), *vestirse* (to get dressed), *despertarse* (to wake up)\n- *acostarse* (to go to bed), *levantarse* (to get up), *llamarse* (to be called)\n- *sentarse* (to sit down), *sentirse* (to feel), *divertirse* (to have fun)\n\n**Reciprocal actions** (each other): *Nos abrazamos* (We hug each other)",
-    "table": [
-      ["Person", "lavarse", "vestirse (e→i)", "despertarse (e→ie)"],
-      ["yo", "me lavo", "me visto", "me despierto"],
-      ["tú", "te lavas", "te vistes", "te despiertas"],
-      ["él/ella/usted", "se lava", "se viste", "se despierta"],
-      ["nosotros", "nos lavamos", "nos vestimos", "nos despertamos"],
-      ["vosotros", "os laváis", "os vestís", "os despertáis"],
-      ["ellos/ustedes", "se lavan", "se visten", "se despiertan"]
-    ],
-    "exercises": [
       {
         "type": "choice",
-        "q": "Cada mañana yo ____ a las 7.",
-        "options": ["me despierto", "me despiervo", "despierto", "me desperto"],
-        "answer": "me despierto",
-        "why": "despertarse: e→ie stem change, yo form"
+        "q": "Gracias ____ tu ayuda.",
+        "options": [
+          "por",
+          "para"
+        ],
+        "answer": "por",
+        "why": "cause/reason → por"
       },
       {
         "type": "fill",
-        "q": "Ellos ____ (divertirse) mucho en la fiesta.",
-        "answer": "se divierten",
-        "why": "divertirse: e→ie, ellos form + se"
-      },
-      {
-        "type": "order",
-        "words": ["nos", "vamos", "a", "acostar"],
-        "answer": "nos vamos a acostar"
+        "q": "Estudio ____ aprender español.",
+        "answer": "para",
+        "why": "purpose → para"
       }
     ]
   },
   {
-    "id": "preterite-regular",
-    "title": "Preterite (Pretérito Indefinido): Regular",
-    "text": "The preterite describes **completed actions in the past** with a definite beginning/end.\n\n**Regular -ar (hablar):**\nyo hablé, tú hablaste, él/ella/usted habló, nosotros hablamos, vosotros hablasteis, ellos/ustedes hablaron\n\n**Regular -er/-ir (comer/vivir):**\nyo comí/viví, tú comiste/viviste, él/ella/usted comió/vivió, nosotros comimos/vivimos, vosotros comisteis/vivisteis, ellos/ustedes comieron/vivieron\n\n**Key patterns:**\n- yo: -é (ar) / -í (er/ir)\n- él/ella: -ó (ar) / -ió (er/ir) - **accent on last vowel**\n- nosotros: same as present for -ar/-ir\n- ellos: -aron (ar) / -ieron (er/ir)",
+    "id": "negation-questions",
+    "title": "Negation & Questions",
+    "text": "**Negation:** put **no** directly before the verb. Other negatives: *nada* (nothing), *nadie* (nobody), *nunca* (never), *tampoco* (neither), *ningún/ninguna* (no/none).\n\n- *No hablo francés.* · *No hay nadie.* · *Nunca voy al gimnasio.*\n\nDouble negatives are correct in Spanish: *No veo **nada**.* (I don't see anything.)\n\n**Questions** use inverted marks ¿...? and the same word order:\n*¿Qué?* (*what*) · *¿Cómo?* (*how*) · *¿Dónde?* (*where*) · *¿Cuándo?* (*when*) · *¿Por qué?* (*why*) · *¿Quién?* (*who*) · *¿Cuánto?* (*how much*)\n\n*¿Dónde está el baño?* · *¿Cómo te llamas?*",
     "table": [
-      ["Person", "-ar (hablar)", "-er (comer)", "-ir (vivir)"],
-      ["yo", "hablé", "comí", "viví"],
-      ["tú", "hablaste", "comiste", "viviste"],
-      ["él/ella/usted", "habló", "comió", "vivió"],
-      ["nosotros", "hablamos", "comimos", "vivimos"],
-      ["vosotros", "hablasteis", "comisteis", "vivisteis"],
-      ["ellos/ustedes", "hablaron", "comieron", "vivieron"]
+      [
+        "Question word",
+        "Meaning",
+        "Example"
+      ],
+      [
+        "¿Qué?",
+        "what",
+        "¿Qué quieres?"
+      ],
+      [
+        "¿Cómo?",
+        "how",
+        "¿Cómo estás?"
+      ],
+      [
+        "¿Dónde?",
+        "where",
+        "¿Dónde vives?"
+      ],
+      [
+        "¿Cuándo?",
+        "when",
+        "¿Cuándo llegas?"
+      ],
+      [
+        "¿Por qué?",
+        "why",
+        "¿Por qué no vienes?"
+      ],
+      [
+        "¿Quién?",
+        "who",
+        "¿Quién es?"
+      ],
+      [
+        "¿Cuánto/a?",
+        "how much",
+        "¿Cuánto cuesta?"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
-        "q": "Ayer yo ____ (hablar) con María.",
-        "options": ["hablé", "habló", "hablaste", "hablaron"],
-        "answer": "hablé",
-        "why": "yo + -é for -ar verbs in preterite"
+        "q": "¿____ está el baño?",
+        "options": [
+          "Dónde",
+          "Cuándo"
+        ],
+        "answer": "Dónde",
+        "why": "asking location → dónde"
       },
       {
         "type": "fill",
-        "q": "Ellos ____ (comer) pizza anoche.",
-        "answer": "comieron",
-        "why": "ellos + -ieron for -er verbs"
+        "q": "No veo ____. (I don't see anything)",
+        "answer": "nada",
+        "why": "double negative is normal in Spanish"
       },
       {
         "type": "order",
-        "words": ["nosotros", "vivimos", "en", "Madrid", "el", "año", "pasado"],
-        "answer": "nosotros vivimos en Madrid el año pasado"
-,
+        "words": [
+          "no",
+          "hablo",
+          "frances"
+        ],
+        "answer": "no hablo frances"
+      }
+    ]
+  },
+  {
+    "id": "preterito-perfecto",
+    "title": "Pretérito Perfecto (he + participio)",
+    "text": "Used for past actions with a link to now (today, this week, ever, not yet):\n**haber** + **participio**.\n\n- *Hoy **he comido** paella.* — Today I have eaten paella.\n- *¿**Has visto** esta película?* — Have you seen this film?\n- *No **he terminado** todavía.* — I haven't finished yet.\n\n**Participios:** -ar → **-ado** (hablado); -er/-ir → **-ido** (comido, vivido).\nIrregular: *hecho, dicho, visto, puesto, escrito, vuelto, roto, abierto, muerto, ido*.\n\nMarkers: *hoy, esta mañana, esta semana, ya, todavía no, alguna vez, nunca, siempre*.",
+    "table": [
+      [
+        "Person",
+        "haber",
+        "Example with hablar"
+      ],
+      [
+        "yo",
+        "he",
+        "he hablado"
+      ],
+      [
+        "tú",
+        "has",
+        "has hablado"
+      ],
+      [
+        "él/ella/usted",
+        "ha",
+        "ha hablado"
+      ],
+      [
+        "nosotros",
+        "hemos",
+        "hemos hablado"
+      ],
+      [
+        "vosotros",
+        "habéis",
+        "habéis hablado"
+      ],
+      [
+        "ellos/ustedes",
+        "han",
+        "han hablado"
+      ]
+    ],
+    "exercises": [
+      {
+        "type": "choice",
+        "q": "Hoy yo ____ paella.",
+        "options": [
+          "he comido",
+          "hemos comido",
+          "como"
+        ],
+        "answer": "he comido",
+        "why": "yo → he + participio"
+      },
+      {
+        "type": "fill",
+        "q": "¿____ (ver) esta película?",
+        "answer": "has visto",
+        "why": "ver has irregular participio: visto"
+      },
+      {
+        "type": "fill",
+        "q": "No he ____ (hacer) la tarea.",
+        "answer": "hecho",
+        "why": "hacer → hecho"
+      }
+    ]
+  },
   {
     "id": "preterite-irregular",
     "title": "Preterite: Key Irregulars",
-    "text": "Many common verbs are irregular in preterite. Memorize these patterns:\n\n**Ser/Ir (identical forms):**\nfui, fuiste, fue, fuimos, fuisteis, fueron\n- *Fui al cine* (I went) / *Fui yo* (It was me)\n\n**Tener/Estar/Andar (u-stem):**\ntuve, tuviste, tuvo, tuvimos, tuvisteis, tuvieron\nestuve, estuviste, estuvo, estuvimos, estuvisteis, estuvieron\nanduve, anduviste, anduvo, anduvimos, anduvisteis, anduvieron\n\n**Poder/Poner/Saber (u-stem):**\npude, pudiste, pudo, pudimos, pudisteis, pudieron\npuse, pusiste, puso, pusimos, pusisteis, pusieron\nsupe, supiste, supo, supimos, supisteis, supieron\n\n**Hacer (z→c in yo):**\nhice, hiciste, hizo, hicimos, hicisteis, hicieron\n\n**Decir/Traer (j-stem):**\ndije, dijiste, dijo, dijimos, dijisteis, dijeron\ntraje, trajiste, trajo, trajimos, trajisteis, trajeron\n\n**Ver (no accent):**\nvi, viste, vio, vimos, visteis, vieron\n\n**Dar (like -er/-ir, no accents):**\ndi, diste, dio, dimos, disteis, dieron",
+    "text": "Used for completed actions in the past. Learn these seven sets:\n\n- **ser/ir** (identical!): fui, fuiste, fue, fuimos, fuisteis, fueron\n- **tener**: tuve, tuviste, tuvo... (also estar → estuve, poder → pude, poner → puse, saber → supe)\n- **hacer**: hice, hiciste, hizo, hicimos, hicisteis, hicieron\n- **decir**: dije, dijiste, dijo, dijimos, dijisteis, dijeron (also traer → traje)\n- **dar**: di, diste, dio, dimos, disteis, dieron\n- **ver**: vi, viste, vio, vimos, visteis, vieron\n\nNote: ser and ir share the same preterite forms — context tells them apart.",
     "table": [
-      ["Verb", "yo", "tú", "él/ella", "nosotros", "ellos"],
-      ["ser/ir", "fui", "fuiste", "fue", "fuimos", "fueron"],
-      ["tener", "tuve", "tuviste", "tuvo", "tuvimos", "tuvieron"],
-      ["estar", "estuve", "estuviste", "estuvo", "estuvimos", "estuvieron"],
-      ["poder", "pude", "pudiste", "pudo", "pudimos", "pudieron"],
-      ["poner", "puse", "pusiste", "puso", "pusimos", "pusieron"],
-      ["saber", "supe", "supiste", "supo", "supimos", "supieron"],
-      ["hacer", "hice", "hiciste", "hizo", "hicimos", "hicieron"],
-      ["decir", "dije", "dijiste", "dijo", "dijimos", "dijeron"],
-      ["ver", "vi", "viste", "vio", "vimos", "vieron"],
-      ["dar", "di", "diste", "dio", "dimos", "dieron"]
+      [
+        "Verb",
+        "yo",
+        "tú",
+        "él/ella",
+        "nosotros",
+        "ellos"
+      ],
+      [
+        "ser / ir",
+        "fui",
+        "fuiste",
+        "fue",
+        "fuimos",
+        "fueron"
+      ],
+      [
+        "tener",
+        "tuve",
+        "tuviste",
+        "tuvo",
+        "tuvimos",
+        "tuvieron"
+      ],
+      [
+        "estar",
+        "estuve",
+        "estuviste",
+        "estuvo",
+        "estuvimos",
+        "estuvieron"
+      ],
+      [
+        "hacer",
+        "hice",
+        "hiciste",
+        "hizo",
+        "hicimos",
+        "hicieron"
+      ],
+      [
+        "decir",
+        "dije",
+        "dijiste",
+        "dijo",
+        "dijimos",
+        "dijeron"
+      ],
+      [
+        "dar",
+        "di",
+        "diste",
+        "dio",
+        "dimos",
+        "dieron"
+      ],
+      [
+        "ver",
+        "vi",
+        "viste",
+        "vio",
+        "vimos",
+        "vieron"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
-        "q": "Ayer yo ____ (ir) al mercado.",
-        "options": ["fui", "fue", "fuiste", "iban"],
+        "q": "Ayer yo ____ al mercado.",
+        "options": [
+          "fui",
+          "voy",
+          "iba"
+        ],
         "answer": "fui",
-        "why": "ir → fui (yo form)"
+        "why": "ir preterite yo = fui"
       },
       {
         "type": "fill",
-        "q": "Ellos no ____ (poder) venir.",
-        "answer": "pudieron",
-        "why": "poder → pudieron (ellos form, u-stem)"
+        "q": "Ellos ____ (hacer) la comida.",
+        "answer": "hicieron",
+        "why": "hacer → hicieron"
+      },
+      {
+        "type": "fill",
+        "q": "Yo ____ (tener) un problema.",
+        "answer": "tuve",
+        "why": "tener → tuve"
       },
       {
         "type": "order",
-        "words": ["hice", "la", "tarea", "yo"],
-        "answer": "yo hice la tarea"
+        "words": [
+          "yo",
+          "di",
+          "el",
+          "libro"
+        ],
+        "answer": "yo di el libro"
       }
     ]
   },
   {
     "id": "imperfect",
-    "title": "Imperfect (Pretérito Imperfecto)",
-    "text": "The imperfect describes **ongoing, habitual, or background actions** in the past - no definite end.\n\n**Uses:**\n- Habitual: *Jugaba fútbol cada día* (I used to play soccer every day)\n- Ongoing: *Llovía cuando salí* (It was raining when I left)\n- Descriptions: *Era alto y guapo* (He was tall and handsome)\n- Time/age: *Eran las tres* / *Tenía diez años*\n- Mental states: *Quería ir* (I wanted to go)\n\n**Regular -ar (hablar):**\nyo hablaba, tú hablabas, él/ella/usted hablaba, nosotros hablábamos, vosotros hablabais, ellos/ustedes hablaban\n\n**Regular -er/-ir (comer/vivir):**\nyo comía/vivía, tú comías/vivías, él/ella/usted comía/vivía, nosotros comíamos/vivíamos, vosotros comíais/vivíais, ellos/ustedes comían/vivían\n\n**Only 3 irregulars:**\n- **ser:** era, eras, era, éramos, erais, eran\n- **ir:** iba, ibas, iba, íbamos, ibais, iban\n- **ver:** veía, veías, veía, veíamos, veíais, veían",
+    "title": "Imperfect (descriptions & habits)",
+    "text": "The imperfect describes **ongoing, repeated or background** past actions — no clear end.\n\n- Habit: *De niño **jugaba** al fútbol.* (As a child I used to play football)\n- Description: *La casa **era** grande.*\n- Background: ***Llovía** cuando salí.* (It was raining when I left)\n- Age/time: ***Tenía** diez años.* · ***Eran** las tres.*\n\n**-ar:** hablaba, hablabas, hablaba, hablábamos, hablabais, hablaban\n**-er/-ir:** comía, comías, comía, comíamos, comíais, comían\n**Only three irregulars:** ser → era...; ir → iba...; ver → veía...",
     "table": [
-      ["Person", "-ar (hablar)", "-er/-ir (comer/vivir)", "ser", "ir", "ver"],
-      ["yo", "hablaba", "comía/vivía", "era", "iba", "veía"],
-      ["tú", "hablabas", "comías/vivías", "eras", "ibas", "veías"],
-      ["él/ella/usted", "hablaba", "comía/vivía", "era", "iba", "veía"],
-      ["nosotros", "hablábamos", "comíamos/vivíamos", "éramos", "íbamos", "veíamos"],
-      ["vosotros", "hablabais", "comíais/vivíais", "erais", "ibais", "veíais"],
-      ["ellos/ustedes", "hablaban", "comían/vivían", "eran", "iban", "veían"]
+      [
+        "Person",
+        "-ar hablar",
+        "-er/-ir comer",
+        "ser",
+        "ir",
+        "ver"
+      ],
+      [
+        "yo",
+        "hablaba",
+        "comía",
+        "era",
+        "iba",
+        "veía"
+      ],
+      [
+        "tú",
+        "hablabas",
+        "comías",
+        "eras",
+        "ibas",
+        "veías"
+      ],
+      [
+        "él/ella",
+        "hablaba",
+        "comía",
+        "era",
+        "iba",
+        "veía"
+      ],
+      [
+        "nosotros",
+        "hablábamos",
+        "comíamos",
+        "éramos",
+        "íbamos",
+        "veíamos"
+      ],
+      [
+        "vosotros",
+        "hablabais",
+        "comíais",
+        "erais",
+        "ibais",
+        "veíais"
+      ],
+      [
+        "ellos",
+        "hablaban",
+        "comían",
+        "eran",
+        "iban",
+        "veían"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
-        "q": "De niño, yo ____ (jugar) en el parque.",
-        "options": ["jugaba", "jugué", "juego", "jugaré"],
+        "q": "De niño, yo ____ en el parque.",
+        "options": [
+          "jugaba",
+          "jugué"
+        ],
         "answer": "jugaba",
-        "why": "Habitual past action → imperfect"
+        "why": "repeated past habit → imperfect"
       },
       {
         "type": "fill",
         "q": "Cuando era joven, ____ (ir) a la playa cada verano.",
-        "answer": "íbamos",
-        "why": "nosotros + íbamos (ir imperfect)"
+        "answer": "iba",
+        "why": "ir imperfect = iba"
       },
-      {
-        "type": "order",
-        "words": ["era", "muy", "feliz", "él"],
-        "answer": "él era muy feliz"
-      }
-    ]
-  }
-      }
-    ]
-,
-  {
-    "id": "preterite-vs-imperfect",
-    "title": "Preterite vs Imperfect",
-    "text": "Choosing between preterite and imperfect changes the meaning:\n\n**Preterite** = completed, punctual, foreground:\n- *Ayer compré un coche* (Yesterday I bought a car - done)\n- *Llegó a las ocho* (He arrived at eight - specific time)\n\n**Imperfect** = ongoing, habitual, background:\n- *Cuando era niño, compraba caramelos* (When I was a kid, I used to buy candy)\n- *Llovía cuando llegué* (It was raining when I arrived - background)\n\n**Meaning-changing verbs:**\n- *conocer* → preterite: **met** (first time) / imperfect: **knew**\n- *saber* → preterite: **found out** / imperfect: **knew**\n- *querer* → preterite: **tried** / imperfect: **wanted**\n- *poder* → preterite: **managed to/succeeded** / imperfect: **could**\n- *tener* → preterite: **got/received** / imperfect: **had**\n- *no querer* → preterite: **refused** / imperfect: **didn't want**\n- *no poder* → preterite: **failed to** / imperfect: **couldn't**",
-    "table": [
-      ["Verb", "Preterite meaning", "Imperfect meaning", "Example (Preterite)", "Example (Imperfect)"],
-      ["conocer", "met", "knew", "Conocí a Juan ayer", "Conocía a Juan bien"],
-      ["saber", "found out", "knew", "Supe la verdad", "Sabía la respuesta"],
-      ["querer", "tried", "wanted", "Quise abrir la puerta", "Quería ir al cine"],
-      ["poder", "managed to", "could", "Pude terminarlo", "Podía nadar"],
-      ["tener", "got/received", "had", "Tuve un accidente", "Tenía un coche rojo"]
-    ],
-    "exercises": [
       {
         "type": "choice",
-        "q": "Ayer ____ (querer) llamar a mi madre, pero no ____ (poder).",
-        "options": ["quise / pude", "quería / podía", "quise / podía", "quería / pude"],
-        "answer": "quise / pude",
-        "why": "Specific attempts in past → preterite for both"
-      },
-      {
-        "type": "fill",
-        "q": "De pequeño, yo ____ (saber) nadar.",
-        "answer": "sabía",
-        "why": "Past ability/knowledge → imperfect"
-      },
-      {
-        "type": "order",
-        "words": ["llovía", "cuando", "salí"],
-        "answer": "llovía cuando salí"
+        "q": "____ las tres de la tarde.",
+        "options": [
+          "Eran",
+          "Fueron"
+        ],
+        "answer": "Eran",
+        "why": "telling past time → imperfect"
       }
     ]
   },
   {
-    "id": "future",
-    "title": "Future Tense (Ir a + Infinitive & Simple Future)",
-    "text": "Two ways to express future:\n\n**1. Ir a + infinitive** (near future, very common):\n*Voy a estudiar* (I'm going to study)\n*Vamos a comer paella* (We're going to eat paella)\n\n**Conjugation of ir:** voy, vas, va, vamos, vais, van\n\n**2. Simple Future** (will + verb):\nAdd endings to **full infinitive**: -é, -ás, -á, -emos, -éis, -án\n- *hablaré, comeré, viviré*\n- *Todos los verbos usan los mismos endings!*\n\n**Irregular stems (but regular endings):**\n- *tener → tendr-* (tendré)\n- *poner → pondr-* (pondré)\n- *salir → saldr-* (saldré)\n- *venir → vendr-* (vendré)\n- *poder → podr-* (podré)\n- *querer → querr-* (querré)\n- *saber → sabr-* (sabré)\n- *hacer → har-* (haré)\n- *decir → dir-* (diré)\n- *haber → habr-* (habrá)\n\n**Also expresses probability:** *Serán las tres* (It must be three o'clock)",
+    "id": "preterite-vs-imperfect",
+    "title": "Preterite vs. Imperfect",
+    "text": "**Preterite** = completed, single, finished event: *Ayer **compré** un coche.*\n**Imperfect** = habit, description, background: ***Compraba** caramelos cada día.*\n\nTogether: *Mientras **leía** (background), **sonó** el teléfono (event).*\n\nSome verbs change meaning:\n- saber: *supe* (found out) / *sabía* (knew)\n- conocer: *conocí* (met) / *conocía* (knew)\n- querer: *quise* (tried) / *quería* (wanted)\n- poder: *pude* (managed to) / *podía* (was able to)",
     "table": [
-      ["Verb", "yo", "tú", "él/ella", "nosotros", "ellos"],
-      ["hablar (reg)", "hablaré", "hablarás", "hablará", "hablaremos", "hablarán"],
-      ["comer (reg)", "comeré", "comerás", "comerá", "comeremos", "comerán"],
-      ["tener", "tendré", "tendrás", "tendrá", "tendremos", "tendrán"],
-      ["poner", "pondré", "pondrás", "pondrá", "pondremos", "pondrán"],
-      ["hacer", "haré", "harás", "hará", "haremos", "harán"],
-      ["poder", "podré", "podrás", "podrá", "podremos", "podrán"],
-      ["saber", "sabré", "sabrás", "sabrá", "sabremos", "sabrán"]
+      [
+        "",
+        "Preterite",
+        "Imperfect"
+      ],
+      [
+        "focus",
+        "completed event",
+        "ongoing / habitual"
+      ],
+      [
+        "time",
+        "specific, finished",
+        "vague, repeated"
+      ],
+      [
+        "example",
+        "Ayer fui al cine",
+        "Iba al cine cada viernes"
+      ],
+      [
+        "signal words",
+        "ayer, el lunes, en 2010",
+        "siempre, cada día, de niño"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
-        "q": "Mañana yo ____ (estudiar) español.",
-        "options": ["voy a estudiar", "estudiaré", "estudio", "estudié"],
-        "answer": "voy a estudiar",
-        "why": "Near future plan → ir a + infinitive"
+        "q": "Ayer ____ (comer) en un restaurante.",
+        "options": [
+          "comí",
+          "comía"
+        ],
+        "answer": "comí",
+        "why": "finished event with 'ayer' → preterite"
+      },
+      {
+        "type": "choice",
+        "q": "Cuando era niño, ____ (tener) un perro.",
+        "options": [
+          "tuve",
+          "tenía"
+        ],
+        "answer": "tenía",
+        "why": "description of the past → imperfect"
+      },
+      {
+        "type": "fill",
+        "q": "Mientras ____ (leer), sonó el teléfono.",
+        "answer": "leía",
+        "why": "background action → imperfect"
+      }
+    ]
+  },
+  {
+    "id": "future-conditional",
+    "title": "Future & Conditional",
+    "text": "**Future** = add endings to the whole infinitive: **-é, -ás, -á, -emos, -éis, -án**.\n*hablaré, comerás, vivirá...* — *Mañana **viajaré** a Sevilla.*\n\n**Conditional** = same endings with -ía: **-ía, -ías, -ía, -íamos, -íais, -ían**.\n*hablaría, comerías...* — ***Me gustaría** ir contigo.* · ***Podrías** ayudarme?*\n\nTwelve verbs use a shortened stem for **both** tenses:\ntener→tendr-, poner→pondr-, salir→saldr-, venir→vendr-, poder→podr-, querer→querr-, saber→sabr-, hacer→har-, decir→dir-, haber→habr-, caber→cabr-, valer→valdr-",
+    "table": [
+      [
+        "Verb",
+        "Future (yo)",
+        "Conditional (yo)"
+      ],
+      [
+        "hablar",
+        "hablaré",
+        "hablaría"
+      ],
+      [
+        "comer",
+        "comeré",
+        "comería"
+      ],
+      [
+        "vivir",
+        "viviré",
+        "viviría"
+      ],
+      [
+        "tener",
+        "tendré",
+        "tendría"
+      ],
+      [
+        "hacer",
+        "haré",
+        "haría"
+      ],
+      [
+        "poder",
+        "podré",
+        "podría"
+      ],
+      [
+        "decir",
+        "diré",
+        "diría"
+      ]
+    ],
+    "exercises": [
+      {
+        "type": "choice",
+        "q": "Mañana yo ____ a Sevilla.",
+        "options": [
+          "viajaré",
+          "viajaría"
+        ],
+        "answer": "viajaré",
+        "why": "future for a real plan"
       },
       {
         "type": "fill",
@@ -343,218 +1209,235 @@
         "why": "tener → tendr- + -án"
       },
       {
-        "type": "order",
-        "words": ["vamos", "a", "comer", "tacos"],
-        "answer": "vamos a comer tacos"
-      }
-    ]
-  }
-,
-  {
-    "id": "conditional",
-    "title": "Conditional (El Condicional)",
-    "text": "Expresses **would + verb** - hypothetical actions, polite requests, future-in-the-past.\n\n**Regular endings** (same as future, added to infinitive):\n-ía, -ías, -ía, -íamos, -íais, -ían\n\n*hablaría, comería, viviría*\n\n**Same 12 irregular stems as future:**\n- *tener → tendr-* (tendría)\n- *poner → pondr-* (pondría)\n- *salir → saldr-* (saldría)\n- *venir → vendr-* (vendría)\n- *poder → podr-* (podría)\n- *querer → querr-* (querría)\n- *saber → sabr-* (sabría)\n- *hacer → har-* (haría)\n- *decir → dir-* (diría)\n- *haber → habr-* (habría)\n\n**Uses:**\n- Hypothetical: *Viajaría por el mundo* (I would travel the world)\n- Polite request: *¿Podrías ayudarme?* (Could you help me?)\n- Future in past: *Dijo que vendría* (He said he would come)\n- Advice: *Yo que tú, lo haría* (If I were you, I'd do it)",
-    "table": [
-      ["Verb", "yo", "tú", "él/ella", "nosotros", "ellos"],
-      ["hablar", "hablaría", "hablarías", "hablaría", "hablaríamos", "hablarían"],
-      ["tener", "tendría", "tendrías", "tendría", "tendríamos", "tendrían"],
-      ["hacer", "haría", "harías", "haría", "haríamos", "harían"],
-      ["poder", "podría", "podrías", "podría", "podríamos", "podrían"],
-      ["querer", "querría", "querrías", "querría", "querríamos", "querrían"],
-      ["decir", "diría", "dirías", "diría", "diríamos", "dirían"]
-    ],
-    "exercises": [
-      {
         "type": "choice",
-        "q": "____ (gustar) ir a la playa contigo.",
-        "options": ["Me gustaría", "Me gusta", "Me gusté", "Me gustaba"],
-        "answer": "Me gustaría",
-        "why": "Would like → conditional of gustar"
-      },
-      {
-        "type": "fill",
-        "q": "Yo que tú, ____ (hacer) la tarea ya.",
-        "answer": "la haría",
-        "why": "Advice → conditional; hacer → har-"
-      },
-      {
-        "type": "order",
-        "words": ["podrías", "ayudarme", "¿", "?"],
-        "answer": "¿Podrías ayudarme?"
+        "q": "____ ayudarme, por favor?",
+        "options": [
+          "¿Podrías",
+          "¿Puedes"
+        ],
+        "answer": "¿Podrías",
+        "why": "polite request → conditional"
       }
     ]
   },
   {
     "id": "present-subjunctive",
-    "title": "Present Subjunctive (Presente de Subjuntivo)",
-    "text": "The subjunctive expresses **doubt, emotion, necessity, uncertainty** - not facts. Used after certain triggers (WEIRDO):\n\n**W**ishes: *quiero que, deseo que, prefiero que*\n**E**motions: *me gusta que, siento que, alegro que*\n**I**mpersonal expressions: *es importante que, es necesario que, es bueno que*\n**R**ecommendations: *recomiendo que, sugiero que, insisto en que*\n**D**oubt/denial: *dudo que, no creo que, no es cierto que*\n**O**jalá: *ojalá que* (always subjunctive)\n\n**Formation:** Start with **yo present**, drop -o, add opposite vowel:\n- -ar verbs → **-e, -es, -e, -emos, -éis, -en**\n- -er/-ir verbs → **-a, -as, -a, -amos, -áis, -an**\n\n*hablar → hable, hables, hable, hablemos, habléis, hablen*\n*comer → coma, comas, coma, comamos, comáis, coman*\n*vivir → viva, vivas, viva, vivamos, viváis, vivan*\n\n**6 Irregulars (DISHES):**\n- **Dar** → dé, des, dé, demos, deis, den\n- **Ir** → vaya, vayas, vaya, vayamos, vayáis, vayan\n- **Ser** → sea, seas, sea, seamos, seáis, sean\n- **Haber** → haya, hayas, haya, hayamos, hayáis, hayan\n- **Estar** → esté, estés, esté, estemos, estéis, estén\n- **Saber** → sepa, sepas, sepa, sepamos, sepáis, sepan\n\n**Stem-changing -ar/-er:** same as present (e→ie, o→ue) but **nosotros/vosotros don't change**\n**Stem-changing -ir:** e→ie, e→i, o→ue in all forms **including nosotros/vosotros**",
+    "title": "Present Subjunctive (intro)",
+    "text": "Used after **wishes, emotions, doubt and impersonal phrases**, with a change of subject:\n*Quiero **que vengas**.* — I want you to come.\n\nForm: take the **yo** form of the present, drop **-o**, add the \"opposite\" vowel.\n- -ar verbs → **-e**: hable, hables, hable, hablemos, habléis, hablen\n- -er/-ir verbs → **-a**: coma, comas... / viva, vivas...\n\nIrregular: ser→sea, ir→vaya, haber→haya, estar→esté, saber→sepa, dar→dé.\n\nTriggers: *quiero que, espero que, es importante que, es necesario que, ojalá, dudo que, no creo que*.",
     "table": [
-      ["Verb", "yo", "tú", "él/ella", "nosotros", "ellos"],
-      ["hablar (reg)", "hable", "hables", "hable", "hablemos", "hablen"],
-      ["comer (reg)", "coma", "comas", "coma", "comamos", "coman"],
-      ["vivir (reg)", "viva", "vivas", "viva", "vivamos", "vivan"],
-      ["pensar (e→ie)", "piense", "pienses", "piense", "pensemos", "piensen"],
-      ["dormir (o→ue)", "duerma", "duermas", "duerma", "durmamos", "duerman"],
-      ["pedir (e→i)", "pida", "pidas", "pida", "pidamos", "pidan"],
-      ["ser (irr)", "sea", "seas", "sea", "seamos", "sean"],
-      ["ir (irr)", "vaya", "vayas", "vaya", "vayamos", "vayan"]
+      [
+        "Verb",
+        "yo",
+        "tú",
+        "él/ella",
+        "nosotros",
+        "ellos"
+      ],
+      [
+        "hablar",
+        "hable",
+        "hables",
+        "hable",
+        "hablemos",
+        "hablen"
+      ],
+      [
+        "comer",
+        "coma",
+        "comas",
+        "coma",
+        "comamos",
+        "coman"
+      ],
+      [
+        "vivir",
+        "viva",
+        "vivas",
+        "viva",
+        "vivamos",
+        "vivan"
+      ],
+      [
+        "ser",
+        "sea",
+        "seas",
+        "sea",
+        "seamos",
+        "sean"
+      ],
+      [
+        "ir",
+        "vaya",
+        "vayas",
+        "vaya",
+        "vayamos",
+        "vayan"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
-        "q": "Quiero que tú ____ (venir) mañana.",
-        "options": ["vienes", "vengas", "viniste", "vendrás"],
+        "q": "Quiero que tú ____ mañana.",
+        "options": [
+          "vienes",
+          "vengas"
+        ],
         "answer": "vengas",
-        "why": "querer que + subjunctive; venir → vengas"
+        "why": "querer que + subjunctive"
       },
       {
         "type": "fill",
         "q": "Es importante que nosotros ____ (estudiar).",
         "answer": "estudiemos",
-        "why": "es importante que + subjunctive; nosotros -emos"
+        "why": "nosotros -ar subjunctive → -emos"
       },
-      {
-        "type": "order",
-        "words": ["ojalá", "que", "llueva", "mañana"],
-        "answer": "ojalá que llueva mañana"
-      }
-    ]
-  }
-,
-  {
-    "id": "por-para",
-    "title": "Por vs Para",
-    "text": "Both can mean \"for\" but have distinct uses:\n\n**POR** - cause, exchange, through, during, by means of:\n- Cause/reason: *Lo hice **por** ti* (I did it for/because of you)\n- Exchange: *Te doy 10 euros **por** el libro* (I give you 10€ for the book)\n- Through/along: *Caminamos **por** el parque* (We walk through the park)\n- Duration: *Estudié **por** dos horas* (I studied for two hours)\n- Means: *Hablamos **por** teléfono* (We talk by phone)\n- Passive agent: *Escrito **por** Cervantes* (Written by Cervantes)\n- Per/each: *80 km **por** hora* (80 km per hour)\n\n**PARA** - purpose, destination, recipient, deadline, comparison:\n- Purpose/goal: *Estudio **para** aprender* (I study in order to learn)\n- Destination: *Salgo **para** Madrid* (I'm leaving for Madrid)\n- Recipient: *Este regalo es **para** ti* (This gift is for you)\n- Deadline: *Para el lunes* (By Monday)\n- Comparison: *Para ser niño, es muy listo* (For a kid, he's very smart)\n- In order to: *Para comer bien, hay que cocinar* (To eat well, you must cook)",
-    "table": [
-      ["Use", "Por", "Para"],
-      ["Cause/Reason", "Lo hice por ti", "—"],
-      ["Purpose", "—", "Estudio para aprender"],
-      ["Exchange", "Pagué 10€ por eso", "—"],
-      ["Destination", "—", "Voy para Madrid"],
-      ["Duration", "Viví allí por 2 años", "—"],
-      ["Deadline", "—", "Lo necesito para mañana"],
-      ["Means", "Hablamos por teléfono", "—"],
-      ["Recipient", "—", "Es para mi madre"]
-    ],
-    "exercises": [
       {
         "type": "choice",
-        "q": "Este libro es ____ ti.",
-        "options": ["por", "para"],
-        "answer": "para",
-        "why": "Recipient → para"
-      },
-      {
-        "type": "fill",
-        "q": "Vine en coche ____ la autopista.",
-        "answer": "por",
-        "why": "Through/along → por"
-      },
-      {
-        "type": "order",
-        "words": ["estudio", "para", "aprender", "español"],
-        "answer": "estudio para aprender español"
+        "q": "Ojalá que ____ buen tiempo.",
+        "options": [
+          "hace",
+          "haga"
+        ],
+        "answer": "haga",
+        "why": "ojalá always takes the subjunctive"
       }
     ]
   },
   {
     "id": "object-pronouns",
     "title": "Direct & Indirect Object Pronouns",
-    "text": "**Direct Object (DO)** receives action directly - answers *what/whom*:\nme, te, lo/la, nos, os, los/las\n\n**Indirect Object (IO)** receives action indirectly - answers *to/for whom*: \nme, te, le, nos, os, les\n\n**Placement:** Same as reflexive - before conjugated verb, attached to infinitive/gerund.\n\n**Double object pronouns (IO + DO):**\n- Order: **IO before DO** → *Te lo doy* (I give it to you)\n- **le/les + lo/la/los/las → se lo/la/los/las** (avoid *le lo*)\n  - *Se lo di* (I gave it to him/her/them)\n  - *Se los compré* (I bought them for him/her/them)\n\n**Clarification with *a* + noun:** *Se lo di **a Juan*** (I gave it to Juan)\n\n**Examples:**\n- *¿Me escuchas?* → *Sí, te escucho*\n- *¿Le das el libro a María?* → *Sí, **se lo** doy*\n- *Voy a comprárselo* (I'm going to buy it for him)",
+    "text": "**Direct object** (what/whom?): me, te, **lo/la**, nos, os, **los/las**\n**Indirect object** (to/for whom?): me, te, **le**, nos, os, **les**\n\nThey go **before** the conjugated verb, or attached to an infinitive/gerund:\n- *¿El libro? **Lo** tengo.* · *Voy a comprar**lo**.*\n\nWhen both appear, the indirect comes first, and **le/les → se** before lo/la/los/las:\n- *Te **lo** doy.* (I give it to you)\n- *Se **lo** di a Juan.* (I gave it to Juan)\n\nClarify ambiguous *le/les* with *a + noun*: *Le di el libro **a María***.",
     "table": [
-      ["Person", "Direct (DO)", "Indirect (IO)"],
-      ["yo", "me", "me"],
-      ["tú", "te", "te"],
-      ["él/ella/usted", "lo / la", "le"],
-      ["nosotros", "nos", "nos"],
-      ["vosotros", "os", "os"],
-      ["ellos/ustedes", "los / las", "les"]
+      [
+        "Person",
+        "Direct",
+        "Indirect"
+      ],
+      [
+        "yo",
+        "me",
+        "me"
+      ],
+      [
+        "tú",
+        "te",
+        "te"
+      ],
+      [
+        "él/ella/usted",
+        "lo / la",
+        "le"
+      ],
+      [
+        "nosotros",
+        "nos",
+        "nos"
+      ],
+      [
+        "vosotros",
+        "os",
+        "os"
+      ],
+      [
+        "ellos/ustedes",
+        "los / las",
+        "les"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
-        "q": "¿Me das el libro? → Sí, te ____ doy.",
-        "options": ["lo", "la", "le", "se"],
+        "q": "¿Me das el libro? Sí, te ____ doy.",
+        "options": [
+          "lo",
+          "le"
+        ],
         "answer": "lo",
-        "why": "el libro = masculine singular DO → lo"
+        "why": "el libro → masculine direct object lo"
       },
       {
         "type": "fill",
-        "q": "¿Le escribiste a Juan? → Sí, ____ escribí.",
+        "q": "¿Le escribiste a Juan? Sí, ____ escribí.",
         "answer": "le",
-        "why": "a Juan = IO → le"
+        "why": "a Juan → indirect le"
       },
       {
         "type": "order",
-        "words": ["se", "lo", "di", "a", "María"],
-        "answer": "se lo di a María"
+        "words": [
+          "se",
+          "lo",
+          "di",
+          "a",
+          "Maria"
+        ],
+        "answer": "se lo di a Maria"
       }
     ]
-  }
-,
+  },
   {
     "id": "relative-pronouns",
-    "title": "Relative Pronouns (Pronombres Relativos)",
-    "text": "Connect clauses, refer back to antecedent:\n\n**QUE** (that/which/who) - most common, for people & things:\n- *El libro **que** leí* (The book that I read)\n- *La chica **que** vino* (The girl who came)\n\n**QUIEN/QUIENES** (who/whom) - only for people, after preposition:\n- *La persona **con quien** hablé* (The person with whom I spoke)\n- *Mis amigos, **quienes** son médicos* (My friends, who are doctors)\n\n**EL CUAL / LA CUAL / LOS CUALES / LAS CUALES** (which/who) - formal, after preposition, agrees with antecedent:\n- *La casa **en la cual** vivo* (The house in which I live)\n- *Los libros **de los cuales** hablé* (The books about which I spoke)\n\n**LO QUE / LO CUAL** (what/which) - refers to whole idea/clause (neuter):\n- *No entiendo **lo que** dices* (I don't understand what you say)\n- *Llegó tarde, **lo cual** molestó a todos* (He arrived late, which annoyed everyone)\n\n**CUYO/CUYA/CUYOS/CUYAS** (whose) - possessive, agrees with owned noun:\n- *El hombre **cuyo** coche es rojo* (The man whose car is red)\n- *La mujer **cuya** hija estudia aquí* (The woman whose daughter studies here)",
+    "title": "Relative Pronouns",
+    "text": "**que** — the everyday \"that / which / who\" (people and things):\n- *El libro **que** leí* · *La chica **que** vino*\n\n**quien / quienes** — only people, usually after a preposition:\n- *La persona con **quien** hablé*\n\n**el cual / la cual / los cuales / las cuales** — formal, after prepositions:\n- *La casa en **la cual** vivo*\n\n**lo que / lo cual** — refers to a whole idea:\n- *No entiendo **lo que** dices*\n\n**cuyo / cuya** — \"whose\", agrees with the thing owned:\n- *El hombre **cuyo** coche es rojo*",
     "table": [
-      ["Pronoun", "Use", "Example"],
-      ["que", "people/things, no prep", "El coche que compré"],
-      ["quien/quienes", "people, after prep", "El amigo con quien fui"],
-      ["el cual/la cual", "formal, after prep, agrees", "La ciudad en la cual vivo"],
-      ["lo que/lo cual", "refers to whole clause", "No sé lo que quiere"],
-      ["cuyo/cuya/cuyos/cuyas", "possessive, agrees with owned", "El niño cuyo padre es médico"]
+      [
+        "Pronoun",
+        "Use",
+        "Example"
+      ],
+      [
+        "que",
+        "people & things",
+        "El coche que compré"
+      ],
+      [
+        "quien",
+        "people after prep.",
+        "El amigo con quien fui"
+      ],
+      [
+        "el/la cual",
+        "formal, after prep.",
+        "La ciudad en la cual vivo"
+      ],
+      [
+        "lo que",
+        "whole idea/clause",
+        "No sé lo que quiere"
+      ],
+      [
+        "cuyo/cuya",
+        "whose (agrees)",
+        "El niño cuyo padre es médico"
+      ]
     ],
     "exercises": [
       {
         "type": "choice",
         "q": "El hombre ____ coche es rojo es mi tío.",
-        "options": ["que", "quien", "cuyo", "cual"],
+        "options": [
+          "que",
+          "cuyo"
+        ],
         "answer": "cuyo",
-        "why": "Possessive relative → cuyo (agrees with coche)"
+        "why": "possessive relative whose → cuyo"
       },
       {
         "type": "fill",
         "q": "No entiendo ____ dices.",
         "answer": "lo que",
-        "why": "Refers to whole clause 'what you say' → lo que"
+        "why": "refers to the whole clause"
       },
       {
         "type": "order",
-        "words": ["la", "casa", "en", "la", "cual", "vivo"],
+        "words": [
+          "la",
+          "casa",
+          "en",
+          "la",
+          "cual",
+          "vivo"
+        ],
         "answer": "la casa en la cual vivo"
-      }
-    ]
-  },
-  {
-    "id": "subjunctive-adjective",
-    "title": "Subjunctive in Adjective Clauses",
-    "text": "Use **subjunctive** when the antecedent is **indefinite, negative, or questioned**.\nUse **indicative** when the antecedent is **definite/specific**.\n\n**Indefinite/Non-existent → Subjunctive:**\n- *Busco un libro **que sea** interesante* (I'm looking for a book that IS interesting - any book)\n- *No hay nadie **que sepa** la respuesta* (There's no one who knows - negative)\n- *¿Conoces a alguien **que hable** japonés?* (Do you know anyone who speaks? - question)\n\n**Definite/Specific → Indicative:**\n- *Tengo un libro **que es** interesante* (I have a book that IS interesting - specific book)\n- *Conozco a alguien **que habla** japonés* (I know someone who speaks - specific person)\n- *El libro **que buscas** está aquí* (The book you're looking for is here)\n\n**Key phrases triggering subjunctive:**\n- *buscar, necesitar, querer, haber* (in questions/negatives)\n- *no hay, no existe, no tengo*\n- *¿Conoces...? ¿Hay...? ¿Tienes...?*",
-    "table": [
-      ["Antecedent", "Mood", "Example"],
-      ["Indefinite (busco un...)", "Subjunctive", "Busco un coche que sea barato"],
-      ["Negative (no hay...)", "Subjunctive", "No hay nadie que sepa"],
-      ["Question (¿conoces...?)", "Subjunctive", "¿Conoces a alguien que viva allí?"],
-      ["Definite (tengo el...)", "Indicative", "Tengo un coche que es barato"],
-      ["Specific (conozco a...)", "Indicative", "Conozco a alguien que vive allí"]
-    ],
-    "exercises": [
-      {
-        "type": "choice",
-        "q": "Busco un secretario ____ (hablar) inglés.",
-        "options": ["habla", "hable", "habló", "hablaba"],
-        "answer": "hable",
-        "why": "Indefinite antecedent (busco un...) → subjunctive"
-      },
-      {
-        "type": "fill",
-        "q": "Tengo un amigo ____ (vivir) en Madrid.",
-        "answer": "que vive",
-        "why": "Definite antecedent (tengo un amigo específico) → indicative"
-      },
-      {
-        "type": "order",
-        "words": ["no", "hay", "nadie", "que", "sepa", "la", "respuesta"],
-        "answer": "no hay nadie que sepa la respuesta"
       }
     ]
   }

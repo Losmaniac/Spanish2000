@@ -3,170 +3,273 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./icon-192.png">
+  <script>
+    // Apply saved theme as early as possible (avoids a flash of the wrong colours)
+    (function () {
+      var theme = 'auto';
+      try {
+        var raw = localStorage.getItem('es_state_v1');
+        if (raw) { theme = (JSON.parse(raw).settings || {}).theme || 'auto'; }
+      } catch (e) { /* ignore */ }
+      var system = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme === 'auto' ? system : theme);
+    })();
+  </script>
   <link rel="stylesheet" href="./style.css">
   <title>Spanish 2000</title>
 </head>
 <body>
   <div id="app">
+
     <section id="tab-home" class="tab-panel active" role="tabpanel" aria-labelledby="btn-home">
       <header class="tab-header">
         <h1>Spanish 2000</h1>
+        <button type="button" class="theme-btn" aria-label="Přepnout světlý a tmavý režim"></button>
       </header>
       <main class="tab-content">
+        <p class="greeting" id="greeting">Ahoj!</p>
+
         <div class="stats-grid">
-          <div class="stat-card streak">
+          <div class="stat-card">
             <div class="stat-icon">🔥</div>
-            <div class="stat-info">
+            <div>
               <div class="stat-value" id="streak-value">0</div>
-              <div class="stat-label">den v řadě</div>
+              <div class="stat-label">dní v řadě</div>
             </div>
           </div>
-          <div class="stat-card xp">
+          <div class="stat-card">
             <div class="stat-icon">⭐</div>
-            <div class="stat-info">
+            <div>
               <div class="stat-value" id="xp-value">0 XP</div>
               <div class="stat-label">Úroveň <span id="level-value">1</span></div>
             </div>
           </div>
-          <div class="stat-card goal">
+          <div class="stat-card">
             <div class="stat-icon">🎯</div>
-            <div class="stat-info">
+            <div>
               <div class="stat-value" id="goal-value">0 / 20</div>
               <div class="stat-label">Denní cíl</div>
-<section id="tab-learn" class="tab-panel" role="tabpanel" aria-labelledby="btn-learn" hidden>
-      <header class="tab-header">
-        <h1>Učit se</h1>
-        <button class="btn btn-ghost" id="btn-end-session" hidden aria-label="Ukončit session">✕ Ukončit</button>
-      </header>
-      <main class="tab-content" id="learn-content">
-        <div class="session-start" id="session-start">
-          <h2>Vyber typ session</h2>
-          <p id="session-desc">Vyber si, jestli chceš opakovat slova, která jsou k opakování, nebo se naučit nová.</p>
-          <div class="session-options">
-            <button class="btn btn-primary btn-session" data-mode="review">
-              <span class="session-icon">🔁</span>
-              <div>
-                <strong>Opakovat</strong>
-                <small id="review-desc">Slova k opakování dle SRS</small>
-              </div>
-            </button>
-            <button class="btn btn-secondary btn-session" data-mode="new">
-              <span class="session-icon">✨</span>
-              <div>
-                <strong>Nová slova</strong>
-                <small id="new-desc">10 nejčastějších nových slov</small>
-              </div>
-            </button>
-          </div>
-        </div>
-        <div class="session-active" id="session-active" hidden>
-          <div class="session-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Postup session">
-            <div class="progress-bar">
-              <div class="progress-fill" id="session-progress-fill"></div>
-            </div>
-            <span class="progress-label" id="session-progress-label">0 / 0</span>
-          </div>
-          <div class="phase-indicator" id="phase-indicator" aria-live="polite"></div>
-          <div class="card-container" id="card-container"></div>
-          <div class="answer-area" id="answer-area"></div>
-<section id="tab-grammar" class="tab-panel" role="tabpanel" aria-labelledby="btn-grammar" hidden>
-      <header class="tab-header">
-        <h1>Gramatika</h1>
-      </header>
-      <main class="tab-content">
-        <div class="search-box">
-          <input type="search" id="grammar-search" placeholder="Hledat téma..." aria-label="Hledat gramatické téma">
-        </div>
-        <div class="accordion" id="grammar-accordion" role="region" aria-label="Gramatické témata"></div>
-      </main>
-    </section>
-
-    <section id="tab-verbs" class="tab-panel" role="tabpanel" aria-labelledby="btn-verbs" hidden>
-      <header class="tab-header">
-        <h1>Slovesa</h1>
-      </header>
-      <main class="tab-content">
-        <div class="search-box">
-          <input type="search" id="verbs-search" placeholder="Hledat sloveso (ES/EN/CZ)..." aria-label="Hledat sloveso">
-        </div>
-        <div class="verbs-list" id="verbs-list" role="list" aria-label="Seznam sloves"></div>
-        <div class="verb-detail" id="verb-detail" hidden aria-label="Detail slova"></div>
-      </main>
-    </section>
-
-    <nav class="bottom-nav" role="tablist" aria-label="Hlavní navigace">
-      <button id="btn-home" role="tab" aria-selected="true" aria-controls="tab-home" class="nav-btn active">
-        <span class="nav-icon">🏠</span><span class="nav-label">Domů</span>
-      </button>
-      <button id="btn-learn" role="tab" aria-selected="false" aria-controls="tab-learn" class="nav-btn">
-        <span class="nav-icon">📚</span><span class="nav-label">Učit</span>
-      </button>
-      <button id="btn-grammar" role="tab" aria-selected="false" aria-controls="tab-grammar" class="nav-btn">
-        <span class="nav-icon">📖</span><span class="nav-label">Gramatika</span>
-      </button>
-      <button id="btn-verbs" role="tab" aria-selected="false" aria-controls="tab-verbs" class="nav-btn">
-        <span class="nav-icon">🔤</span><span class="nav-label">Slovesa</span>
-      </button>
-    </nav>
-  </div>
-  <script src="./app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(console.error);
-    }
-  </script>
-</body>
-</html>
-          <div class="feedback" id="feedback" aria-live="assertive" hidden></div>
-          <button class="btn btn-primary btn-large" id="btn-next" hidden aria-label="Další">Další</button>
-        </div>
-        <div class="session-summary" id="session-summary" hidden>
-          <h2>Session dokončena! 🎉</h2>
-          <div class="summary-stats">
-            <div><strong id="summary-correct">0</strong> správně</div>
-            <div><strong id="summary-wrong">0</strong> špatně</div>
-            <div><strong id="summary-xp">+0</strong> XP</div>
-          </div>
-          <button class="btn btn-primary btn-large" id="btn-home-from-summary">Zpět na Domů</button>
-        </div>
-      </main>
-    </section>
             </div>
           </div>
         </div>
-        <div class="progress-ring" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="20" aria-label="Denní cíl">
-          <svg class="progress-svg" viewBox="0 0 100 100">
-            <circle class="progress-bg" cx="50" cy="50" r="45"></circle>
-            <circle class="progress-fg" id="progress-ring" cx="50" cy="50" r="45" stroke-dasharray="283" stroke-dashoffset="283"></circle>
-          </svg>
-          <div class="progress-text" id="progress-percent">0%</div>
+
+        <div class="level-progress">
+          <div class="progress-bar"><div class="progress-fill" id="level-fill"></div></div>
+          <div class="progress-caption" id="level-caption"></div>
         </div>
+
         <div class="action-buttons">
-          <button class="btn btn-primary btn-large" id="btn-review" aria-label="Opakovat slova k opakování">
-            <span class="btn-icon">🔁</span>
-            <span>Opakovat (<span id="review-count">0</span>)</span>
+          <button type="button" class="btn btn-primary btn-large" id="btn-review">
+            <span>🔁</span> <span>Opakovat (<span id="review-count">0</span>)</span>
           </button>
-          <button class="btn btn-secondary btn-large" id="btn-new" aria-label="Učit nová slova">
-            <span class="btn-icon">✨</span>
-            <span>Nová slova (10)</span>
+          <button type="button" class="btn btn-secondary btn-large" id="btn-new">
+            <span>✨</span> <span>Nová slova (<span id="new-count">10</span>)</span>
           </button>
         </div>
+
         <div class="stats-detail">
           <h2>Statistiky</h2>
           <div class="stats-row">
             <div class="stat-item">
-              <span class="stat-number" id="learned-count">0</span> / 1991
-              <span class="stat-desc">naučeno slov</span>
+              <span class="stat-number" id="learned-count">0</span>
+              <span class="stat-desc">naučeno z 1991</span>
             </div>
             <div class="stat-item">
-              <span class="stat-number" id="coverage-percent">0%</span>
+              <span class="stat-number" id="coverage-percent">0 %</span>
               <span class="stat-desc">pokrytí mluvené řeči</span>
             </div>
           </div>
-          <div class="box-distribution" id="box-distribution" aria-label="Rozložení karet podle boxů"></div>
+          <div class="box-wrap">
+            <div class="box-distribution" id="box-distribution" aria-label="Rozložení karet podle boxů"></div>
+            <div class="box-legend" id="box-legend"></div>
+          </div>
+          <table class="coverage-table">
+            <caption>Pokrytí běžné řeči (podle knihy)</caption>
+            <tbody>
+              <tr><th>Prvních 1 000 slov</th><td>≈ 87,8 %</td></tr>
+              <tr><th>Prvních 2 000 slov</th><td>≈ 92,7 %</td></tr>
+            </tbody>
+          </table>
         </div>
       </main>
     </section>
+    <section id="tab-learn" class="tab-panel" role="tabpanel" aria-labelledby="btn-learn" hidden>
+      <header class="tab-header">
+        <h1>Učit se</h1>
+        <button type="button" class="btn btn-ghost" id="btn-end-session" hidden>✕ Ukončit</button>
+      </header>
+      <main class="tab-content">
+
+        <div class="session-start" id="session-start">
+          <h2>Vyber si, co chceš dělat</h2>
+          <div class="session-options">
+            <button type="button" class="btn btn-primary btn-session" data-mode="review">
+              <span class="session-icon">🔁</span>
+              <span class="session-text">
+                <strong>Opakovat <span id="review-desc"></span></strong>
+                <small>Slova, která jsou na řadě podle SRS</small>
+              </span>
+            </button>
+            <button type="button" class="btn btn-secondary btn-session" data-mode="new">
+              <span class="session-icon">✨</span>
+              <span class="session-text">
+                <strong>Nová slova <span id="new-desc"></span></strong>
+                <small>Nejčastější slova, která ještě neumíš</small>
+              </span>
+            </button>
+          </div>
+          <p class="hint" id="learn-hint"></p>
+        </div>
+
+        <div class="session-active" id="session-active" hidden>
+          <div class="session-progress">
+            <div class="progress-bar"><div class="progress-fill" id="session-progress-fill"></div></div>
+            <span class="progress-label" id="session-progress-label">0 / 0</span>
+          </div>
+          <div class="phase-indicator" id="phase-indicator"></div>
+          <div class="card-container" id="card-container"></div>
+          <div class="answer-area" id="answer-area"></div>
+          <div class="feedback" id="feedback" aria-live="assertive" hidden></div>
+          <button type="button" class="btn btn-primary btn-large" id="btn-next" hidden>Další</button>
+        </div>
+
+        <div class="session-summary" id="session-summary" hidden>
+          <h2>Hotovo! 🎉</h2>
+          <div class="summary-stats">
+            <div><strong id="summary-correct">0</strong><small>správně</small></div>
+            <div><strong id="summary-wrong">0</strong><small>špatně</small></div>
+            <div><strong id="summary-xp">+0</strong><small>XP</small></div>
+          </div>
+          <button type="button" class="btn btn-primary btn-large" id="btn-summary-home">Zpět na Domů</button>
+          <button type="button" class="btn btn-ghost btn-large" id="btn-summary-again">Ještě jednou</button>
+        </div>
+
+      </main>
+    </section>
+
+    <section id="tab-grammar" class="tab-panel" role="tabpanel" aria-labelledby="btn-grammar" hidden>
+      <header class="tab-header">
+        <h1>Gramatika</h1>
+        <span class="header-progress" id="grammar-progress"></span>
+      </header>
+      <main class="tab-content">
+        <div class="search-box">
+          <input type="search" id="grammar-search" placeholder="Hledat lekci…" aria-label="Hledat gramatickou lekci">
+        </div>
+        <div class="accordion" id="grammar-accordion"></div>
+      </main>
+    </section>
+    <section id="tab-verbs" class="tab-panel" role="tabpanel" aria-labelledby="btn-verbs" hidden>
+      <header class="tab-header">
+        <h1>Slovesa</h1>
+        <button type="button" class="btn btn-ghost" id="btn-verb-drill">🎲 Procvičit</button>
+      </header>
+      <main class="tab-content">
+        <div class="search-box">
+          <input type="search" id="verbs-search" placeholder="Hledat sloveso (španělsky / anglicky / česky)…" aria-label="Hledat sloveso">
+        </div>
+        <div class="verbs-list" id="verbs-list"></div>
+      </main>
+    </section>
+
+    <section id="tab-more" class="tab-panel" role="tabpanel" aria-labelledby="btn-more" hidden>
+      <header class="tab-header">
+        <h1>Víc</h1>
+        <button type="button" class="theme-btn" aria-label="Přepnout světlý a tmavý režim"></button>
+      </header>
+      <main class="tab-content">
+
+        <div class="panel">
+          <h2>Nastavení</h2>
+          <label class="setting-row">
+            <span>Režim zobrazení</span>
+            <select id="set-theme">
+              <option value="auto">Podle systému</option>
+              <option value="light">Světlý</option>
+              <option value="dark">Tmavý</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Výslovnost (TTS)</span>
+            <input type="checkbox" id="set-tts">
+          </label>
+          <label class="setting-row">
+            <span>Denní cíl (slov)</span>
+            <input type="number" id="set-goal" min="5" max="200" step="5" inputmode="numeric">
+          </label>
+          <label class="setting-row">
+            <span>Nových slov za session</span>
+            <input type="number" id="set-new" min="5" max="30" step="5" inputmode="numeric">
+          </label>
+        </div>
+
+        <div class="panel">
+          <h2>Procházet slovíčka</h2>
+          <div class="search-box">
+            <input type="search" id="words-search" placeholder="Hledat (španělsky / anglicky)…" aria-label="Hledat slovíčko">
+          </div>
+          <label class="setting-row">
+            <span>Filtr</span>
+            <select id="words-filter">
+              <option value="all">Všechna</option>
+              <option value="learned">Naučená</option>
+              <option value="new">Nenaučená</option>
+            </select>
+          </label>
+          <p class="hint" id="words-count"></p>
+          <div class="word-list" id="word-list"></div>
+          <button type="button" class="btn btn-ghost" id="btn-words-more" hidden>Načíst další</button>
+        </div>
+
+        <div class="panel">
+          <h2>Záloha a reset</h2>
+          <button type="button" class="btn btn-secondary btn-large" id="btn-export">⬇ Exportovat pokrok (JSON)</button>
+          <button type="button" class="btn btn-secondary btn-large" id="btn-import">⬆ Importovat pokrok</button>
+          <input type="file" id="import-file" accept="application/json,.json" hidden>
+          <button type="button" class="btn btn-danger btn-large" id="btn-reset">🗑 Resetovat pokrok</button>
+          <p class="hint">Pokrok je uložený jen v tomto zařízení (localStorage).</p>
+        </div>
+
+      </main>
+    </section>
+
+    <nav class="bottom-nav" role="tablist" aria-label="Hlavní navigace">
+      <button id="btn-home" type="button" role="tab" aria-selected="true" aria-controls="tab-home" class="nav-btn active">
+        <span class="nav-icon">🏠</span><span class="nav-label">Domů</span>
+      </button>
+      <button id="btn-learn" type="button" role="tab" aria-selected="false" aria-controls="tab-learn" class="nav-btn">
+        <span class="nav-icon">📚</span><span class="nav-label">Učit</span>
+      </button>
+      <button id="btn-grammar" type="button" role="tab" aria-selected="false" aria-controls="tab-grammar" class="nav-btn">
+        <span class="nav-icon">📖</span><span class="nav-label">Gramatika</span>
+      </button>
+      <button id="btn-verbs" type="button" role="tab" aria-selected="false" aria-controls="tab-verbs" class="nav-btn">
+        <span class="nav-icon">🔤</span><span class="nav-label">Slovesa</span>
+      </button>
+      <button id="btn-more" type="button" role="tab" aria-selected="false" aria-controls="tab-more" class="nav-btn">
+        <span class="nav-icon">⚙️</span><span class="nav-label">Víc</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-content" id="modal-content" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <div class="toast" id="toast" aria-live="assertive" hidden></div>
+
+  <script src="./app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function (e) { console.warn(e); });
+      });
+    }
+  </script>
+</body>
+</html>
