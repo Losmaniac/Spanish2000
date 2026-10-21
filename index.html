@@ -272,7 +272,11 @@
 
   <script src="./app.js"></script>
   <script src="./firebase-config.js"></script>
-  <script type="module" src="./sync.js"></script>
+  <!-- sync.js je schválně BĚŽNÝ skript, ne modul: dynamické import()
+       funguje i v klasických skriptech a odpadá tím chybový stav
+       "Importing a module script failed", který padá ve starších
+       prohlížečích a ve WebView (Instagram/Facebook/Messenger). -->
+  <script src="./sync.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

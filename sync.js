@@ -84,7 +84,18 @@ function describeError(e) {
     'unavailable': 'Firestore je nedostupný (offline?).'
   };
   if (map[code]) return map[code];
-  return (e && (e.message || e.code)) || 'Neznámá chyba';
+
+  // Selhání načtení Firebase SDK (CDN) — typicky ve WebView nebo na slabé síti.
+  var msg = (e && e.message) || '';
+  if (/module|import|Failed to fetch|NetworkError|Load failed|Network request failed/i.test(msg)) {
+    return 'Nepodařilo se načíst Firebase SDK z CDN (gstatic.com). ' +
+      'Zkontroluj připojení a klikni na „Zkusit znovu“. ' +
+      'Pokud máš appku otevřenou v prohlížeči uvnitř Instagramu, Facebooku ' +
+      'nebo Messengeru, otevři ji radši přímo v Chrome / Safari — vestavěné ' +
+      'prohlížeče často blokují načítání skriptů z jiných domén.';
+  }
+
+  return msg || code || 'Neznámá chyba';
 }
 
 /* Načte Firebase SDK z CDN. Dynamický import → když jsme offline nebo je
@@ -102,6 +113,20 @@ async function start() {
 
   if (!cfg || !cfg.apiKey) {
     status = 'unconfigured';
+    renderPanel();
+    return;
+  }
+
+  // Už inicializováno → jen zkusit znovu synchronizovat (nesmíme přidat
+  // druhý onAuthStateChanged posluchač). Slouží pro tlačítko "Zkusit znovu".
+  if (auth) {
+    if (user) {
+      status = 'syncing'; renderPanel();
+      try { await pullAndMerge(); subscribeLive(); status = 'ok'; }
+      catch (e) { status = 'error'; statusMsg = describeError(e); }
+    } else {
+      status = 'idle';
+    }
     renderPanel();
     return;
   }
@@ -367,9 +392,20 @@ function panelHtml() {
       ? '<p class="hint" style="color:var(--danger)">' + esc(statusMsg) + '</p>' : '';
     var busy = (status === 'signing-in')
       ? '<p class="hint">Přihlašuji…</p>' : '';
+    var retry = '<button type="button" class="btn btn-secondary btn-large" data-sync="retry">🔄 Zkusit znovu</button>';
+    var sdkReady = !!F.app;      // bez načteného SDK nemá přihlášení čím fungovat
+
+    if (!sdkReady && status === 'error') {
+      return '<p class="hint">Cloudovou synchronizaci se nepodařilo spustit ' +
+        '(většinou slabé připojení nebo omezený prohlížeč).</p>' + err + retry +
+        '<p class="hint">Učení funguje i tak dál — jen se zatím nesynchronizuje.</p>';
+    }
+
     return '<p class="hint">Přihlas se Google účtem a měj stejný pokrok na telefonu i na počítači.</p>' +
       '<button type="button" class="btn btn-primary btn-large" data-sync="signin">' +
-      '🔐 Přihlásit se Google účtem</button>' + busy + err +
+      '🔐 Přihlásit se Google účtem</button>' +
+      busy + err +
+      (status === 'error' ? retry : '') +
       '<p class="hint">Pokrok zůstává uložený i v tomto zařízení, přihlášení je jen navíc.</p>';
   }
 
@@ -397,6 +433,7 @@ function onPanelClick(e) {
   else if (act === 'signout') signOutNow();
   else if (act === 'push') manualPush();
   else if (act === 'pull') manualPull();
+  else if (act === 'retry') { status = 'init'; statusMsg = ''; start(); }
 }
 
 /* ---------------- Start ---------------- */
