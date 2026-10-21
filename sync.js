@@ -113,6 +113,13 @@ async function start() {
     db = F.fs.getFirestore(app);
     provider = new F.auth.GoogleAuthProvider();
 
+    // Dokončení přihlášení přes redirect (mobil / nainstalovaná PWA)
+    F.auth.getRedirectResult(auth).catch(function (e) {
+      status = 'error';
+      statusMsg = describeError(e);
+      renderPanel();
+    });
+
     F.auth.onAuthStateChanged(auth, async function (u) {
       user = u;
       if (u) {
@@ -145,13 +152,36 @@ async function start() {
 }
 
 /* ---------------- Přihlášení / odhlášení ---------------- */
+// Na mobilu (hlavně v nainstalované PWA) může být vyskakovací okno zablokované.
+// V tom případě se automaticky přepne na přesměrování (redirect) — to je pro
+// Android/iOS PWA oficiálně doporučený postup.
+var REDIRECT_FALLBACK = [
+  'auth/popup-blocked',
+  'auth/operation-not-supported-in-this-environment'
+];
+
 async function signIn() {
   if (!auth) return;
+  status = 'signing-in'; statusMsg = ''; renderPanel();
+
   try {
-    status = 'signing-in'; statusMsg = ''; renderPanel();
     await F.auth.signInWithPopup(auth, provider);
-    // další kroky řeší onAuthStateChanged
+    return;                                  // dokončení řeší onAuthStateChanged
   } catch (e) {
+    var code = (e && e.code) || '';
+
+    if (REDIRECT_FALLBACK.indexOf(code) > -1) {
+      try {
+        statusMsg = 'Přesměrovávám na Google…';
+        renderPanel();
+        await F.auth.signInWithRedirect(auth, provider);
+        return;                              // stránka se opustí
+      } catch (e2) {
+        status = 'error'; statusMsg = describeError(e2); renderPanel();
+        return;
+      }
+    }
+
     status = 'error';
     statusMsg = describeError(e);
     renderPanel();
