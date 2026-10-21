@@ -247,10 +247,10 @@ function startSession(mode) {
   }
   
   session.currentIndex = 0;
-  $('#session-start').hidden = true;
-  $('#session-active').hidden = false;
-  $('#session-summary').hidden = true;
-  $('#btn-end-session').hidden = false;
+  hide($('#session-start'));
+  show($('#session-active'));
+  hide($('#session-summary'));
+  show($('#btn-end-session'));
   renderSession();
 }
 
@@ -273,8 +273,8 @@ function renderCard(card, phase) {
   const feedback = $('#feedback');
   const btnNext = $('#btn-next');
   
-  feedback.hidden = true;
-  btnNext.hidden = true;
+  hide(feedback);
+  hide(btnNext);
   answerArea.innerHTML = '';
   
   if (phase === 'intro') {
@@ -369,7 +369,7 @@ function checkMeaning(idx, option) {
     session.stats.xpGained += 2;
   }
   
-  $('#btn-next').hidden = false;
+  show($('#btn-next'));
   $('#btn-next').onclick = nextPhase;
   $('#btn-next').textContent = 'Další';
 }
@@ -393,7 +393,7 @@ function checkForm() {
     session.stats.xpGained += 2;
   }
   
-  $('#btn-next').hidden = false;
+  show($('#btn-next'));
   $('#btn-next').onclick = nextPhase;
   $('#btn-next').textContent = 'Další';
 }
@@ -417,7 +417,7 @@ function checkSentence() {
     session.stats.xpGained += 2;
   }
   
-  $('#btn-next').hidden = false;
+  show($('#btn-next'));
   $('#btn-next').onclick = nextPhase;
   $('#btn-next').textContent = 'Další';
 }
@@ -457,9 +457,9 @@ function endSession() {
   addXP(session.stats.xpGained);
   state.doneToday += session.cards.length;
   
-  $('#session-active').hidden = true;
-  $('#session-summary').hidden = false;
-  $('#btn-end-session').hidden = true;
+  hide($('#session-active'));
+  show($('#session-summary'));
+  hide($('#btn-end-session'));
   
   $('#summary-correct').textContent = session.stats.correct;
   $('#summary-wrong').textContent = session.stats.wrong;
@@ -473,8 +473,8 @@ function showFeedback(msg, type) {
   const el = $('#feedback');
   el.textContent = msg;
   el.className = 'feedback ' + type;
-  el.hidden = false;
-  setTimeout(() => { el.hidden = true; }, 2000);
+  show(el);
+  setTimeout(() => { hide(el); }, 2000);
 }
 
 // --- Grammar Tab ---
@@ -655,12 +655,12 @@ function showVerbDetail(v) {
     </div>
   `;
   detail.appendChild(content);
-  detail.hidden = false;
+  show(detail);
   content.focus();
 }
 
 function hideVerbDetail() {
-  $('#verb-detail').hidden = true;
+  hide($('#verb-detail'));
   const content = $('#verb-detail .verb-detail-content');
   if (content) content.remove();
 }
@@ -722,10 +722,10 @@ function initEventListeners() {
 }
 
 function renderLearn() {
-  $('#session-start').hidden = false;
-  $('#session-active').hidden = true;
-  $('#session-summary').hidden = true;
-  $('#btn-end-session').hidden = true;
+  show($('#session-start'));
+  hide($('#session-active'));
+  hide($('#session-summary'));
+  hide($('#btn-end-session'));
 }
 
 // --- Initialize ---
@@ -804,12 +804,10 @@ window.app = { state, words, grammar, verbs, normalize, todayStr, addDays };
   return html;
 }
 function endSessionEarly() {
-  $('#session-start').hidden = false;
-  $('#session-active').hidden = true;
-  $('#session-summary').hidden = true;
-  $('#btn-end-session').hidden = true;
-}
-  }
+  show($('#session-start'));
+  hide($('#session-active'));
+  hide($('#session-summary'));
+  hide($('#btn-end-session'));
 }
   $('#phase-indicator').textContent = phase.charAt(0).toUpperCase() + phase.slice(1);
   
@@ -826,13 +824,15 @@ function speak(text) {
 // --- UI Helpers ---
 function $(sel) { return document.querySelector(sel); }
 function $$(sel) { return document.querySelectorAll(sel); }
+function hide(el) { if (el) el.setAttribute('hidden', ''); }
+function show(el) { if (el) el.removeAttribute('hidden'); }
 
 function showTab(tabId) {
-  $$('.tab-panel').forEach(p => { p.hidden = true; p.classList.remove('active'); });
+  $$('.tab-panel').forEach(p => { p.setAttribute('hidden', ''); p.classList.remove('active'); });
   $$('.nav-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
   const panel = $('#tab-' + tabId);
   const btn = $('#btn-' + tabId);
-  if (panel) { panel.hidden = false; panel.classList.add('active'); }
+  if (panel) { panel.removeAttribute('hidden'); panel.classList.add('active'); }
   if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); }
 }
 
