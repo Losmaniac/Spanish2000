@@ -1,18 +1,18 @@
 /* ============================================================
-   CLOUDOVÁ SYNCHRONIZACE  (ES modul)
+   CLOUD SYNC  (plain script)
    Firebase Authentication (Google) + Cloud Firestore
    ------------------------------------------------------------
-   • localStorage zůstává zdrojem pravdy → appka je dál offline-first
-   • Firebase je jen zrcadlo; při přihlášení se stavy SLUČUJÍ, nikdy
-     nepřepisují, aby žádné zařízení nepřišlo o pokrok
-   • Bez vyplněného FIREBASE_CONFIG se nic nenačítá (ani CDN)
+   • localStorage stays the source of truth → the app remains offline-first
+   • Firebase is only a mirror; on sign-in the states are MERGED, never
+     overwritten, so no device loses progress
+   • Without a filled-in FIREBASE_CONFIG nothing is loaded (not even the CDN)
    ============================================================ */
 
 var SDK_BASE = 'https://www.gstatic.com/firebasejs/10.12.2/';
 var COLLECTION = 'progress';
 
-// Náhodné ID tohoto zařízení – podle něj poznáme vlastní zápisy
-// (Firestore posílá zpět i naše vlastní změny) a ignorujeme je.
+// Random ID of this device — used to recognise our own writes
+// (Firestore echoes our own changes back) so we can ignore them.
 var DEVICE_ID = (function () {
   try {
     var k = 'es_device_id';
@@ -29,7 +29,7 @@ var DEVICE_ID = (function () {
 
 var cfg = window.FIREBASE_CONFIG || null;
 
-// Načtené části Firebase SDK
+// Loaded Firebase SDK modules
 var F = { app: null, auth: null, fs: null };
 var auth = null, db = null, provider = null, user = null;
 
@@ -50,7 +50,7 @@ function esc(s) {
 }
 function timeStr(ts) {
   if (!ts) return '—';
-  try { return new Date(ts).toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' }); }
+  try { return new Date(ts).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); }
   catch (e) { return '—'; }
 }
 
@@ -58,14 +58,14 @@ function toast(msg, ms) {
   if (window.S2000 && window.S2000.toast) window.S2000.toast(msg, ms);
 }
 
-/* Počkej, až app.js dokončí start (načte words/grammar/verbs). */
+/* Wait until app.js finishes starting (loads words/grammar/verbs). */
 function whenAppReady() {
   return new Promise(function (resolve) {
     if (window.appReady) return resolve(window.appReady);
     var tries = 0;
     (function poll() {
       if (window.appReady) return resolve(window.appReady);
-      if (tries++ > 100) return resolve();          // ~5 s, pak to vzdáme
+      if (tries++ > 100) return resolve();          // ~5 s, then give up
       setTimeout(poll, 50);
     })();
   });
@@ -74,32 +74,32 @@ function whenAppReady() {
 function describeError(e) {
   var code = (e && e.code) || '';
   var map = {
-    'auth/popup-closed-by-user': 'Přihlášení zrušeno (zavřel jsi okno Google).',
-    'auth/popup-blocked': 'Prohlížeč zablokoval přihlašovací okno. Povol vyskakovací okna a zkus to znovu.',
-    'auth/cancelled-popup-request': 'Přihlášení zrušeno.',
-    'auth/unauthorized-domain': 'Tato doména není povolená ve Firebase (Authentication → Settings → Authorized domains).',
-    'auth/operation-not-allowed': 'Google přihlášení není ve Firebase zapnuté (Authentication → Sign-in method).',
-    'auth/network-request-failed': 'Chyba sítě — zkontroluj připojení.',
-    'permission-denied': 'Firestore odmítl přístup — zkontroluj bezpečnostní pravidla (Rules).',
-    'unavailable': 'Firestore je nedostupný (offline?).'
+    'auth/popup-closed-by-user': 'Sign-in cancelled (you closed the Google window).',
+    'auth/popup-blocked': 'The browser blocked the sign-in popup. Allow popups and try again.',
+    'auth/cancelled-popup-request': 'Sign-in cancelled.',
+    'auth/unauthorized-domain': 'This domain is not authorised in Firebase (Authentication → Settings → Authorized domains).',
+    'auth/operation-not-allowed': 'Google sign-in is not enabled in Firebase (Authentication → Sign-in method).',
+    'auth/network-request-failed': 'Network error — check your connection.',
+    'permission-denied': 'Firestore denied access — check the security rules.',
+    'unavailable': 'Firestore is unavailable (offline?).'
   };
   if (map[code]) return map[code];
 
-  // Selhání načtení Firebase SDK (CDN) — typicky ve WebView nebo na slabé síti.
+  // Firebase SDK (CDN) load failure — typically in a WebView or on a weak network.
   var msg = (e && e.message) || '';
   if (/module|import|Failed to fetch|NetworkError|Load failed|Network request failed/i.test(msg)) {
-    return 'Nepodařilo se načíst Firebase SDK z CDN (gstatic.com). ' +
-      'Zkontroluj připojení a klikni na „Zkusit znovu“. ' +
-      'Pokud máš appku otevřenou v prohlížeči uvnitř Instagramu, Facebooku ' +
-      'nebo Messengeru, otevři ji radši přímo v Chrome / Safari — vestavěné ' +
-      'prohlížeče často blokují načítání skriptů z jiných domén.';
+    return 'Could not load the Firebase SDK from the CDN (gstatic.com). ' +
+      'Check your connection and tap "Try again". ' +
+      'If the app is open in a browser inside Instagram, Facebook ' +
+      'or Messenger, open it directly in Chrome / Safari instead — in-app ' +
+      'browsers often block scripts from other domains.';
   }
 
-  return msg || code || 'Neznámá chyba';
+  return msg || code || 'Unknown error';
 }
 
-/* Načte Firebase SDK z CDN. Dynamický import → když jsme offline nebo je
-   CDN nedostupné, spadne to do catch a zbytek appky funguje dál. */
+/* Loads the Firebase SDK from the CDN. Dynamic import → if we are offline or
+   the CDN is unreachable it lands in catch and the rest of the app keeps working. */
 async function loadSdk() {
   var appMod = await import(SDK_BASE + 'firebase-app.js');
   var authMod = await import(SDK_BASE + 'firebase-auth.js');
@@ -117,8 +117,8 @@ async function start() {
     return;
   }
 
-  // Už inicializováno → jen zkusit znovu synchronizovat (nesmíme přidat
-  // druhý onAuthStateChanged posluchač). Slouží pro tlačítko "Zkusit znovu".
+  // Already initialised → just retry syncing (we must not add a second
+  // onAuthStateChanged listener). Used by the "Try again" button.
   if (auth) {
     if (user) {
       status = 'syncing'; renderPanel();
@@ -138,7 +138,7 @@ async function start() {
     db = F.fs.getFirestore(app);
     provider = new F.auth.GoogleAuthProvider();
 
-    // Dokončení přihlášení přes redirect (mobil / nainstalovaná PWA)
+    // Completing sign-in via redirect (mobile / installed PWA)
     F.auth.getRedirectResult(auth).catch(function (e) {
       status = 'error';
       statusMsg = describeError(e);
@@ -176,10 +176,10 @@ async function start() {
   }
 }
 
-/* ---------------- Přihlášení / odhlášení ---------------- */
-// Na mobilu (hlavně v nainstalované PWA) může být vyskakovací okno zablokované.
-// V tom případě se automaticky přepne na přesměrování (redirect) — to je pro
-// Android/iOS PWA oficiálně doporučený postup.
+/* ---------------- Sign in / sign out ---------------- */
+// On mobile (especially in an installed PWA) the popup may be blocked.
+// In that case we automatically fall back to redirect — the officially
+// recommended approach for Android/iOS PWAs.
 var REDIRECT_FALLBACK = [
   'auth/popup-blocked',
   'auth/operation-not-supported-in-this-environment'
@@ -191,16 +191,16 @@ async function signIn() {
 
   try {
     await F.auth.signInWithPopup(auth, provider);
-    return;                                  // dokončení řeší onAuthStateChanged
+    return;                                  // completion is handled by onAuthStateChanged
   } catch (e) {
     var code = (e && e.code) || '';
 
     if (REDIRECT_FALLBACK.indexOf(code) > -1) {
       try {
-        statusMsg = 'Přesměrovávám na Google…';
+        statusMsg = 'Redirecting to Google…';
         renderPanel();
         await F.auth.signInWithRedirect(auth, provider);
-        return;                              // stránka se opustí
+        return;                              // the page is left
       } catch (e2) {
         status = 'error'; statusMsg = describeError(e2); renderPanel();
         return;
@@ -217,9 +217,9 @@ async function signOutNow() {
   if (!auth) return;
   try {
     await F.auth.signOut(auth);
-    toast('Odhlášeno. Pokrok zůstává v tomto zařízení. 👋');
+    toast('Signed out. Progress stays on this device. 👋');
   } catch (e) {
-    toast('Odhlášení se nepovedlo 😕');
+    toast('Sign-out failed 😕');
   }
 }
 
@@ -249,21 +249,21 @@ async function pullAndMerge() {
     if (data.state && window.S2000) {
       var before = window.S2000.snapshot();
       var after = window.S2000.applyRemote(data.state);
-      // sloučený výsledek hned pošli zpět → všechna zařízení se srovnají
+      // push the merged result straight back → all devices converge
       await pushState(true);
       lastPullAt = Date.now();
       reportMerge(before, after);
       return;
     }
   }
-  // v cloudu ještě nic není → nahraj lokální pokrok
+  // nothing in the cloud yet → upload the local progress
   await pushState(true);
   lastPushAt = Date.now();
   lastPullAt = Date.now();
-  toast('Pokrok nahrán do cloudu ⬆');
+  toast('Progress uploaded to the cloud ⬆');
 }
 
-/* Shrnutí, co se sloučením změnilo (jen když se něco skutečně změnilo). */
+/* Summary of what the merge changed (only when something actually changed). */
 function reportMerge(before, after) {
   var beforeCards = Object.keys(before.cards || {}).length;
   var afterCards = Object.keys(after.cards || {}).length;
@@ -272,11 +272,11 @@ function reportMerge(before, after) {
 
   if (added || xpDiff) {
     var parts = [];
-    if (added) parts.push('+' + added + ' slovíček');
+    if (added) parts.push('+' + added + ' words');
     if (xpDiff) parts.push('XP ' + (window.S2000 ? window.S2000.fmt(after.xp) : after.xp));
-    toast('Sloučeno s cloudem: ' + parts.join(', ') + ' ✅', 4000);
+    toast('Merged with the cloud: ' + parts.join(', ') + ' ✅', 4000);
   } else {
-    toast('Pokrok je v pořádku synchronizovaný ✅');
+    toast('Progress is in sync ✅');
   }
 }
 
@@ -286,14 +286,14 @@ function subscribeLive() {
     unsubDoc = F.fs.onSnapshot(docRef(), function (snap) {
       if (!snap.exists()) return;
       var d = snap.data() || {};
-      if (d.device === DEVICE_ID) return;            // vlastní zápis → ignoruj
+      if (d.device === DEVICE_ID) return;            // own write → ignore
       if (!d.state || !window.S2000) return;
 
       window.S2000.applyRemote(d.state);
       lastPullAt = Date.now();
       if (!echoToastShown) {
         echoToastShown = true;
-        toast('Pokrok se aktualizoval z jiného zařízení 🔄', 3500);
+        toast('Progress was updated from another device 🔄', 3500);
         setTimeout(function () { echoToastShown = false; }, 8000);
       }
       renderPanel();
@@ -315,7 +315,7 @@ function unsubscribeLive() {
   }
 }
 
-/* Každá lokální změna → odložený push do cloudu (2,5 s po poslední změně). */
+/* Every local change → debounced push to the cloud (2.5 s after the last change). */
 function hookLocalSave() {
   if (!window.S2000) return;
   window.S2000.onLocalSave = function () {
@@ -324,23 +324,23 @@ function hookLocalSave() {
     pushTimer = setTimeout(function () {
       pushState(true).catch(function () {
         status = 'error';
-        statusMsg = 'Nepodařilo se nahrát změny do cloudu.';
+        statusMsg = 'Could not upload changes to the cloud.';
         renderPanel();
       });
     }, 2500);
   };
 }
 
-/* ---------------- Ruční akce z UI ---------------- */
+/* ---------------- Manual actions from the UI ---------------- */
 async function manualPush() {
   try {
     status = 'syncing'; renderPanel();
     await pushState(true);
     status = 'ok';
-    toast('Nahráno do cloudu ⬆');
+    toast('Uploaded to the cloud ⬆');
   } catch (e) {
     status = 'error'; statusMsg = describeError(e);
-    toast('Nahrání se nepovedlo 😕');
+    toast('Upload failed 😕');
   }
   renderPanel();
 }
@@ -351,7 +351,7 @@ async function manualPull() {
     var snap = await F.fs.getDoc(docRef());
     if (!snap.exists() || !(snap.data() || {}).state) {
       status = 'ok';
-      toast('V cloudu zatím žádný pokrok není.');
+      toast('There is no progress in the cloud yet.');
       renderPanel();
       return;
     }
@@ -363,12 +363,12 @@ async function manualPull() {
     reportMerge(before, after);
   } catch (e) {
     status = 'error'; statusMsg = describeError(e);
-    toast('Stažení se nepovedlo 😕');
+    toast('Download failed 😕');
   }
   renderPanel();
 }
 
-/* ---------------- Vykreslení panelu v záložce „Víc" ---------------- */
+/* ---------------- Rendering the panel in the "More" tab ---------------- */
 function renderPanel() {
   var box = el('sync-body');
   if (!box) return;
@@ -377,52 +377,52 @@ function renderPanel() {
 
 function panelHtml() {
   if (status === 'unconfigured') {
-    return '<p class="hint">Cloudová synchronizace zatím není nastavená.</p>' +
-      '<p class="hint">Doplň svůj <strong>firebase-config.js</strong> — podrobný postup ' +
-      '(Firebase projekt, Google přihlášení, Firestore pravidla) je v komentáři přímo v tom souboru.</p>';
+    return '<p class="hint">Cloud sync is not configured yet.</p>' +
+      '<p class="hint">Fill in your <strong>firebase-config.js</strong> — the detailed steps ' +
+      '(Firebase project, Google sign-in, Firestore rules) are in a comment inside that file.</p>';
   }
 
   if (status === 'offline') {
-    return '<p class="hint">Jsi offline. Synchronizace se připojí, jakmile budeš na síti — ' +
-      'učení funguje i tak dál. 📴</p>';
+    return '<p class="hint">You are offline. Sync will connect once you are back online — ' +
+      'studying keeps working either way. 📴</p>';
   }
 
   if (!user) {
     var err = (status === 'error')
       ? '<p class="hint" style="color:var(--danger)">' + esc(statusMsg) + '</p>' : '';
     var busy = (status === 'signing-in')
-      ? '<p class="hint">Přihlašuji…</p>' : '';
-    var retry = '<button type="button" class="btn btn-secondary btn-large" data-sync="retry">🔄 Zkusit znovu</button>';
-    var sdkReady = !!F.app;      // bez načteného SDK nemá přihlášení čím fungovat
+      ? '<p class="hint">Signing in…</p>' : '';
+    var retry = '<button type="button" class="btn btn-secondary btn-large" data-sync="retry">🔄 Try again</button>';
+    var sdkReady = !!F.app;      // without a loaded SDK there is nothing to sign in with
 
     if (!sdkReady && status === 'error') {
-      return '<p class="hint">Cloudovou synchronizaci se nepodařilo spustit ' +
-        '(většinou slabé připojení nebo omezený prohlížeč).</p>' + err + retry +
-        '<p class="hint">Učení funguje i tak dál — jen se zatím nesynchronizuje.</p>';
+      return '<p class="hint">Cloud sync could not start ' +
+        '(usually a weak connection or a restricted browser).</p>' + err + retry +
+        '<p class="hint">Studying keeps working — it just will not sync for now.</p>';
     }
 
-    return '<p class="hint">Přihlas se Google účtem a měj stejný pokrok na telefonu i na počítači.</p>' +
+    return '<p class="hint">Sign in with Google and keep the same progress on your phone and computer.</p>' +
       '<button type="button" class="btn btn-primary btn-large" data-sync="signin">' +
-      '🔐 Přihlásit se Google účtem</button>' +
+      '🔐 Sign in with Google</button>' +
       busy + err +
       (status === 'error' ? retry : '') +
-      '<p class="hint">Pokrok zůstává uložený i v tomto zařízení, přihlášení je jen navíc.</p>';
+      '<p class="hint">Progress stays saved on this device as well; signing in is optional.</p>';
   }
 
   var info;
-  if (status === 'syncing') info = 'Synchronizuji… ⏳';
+  if (status === 'syncing') info = 'Syncing… ⏳';
   else if (status === 'error') info = '<span style="color:var(--danger)">' + esc(statusMsg) + '</span>';
-  else info = 'Synchronizováno ✅';
+  else info = 'Synced ✅';
 
-  return '<p class="hint">Přihlášen jako <strong>' +
-      esc(user.email || user.displayName || 'Google účet') + '</strong><br>' +
+  return '<p class="hint">Signed in as <strong>' +
+      esc(user.email || user.displayName || 'Google account') + '</strong><br>' +
       info + '<br>' +
-      'Nahráno: ' + timeStr(lastPushAt) + ' · Staženo: ' + timeStr(lastPullAt) + '</p>' +
-    '<button type="button" class="btn btn-secondary btn-large" data-sync="push">⬆ Nahrát do cloudu</button>' +
-    '<button type="button" class="btn btn-secondary btn-large" data-sync="pull">⬇ Stáhnout z cloudu</button>' +
-    '<button type="button" class="btn btn-ghost btn-large" data-sync="signout">Odhlásit se</button>' +
-    '<p class="hint">Změny se nahrávají automaticky ~2,5 s po každé odpovědi a při zavření appky. ' +
-    'Při stažení se pokrok <strong>slučuje</strong>, takže o nic nepřijdeš ani na jednom zařízení.</p>';
+      'Uploaded: ' + timeStr(lastPushAt) + ' · Downloaded: ' + timeStr(lastPullAt) + '</p>' +
+    '<button type="button" class="btn btn-secondary btn-large" data-sync="push">⬆ Upload to cloud</button>' +
+    '<button type="button" class="btn btn-secondary btn-large" data-sync="pull">⬇ Download from cloud</button>' +
+    '<button type="button" class="btn btn-ghost btn-large" data-sync="signout">Sign out</button>' +
+    '<p class="hint">Changes upload automatically ~2.5 s after each answer and when the app closes. ' +
+    'When downloading, progress is <strong>merged</strong>, so neither device loses anything.</p>';
 }
 
 function onPanelClick(e) {
@@ -454,7 +454,7 @@ function onPanelClick(e) {
   start();
 })();
 
-// Pro ladění z konzole
+// Console access for debugging
 window.SyncDebug = {
   status: function () { return status; },
   message: function () { return statusMsg; },
@@ -467,7 +467,7 @@ window.SyncDebug = {
   signOut: signOutNow,
   push: manualPush,
   pull: manualPull,
-  // testovací simulace: předstírá přihlášeného uživatele a simuluje cloud
+  // test simulation: pretends a user is signed in and fakes the cloud
   _setUser: function (u) { user = u; status = u ? 'ok' : 'idle'; renderPanel(); },
   _setStatus: function (s, m) { status = s; statusMsg = m || ''; renderPanel(); }
 };

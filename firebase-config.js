@@ -1,21 +1,21 @@
 /* ============================================================
-   KONFIGURACE FIREBASE  —  projekt spanish2000-91271
+   FIREBASE CONFIGURATION  —  project spanish2000-91271
    ============================================================
-   Tento soubor obsahuje VEŘEJNÉ identifikátory Firebase.
-   Nejsou to tajné údaje — Google je sám označuje jako veřejné.
-   Skutečnou ochranu tvoří:
-     • Firestore Security Rules  (viz firestore.rules, už nasazeno)
-     • seznam povolených domén   (Authentication → Authorized domains)
+   This file contains PUBLIC Firebase identifiers.
+   They are not secrets — Google itself treats them as public.
+   The real protection is:
+     • Firestore Security Rules  (see firestore.rules, already deployed)
+     • the authorised-domains list (Authentication → Authorized domains)
 
-   ZBÝVAJÍ 2 RUČNÍ KROKY (v CLI pro ně neexistuje příkaz):
+   2 MANUAL STEPS REMAIN (there is no CLI command for them):
      https://console.firebase.google.com/project/spanish2000-91271/authentication/providers
-       1) Authentication → Sign-in method → Google → Povolit → Uložit
+       1) Authentication → Sign-in method → Google → Enable → Save
        2) Authentication → Settings → Authorized domains → Add domain
-            • losmaniac.github.io     (bez https:// a bez cesty!)
-            • localhost               (jen pokud testuješ lokálně)
+            • losmaniac.github.io     (no https:// and no path!)
+            • localhost               (only if you test locally)
 
-   Dokud nejsou hotové, appka funguje normálně, ale přihlášení
-   skončí chybou "auth/unauthorized-domain" nebo "auth/operation-not-allowed".
+   Until those are done the app works normally, but sign-in
+   will fail with "auth/unauthorized-domain" or "auth/operation-not-allowed".
    ============================================================ */
 
 window.FIREBASE_CONFIG = {

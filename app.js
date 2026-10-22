@@ -1,12 +1,12 @@
 /* ============================================================
-   Spanish 2000 — veškerá logika aplikace (vanilla JS, bez build kroku)
+   Spanish 2000 — all application logic (vanilla JS, no build step)
    ============================================================ */
 'use strict';
 
 var STORAGE_KEY = 'es_state_v1';
 var INTERVALS = [0, 1, 3, 7, 16, 35];   // dny podle boxu (Leitner)
-var REVIEW_LIMIT = 30;                  // max karet na jedno opakování
-var QUIZ_EVERY = 5;                     // mini-kvíz po každých 5 nových slovech
+var REVIEW_LIMIT = 30;                  // max cards per review session
+var QUIZ_EVERY = 5;                     // mini quiz after every 5 new words
 var XP_CORRECT = 10;
 var XP_WRONG = 2;
 var XP_SESSION = 20;
@@ -18,14 +18,14 @@ function normalize(s) {
     .toLowerCase().replace(/\s+/g, ' ').trim();
 }
 
-// Anglický význam bez poznámky o rodu: "The (Feminine)" -> "the"
+// English meaning without the gender note: "The (Feminine)" -> "the"
 function enKey(s) {
   return normalize(String(s == null ? '' : s).replace(/\([^)]*\)/g, ' '));
 }
 
 function pad2(n) { return n < 10 ? '0' + n : '' + n; }
 
-// Lokální datum (ne UTC) ve tvaru YYYY-MM-DD
+// Local date (not UTC) in the form YYYY-MM-DD
 function todayStr() {
   var d = new Date();
   return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
@@ -38,7 +38,7 @@ function addDays(dateStr, days) {
   return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
 }
 
-function fmt(n) { return Number(n).toLocaleString('cs-CZ'); }
+function fmt(n) { return Number(n).toLocaleString('en-US'); }
 
 function esc(s) {
   return String(s == null ? '' : s)
@@ -68,7 +68,7 @@ function defaultState() {
     doneToday: 0,
     grammarDone: {},    // { lessonId: true }
     settings: { tts: true, newPerSession: 10, theme: 'auto' },
-    updatedAt: 0        // ms timestamp poslední lokální změny (kvůli synchronizaci)
+    updatedAt: 0        // ms timestamp of the last local change (for sync)
   };
 }
 
@@ -98,22 +98,22 @@ function loadState() {
     s.updatedAt = Number(p.updatedAt) || 0;
     state = s;
   } catch (e) {
-    console.warn('Nepodařilo se načíst stav:', e);
+    console.warn('Failed to load state:', e);
   }
 }
 
-// silent = true → neupozorňovat cloudovou synchronizaci (používá se při
-// zápisu dat stažených z cloudu, aby nevznikl nekonečný cyklus push/pull).
+// silent = true → do not notify cloud sync (used when writing data
+// downloaded from the cloud, to avoid an endless push/pull loop).
 function saveState(silent) {
   if (!storageEnabled) return;
   if (!silent) state.updatedAt = Date.now();
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  catch (e) { console.warn('Nepodařilo se uložit stav:', e); }
+  catch (e) { console.warn('Failed to save state:', e); }
   if (!silent && window.S2000 && typeof window.S2000.onLocalSave === 'function') {
     window.S2000.onLocalSave();
   }
 }
-/* ---------------- Téma (světlý / tmavý režim) ---------------- */
+/* ---------------- Theme (light / dark) ---------------- */
 function systemTheme() {
   return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
 }
@@ -126,7 +126,7 @@ function applyTheme() {
   document.documentElement.setAttribute('data-theme', r);
   $$('.theme-btn').forEach(function (b) {
     b.textContent = r === 'dark' ? '☀️' : '🌙';
-    b.setAttribute('aria-label', r === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim');
+    b.setAttribute('aria-label', r === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
     b.title = b.getAttribute('aria-label');
   });
   var sel = $('#set-theme');
@@ -141,11 +141,11 @@ function toggleTheme() {
   setTheme(resolvedTheme() === 'dark' ? 'light' : 'dark');
 }
 
-/* ---------------- Streak, XP, úroveň ---------------- */
+/* ---------------- Streak, XP, level ---------------- */
 function touchStreak() {
   var today = todayStr();
-  if (state.lastDay === today) return;              // dnes už proběhlo
-  if (!state.lastDay) state.streak = 1;             // úplně první den
+  if (state.lastDay === today) return;              // already counted today
+  if (!state.lastDay) state.streak = 1;             // very first day
   else if (state.lastDay === addDays(today, -1)) state.streak += 1;
   else state.streak = 1;                            // pauza
   state.lastDay = today;
@@ -193,7 +193,7 @@ function ensureCard(rank) {
   return state.cards[rank];
 }
 
-// Správně: box = min(box+1, 5), due = dnes + INTERVALS[box]
+// Correct: box = min(box+1, 5), due = today + INTERVALS[box]
 function answerCorrect(rank) {
   var c = ensureCard(rank);
   c.seen += 1;
@@ -202,7 +202,7 @@ function answerCorrect(rank) {
   c.due = addDays(todayStr(), INTERVALS[c.box]);
 }
 
-// Špatně: box = 0, due = dnes
+// Wrong: box = 0, due = today
 function answerWrong(rank) {
   var c = ensureCard(rank);
   c.seen += 1;
@@ -228,22 +228,64 @@ function boxCounts() {
   return d;
 }
 
-/* ---------------- TTS ---------------- */
+/* ---------------- TTS (speech synthesis) ---------------- */
 var ttsSupported = ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window);
 function ttsOn() { return ttsSupported && state.settings.tts !== false; }
 
+// Chrome loads the voice list asynchronously, so without this the very first
+// click would find no Spanish voice and stay completely silent.
+var ttsVoices = [];
+var ttsVoice = null;
+
+function loadVoices() {
+  if (!ttsSupported) return;
+  try { ttsVoices = window.speechSynthesis.getVoices() || []; }
+  catch (e) { ttsVoices = []; }
+  var spanish = ttsVoices.filter(function (v) { return /^es([-_]|$)/i.test(v.lang || ''); });
+  ttsVoice = spanish.filter(function (v) { return /^es[-_]ES/i.test(v.lang); })[0] ||
+             spanish[0] || null;
+}
+
+if (ttsSupported) {
+  loadVoices();
+  if (typeof window.speechSynthesis.addEventListener === 'function') {
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
+  } else {
+    window.speechSynthesis.onvoiceschanged = loadVoices;   // older Safari
+  }
+}
+
+// Returns true only when something was actually queued for speaking,
+// so callers can show a message instead of failing silently.
 function speak(text) {
-  if (!ttsOn() || !text) return;
+  if (!ttsOn() || !text) return false;
+  var synth = window.speechSynthesis;
   try {
-    window.speechSynthesis.cancel();
+    if (!ttsVoices.length) loadVoices();     // voices may have arrived meanwhile
+
     var u = new SpeechSynthesisUtterance(String(text));
     u.lang = 'es-ES';
     u.rate = 0.9;
-    window.speechSynthesis.speak(u);
-  } catch (e) { /* ignoruj */ }
+    u.pitch = 1;
+    if (ttsVoice) { u.voice = ttsVoice; u.lang = ttsVoice.lang || 'es-ES'; }
+
+    if (synth.speaking || synth.pending) {
+      // Chrome bug: cancel() followed by speak() in the SAME task drops the
+      // utterance. So after cancelling we speak on the next tick instead.
+      synth.cancel();
+      setTimeout(function () { try { synth.speak(u); } catch (e) { /* ignore */ } }, 90);
+    } else {
+      // Nothing is speaking → speak synchronously. This is required on iOS,
+      // where the utterance must be created inside the user-gesture handler.
+      synth.speak(u);
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
-/* ---------------- Načtení dat ---------------- */
+/* ---------------- Loading data ---------------- */
 function fetchJson(url) {
   return fetch(url).then(function (r) {
     if (!r.ok) throw new Error('HTTP ' + r.status + ' pro ' + url);
@@ -261,14 +303,14 @@ function loadData() {
       .catch(function (e) { console.error(e); verbs = []; })
   ]);
 }
-/* ---------------- DOM pomocníci ---------------- */
+/* ---------------- DOM helpers ---------------- */
 function $(sel, root) { return (root || document).querySelector(sel); }
 function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
 
-// POZOR: vlastnost .hidden (a ani atribut [hidden]) nemusí stačit —
-// naše CSS pravidla jako .modal{display:flex} nebo .btn{display:inline-flex}
-// přebíjejí výchozí [hidden]{display:none} z prohlížeče. Proto nastavujeme
-// i inline display, který je nejsilnější a funguje i se starou cache CSS.
+// NOTE: the .hidden property (nor the [hidden] attribute) is not enough —
+// our own CSS rules such as .modal{display:flex} or .btn{display:inline-flex}
+// override the browser default [hidden]{display:none}. So we also set an
+// inline display, which is the strongest and works even with a stale CSS cache.
 function hide(el) {
   if (!el) return;
   el.setAttribute('hidden', '');
@@ -306,7 +348,7 @@ function closeModal() {
 }
 function clear(el) { if (el) el.innerHTML = ''; }
 
-/* ---------------- Přepínání záložek ---------------- */
+/* ---------------- Tab switching ---------------- */
 var TAB_NAMES = ['home', 'learn', 'grammar', 'verbs', 'more'];
 
 function showTab(name) {
@@ -333,15 +375,15 @@ function showTab(name) {
 
 function greetingText() {
   var h = new Date().getHours();
-  if (h < 10) return 'Dobré ráno';
-  if (h < 18) return 'Dobrý den';
-  return 'Dobrý večer';
+  if (h < 10) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
 }
 
-/* ---------------- Domů ---------------- */
+/* ---------------- Home ---------------- */
 function renderHome() {
-  // POZOR: touchStreak() se volá jen jednou při startu aplikace (v init()),
-  // jinak by přepsal dnešní pokrok při každém vykreslení Domů.
+  // NOTE: touchStreak() is called only once at app start (in init()),
+  // otherwise it would wipe today progress on every Home render.
 
   var g = $('#greeting');
   if (g) g.textContent = greetingText() + '! 👋';
@@ -353,7 +395,7 @@ function renderHome() {
 
   var lp = $('#level-fill');
   if (lp) lp.style.width = levelPercent() + '%';
-  setText('#level-caption', 'Úroveň ' + level() + ' • do další ' + fmt(xpToNext()) + ' XP');
+  setText('#level-caption', 'Level ' + level() + ' • ' + fmt(xpToNext()) + ' XP to next');
 
   var due = dueCards();
   var dueShown = Math.min(due.length, REVIEW_LIMIT);
@@ -371,9 +413,9 @@ function renderHome() {
   if (btnNew) btnNew.disabled = newPlanned === 0;
 
   setText('#learned-count', fmt(learnedCount()));
-  setText('#coverage-percent', coveragePercent().toFixed(1).replace('.', ',') + ' %');
+  setText('#coverage-percent', coveragePercent().toFixed(1) + '%');
 
-  // Rozložení podle boxů
+  // Distribution across boxes
   var box = $('#box-distribution');
   var legend = $('#box-legend');
   if (box && legend) {
@@ -414,10 +456,10 @@ function setText(sel, text) {
   if (el) el.textContent = text;
 }
 /* ============================================================
-   PROCVIČOVÁNÍ — fáze, kroky a SRS
+   PRACTICE — phases, steps and SRS
    ============================================================ */
 
-/* Rozdělení příkladové věty, abychom uměli zvýraznit / vynechat hledané slovo */
+/* Splitting the example sentence so we can highlight / blank the target word */
 function splitTokens(text) { return String(text || '').split(/(\s+)/); }
 
 function findWordInExample(exEs, esWord) {
@@ -442,7 +484,7 @@ function exampleEsHtml(word, blank) {
   }).join('');
 }
 
-/* Distraktory z blízkého ranku (±30), jinak z celého seznamu */
+/* Distractors from a nearby rank (±30), otherwise from the whole list */
 function distractorList(word, count, field) {
   var isEn = field === 'en';
   var keyOf = isEn ? enKey : normalize;
@@ -471,13 +513,13 @@ function distractorList(word, count, field) {
 }
 
 function stepIntro(w) {
-  return { type: 'intro', rank: w.rank, label: 'Seznámení', word: w };
+  return { type: 'intro', rank: w.rank, label: 'Introduction', word: w };
 }
 
 function stepChoiceEsEn(w, label) {
   return {
     type: 'choice', rank: w.rank, label: label, word: w,
-    big: String(w.es).toLowerCase(), sub: 'Vyber správný význam',
+    big: String(w.es).toLowerCase(), sub: 'Pick the correct meaning',
     options: shuffle([w.en].concat(distractorList(w, 3, 'en'))),
     answer: w.en, keyFn: enKey
   };
@@ -486,7 +528,7 @@ function stepChoiceEsEn(w, label) {
 function stepWriteEnEs(w, label) {
   return {
     type: 'write', rank: w.rank, label: label, word: w,
-    big: w.en, sub: 'Napiš španělsky',
+    big: w.en, sub: 'Write it in Spanish',
     answer: String(w.es).toLowerCase(), keyFn: normalize
   };
 }
@@ -495,7 +537,7 @@ function stepFill(w, label) {
   if (!findWordInExample(w.ex_es || '', w.es).found) return null;
   return {
     type: 'choice', rank: w.rank, label: label, word: w, fill: true,
-    sub: 'Doplň slovo do věty',
+    sub: 'Fill in the missing word',
     options: shuffle([String(w.es).toLowerCase()].concat(distractorList(w, 3, 'es'))),
     answer: String(w.es).toLowerCase(), keyFn: normalize
   };
@@ -505,7 +547,7 @@ function stepListen(w, label) {
   if (!ttsOn()) return null;
   return {
     type: 'listen', rank: w.rank, label: label, word: w,
-    sub: 'Poslouchej a vyber správný význam', speak: w.es,
+    sub: 'Listen and pick the correct meaning', speak: w.es,
     options: shuffle([w.en].concat(distractorList(w, 3, 'en'))),
     answer: w.en, keyFn: enKey
   };
@@ -529,9 +571,9 @@ function buildNewSteps() {
   for (var i = 0; i < list.length; i += QUIZ_EVERY) {
     var chunk = list.slice(i, i + QUIZ_EVERY);
     chunk.forEach(function (w) { steps.push(stepIntro(w)); });
-    chunk.forEach(function (w) { steps.push(stepChoiceEsEn(w, 'Mini-kvíz')); });
+    chunk.forEach(function (w) { steps.push(stepChoiceEsEn(w, 'Mini quiz')); });
   }
-  list.forEach(function (w) { steps.push(stepWriteEnEs(w, 'Závěrečné kolo')); });
+  list.forEach(function (w) { steps.push(stepWriteEnEs(w, 'Final round')); });
   return steps;
 }
 
@@ -546,10 +588,10 @@ function buildReviewSteps() {
     if (findWordInExample(w.ex_es || '', w.es).found) modes.push('fill');
     if (ttsOn()) modes.push('listen');
     var mode = pick(modes), st = null;
-    if (mode === 'es-en') st = stepChoiceEsEn(w, 'Opakování');
-    else if (mode === 'en-es') st = stepWriteEnEs(w, 'Opakování');
-    else if (mode === 'fill') st = stepFill(w, 'Opakování');
-    else st = stepListen(w, 'Opakování');
+    if (mode === 'es-en') st = stepChoiceEsEn(w, 'Review');
+    else if (mode === 'en-es') st = stepWriteEnEs(w, 'Review');
+    else if (mode === 'fill') st = stepFill(w, 'Review');
+    else st = stepListen(w, 'Review');
     if (st) steps.push(st);
   });
   return steps;
@@ -558,7 +600,7 @@ function buildReviewSteps() {
 function startSession(mode) {
   var steps = (mode === 'review') ? buildReviewSteps() : buildNewSteps();
   if (!steps || !steps.length) {
-    toast(mode === 'review' ? 'Teď není co opakovat 🎉' : 'Všechna slovíčka už máš naučená 🎉');
+    toast(mode === 'review' ? 'Nothing to review right now 🎉' : 'You have learned every word 🎉');
     return;
   }
   session.active = true;
@@ -581,7 +623,7 @@ function startSession(mode) {
   show($('#btn-end-session'));
   renderStep();
 }
-/* ---------------- Vykreslení jednoho kroku ---------------- */
+/* ---------------- Rendering one step ---------------- */
 function advanceSkipped() {
   while (session.idx < session.steps.length && session.skipped[session.steps[session.idx].rank]) {
     session.idx += 1;
@@ -633,7 +675,7 @@ function cardHtml(s) {
 
   if (s.type === 'listen') {
     var replay = ttsOn()
-      ? '<button type="button" class="btn btn-ghost" data-act="speak" data-text="' + esc(s.speak) + '">🔊 Přehrát znovu</button>'
+      ? '<button type="button" class="btn btn-ghost" data-act="speak" data-text="' + esc(s.speak) + '">🔊 Play again</button>'
       : '';
     return '<div class="card-word">🔊</div>' +
       '<div class="card-sub">' + esc(s.sub) + '</div>' +
@@ -651,14 +693,14 @@ function cardHtml(s) {
 
 function answerHtml(s) {
   if (s.type === 'intro') {
-    return '<button type="button" class="btn btn-primary btn-large" data-act="know">✔ Už to znám</button>' +
-      '<button type="button" class="btn btn-ghost btn-large" data-act="continue">📖 Učit se</button>';
+    return '<button type="button" class="btn btn-primary btn-large" data-act="know">✔ I know this</button>' +
+      '<button type="button" class="btn btn-ghost btn-large" data-act="continue">📖 Study it</button>';
   }
 
   if (s.type === 'write') {
     return '<div class="input-group">' +
       '<input type="text" id="session-input" autocomplete="off" autocorrect="off" ' +
-      'autocapitalize="off" spellcheck="false" placeholder="napiš španělsky" aria-label="Tvá odpověď">' +
+      'autocapitalize="off" spellcheck="false" placeholder="write it in Spanish" aria-label="Your answer">' +
       '<button type="button" class="btn btn-primary" data-act="submit">Odeslat</button>' +
       '</div>';
   }
@@ -670,7 +712,7 @@ function answerHtml(s) {
   }
   return html + '</div>';
 }
-/* ---------------- Vyhodnocení odpovědi ---------------- */
+/* ---------------- Answer evaluation ---------------- */
 function showFeedback(kind, text) {
   var el = $('#feedback');
   if (!el) return;
@@ -693,7 +735,7 @@ function recordAnswer(s, ok) {
   if (!remaining) applySrs(s.rank);
 
   var last = (session.idx + 1 >= session.steps.length) && !remaining;
-  setText('#btn-next', last ? 'Dokončit' : 'Další');
+  setText('#btn-next', last ? 'Finish' : 'Next');
   show($('#btn-next'));
 }
 
@@ -732,8 +774,8 @@ function handleOptionClick(index) {
     if (i === index && !ok) b.classList.add('wrong');
   });
 
-  if (ok) showFeedback('correct', 'Správně! 🎉');
-  else showFeedback('wrong', 'Špatně — správně: ' + s.answer);
+  if (ok) showFeedback('correct', 'Correct! 🎉');
+  else showFeedback('wrong', 'Wrong — correct answer: ' + s.answer);
   if (ttsOn()) speak(s.word.es);
 
   recordAnswer(s, ok);
@@ -751,8 +793,8 @@ function handleWriteSubmit() {
   inp.disabled = true;
   inp.classList.add(ok ? 'correct' : 'wrong');
 
-  if (ok) showFeedback('correct', 'Správně! 🎉 (' + s.answer + ')');
-  else showFeedback('wrong', 'Špatně — správně: ' + s.answer);
+  if (ok) showFeedback('correct', 'Correct! 🎉 (' + s.answer + ')');
+  else showFeedback('wrong', 'Wrong — correct answer: ' + s.answer);
   if (ttsOn()) speak(s.word.es);
 
   recordAnswer(s, ok);
@@ -795,7 +837,7 @@ function finishSession() {
 
 function quitSession() {
   if (session.active && !session.finished) {
-    addXP(session.xp);              // bez bonusu za dokončení
+    addXP(session.xp);              // without the completion bonus
     saveState();
   }
   session.active = false;
@@ -822,9 +864,9 @@ function renderLearnStart() {
 
   var hint = $('#learn-hint');
   if (hint) {
-    if (!due && !newAvail) hint.textContent = 'Hotovo — všechna slovíčka máš naučená! 🎉';
-    else if (!newAvail) hint.textContent = 'Všechna slovíčka už znáš, stačí opakovat. 👍';
-    else hint.textContent = 'Tip: nejdřív opakuj, pak se uč nová slova.';
+    if (!due && !newAvail) hint.textContent = 'Done — you have learned every word! 🎉';
+    else if (!newAvail) hint.textContent = 'You already know every word, just keep reviewing. 👍';
+    else hint.textContent = 'Tip: review first, then learn new words.';
   }
 
   $$('.btn-session').forEach(function (b) {
@@ -832,7 +874,7 @@ function renderLearnStart() {
   });
 }
 /* ============================================================
-   GRAMATIKA
+   GRAMMAR
    ============================================================ */
 function mdHtml(text) {
   return esc(text)
@@ -868,15 +910,15 @@ function exerciseHtml(ex, index) {
     html += '</div>';
   } else if (ex.type === 'fill') {
     html += '<input type="text" class="ex-input" autocomplete="off" autocorrect="off" ' +
-      'autocapitalize="off" spellcheck="false" placeholder="napiš odpověď" aria-label="Odpověď">' +
-      '<div class="ex-actions"><button type="button" class="btn btn-primary" data-act="ex-check">Ověřit</button></div>';
+      'autocapitalize="off" spellcheck="false" placeholder="type your answer" aria-label="Answer">' +
+      '<div class="ex-actions"><button type="button" class="btn btn-primary" data-act="ex-check">Check</button></div>';
   } else if (ex.type === 'order') {
     html += '<div class="chip-row">';
     shuffle(ex.words).forEach(function (w) {
       html += '<button type="button" class="chip" data-act="ex-chip" data-w="' + esc(w) + '">' + esc(w) + '</button>';
     });
     html += '</div><div class="chip-line"></div>' +
-      '<div class="ex-actions"><button type="button" class="btn btn-primary" data-act="ex-check">Ověřit</button></div>';
+      '<div class="ex-actions"><button type="button" class="btn btn-primary" data-act="ex-check">Check</button></div>';
   }
 
   return html + '<div class="ex-fb"></div></div>';
@@ -894,7 +936,7 @@ function renderGrammar() {
   var q = normalize(search ? search.value : '');
   var doneCount = 0;
   Object.keys(state.grammarDone || {}).forEach(function (k) { if (state.grammarDone[k]) doneCount += 1; });
-  setText('#grammar-progress', doneCount + ' / ' + grammar.length + ' hotovo');
+  setText('#grammar-progress', doneCount + ' / ' + grammar.length + ' done');
 
   acc.innerHTML = '';
   grammar.forEach(function (lesson) {
@@ -907,14 +949,14 @@ function renderGrammar() {
       lesson.exercises.forEach(function (ex, ei) { body += exerciseHtml(ex, ei); });
     }
     body += '<div class="ex-actions"><button type="button" class="btn btn-ghost" data-act="lesson-done">' +
-      (done ? '↺ Označit jako nehotové' : '✔ Mám hotovo (+15 XP)') + '</button></div>';
+      (done ? '↺ Mark as not done' : '✔ Mark as done (+15 XP)') + '</button></div>';
 
     var item = document.createElement('div');
     item.className = 'acc-item';
     item.dataset.id = lesson.id;
     item.innerHTML =
       '<div class="acc-head">' +
-        '<button type="button" class="acc-check" data-act="lesson-done" aria-label="Označit lekci jako hotovou">' +
+        '<button type="button" class="acc-check" data-act="lesson-done" aria-label="Mark lesson as done">' +
           (done ? '✅' : '⬜') + '</button>' +
         '<button type="button" class="acc-toggle" data-act="toggle">' +
           '<span class="acc-title">' + esc(lesson.title) + '</span>' +
@@ -930,7 +972,7 @@ function exFeedback(box, ok, why) {
   var fb = $('.ex-fb', box);
   if (!fb) return;
   fb.className = 'ex-fb show ' + (ok ? 'correct' : 'wrong');
-  fb.textContent = (ok ? '✔ Správně! ' : '✘ Špatně. ') + (why || '');
+  fb.textContent = (ok ? '✔ Correct! ' : '✘ Wrong. ') + (why || '');
 }
 
 function toggleLessonDone(item) {
@@ -941,7 +983,7 @@ function toggleLessonDone(item) {
   } else {
     state.grammarDone[id] = true;
     addXP(15);
-    toast('Lekce splněna! +15 XP 🎉');
+    toast('Lesson complete! +15 XP 🎉');
   }
   saveState();
   renderGrammar();
@@ -991,7 +1033,7 @@ function handleExCheck(item, box) {
   }
 
   var why = ex.why || '';
-  if (!ok) why = (why ? why + ' · ' : '') + 'správně: ' + correct;
+  if (!ok) why = (why ? why + ' · ' : '') + 'correct: ' + correct;
   exFeedback(box, ok, why);
 }
 
@@ -1005,7 +1047,7 @@ function moveChip(chip) {
   else pool.appendChild(chip);
 }
 /* ============================================================
-   SLOVESA
+   VERBS
    ============================================================ */
 var PERSONS = ['yo', 'tú', 'él/ella/usted', 'nosotros', 'vosotros', 'ellos/ustedes'];
 
@@ -1033,8 +1075,7 @@ function renderVerbs() {
 
   verbs.forEach(function (v) {
     if (q && normalize(v.inf).indexOf(q) === -1 &&
-        normalize(v.en).indexOf(q) === -1 &&
-        normalize(v.cz).indexOf(q) === -1) return;
+        normalize(v.en).indexOf(q) === -1) return;
     shown += 1;
     var b = document.createElement('button');
     b.type = 'button';
@@ -1044,7 +1085,7 @@ function renderVerbs() {
     b.innerHTML =
       '<span class="verb-main">' +
         '<span class="verb-inf">' + esc(v.inf) + '</span>' +
-        '<span class="verb-tr">' + esc((v.en || '') + (v.cz ? ' · ' + v.cz : '')) + '</span>' +
+        '<span class="verb-tr">' + esc(v.en || '') + '</span>' +
       '</span>' +
       '<span class="verb-tag">' + esc(v.type || '') + '</span>';
     list.appendChild(b);
@@ -1053,7 +1094,7 @@ function renderVerbs() {
   if (!shown) {
     var p = document.createElement('p');
     p.className = 'hint';
-    p.textContent = verbs.length ? 'Nic nenalezeno.' : 'Slovesa se nepodařilo načíst.';
+    p.textContent = verbs.length ? 'Nothing found.' : 'Could not load the verbs.';
     list.appendChild(p);
   }
 }
@@ -1064,13 +1105,13 @@ function openVerbDetail(inf) {
 
   var html = '<div class="modal-head">' +
       '<h2>' + esc(v.inf) + '</h2>' +
-      '<button type="button" class="modal-close" data-act="modal-close" aria-label="Zavřít">✕</button>' +
+      '<button type="button" class="modal-close" data-act="modal-close" aria-label="Close">✕</button>' +
     '</div>' +
-    '<p class="hint">' + esc((v.en || '') + (v.cz ? ' · ' + v.cz : '')) +
+    '<p class="hint">' + esc(v.en || '') +
       (v.type ? ' · ' + esc(v.type) : '') + '</p>' +
     '<div class="conj-block">' +
-      conjTableHtml(v.presente, 'Presente') +
-      conjTableHtml(v.pretérito, 'Pretérito') +
+      conjTableHtml(v.presente, 'Present') +
+      conjTableHtml(v.pretérito, 'Preterite') +
       '<h3>Futuro (ir a + infinitiv)</h3><p>' + esc(v.futuro_ir_a || '—') + '</p>' +
       '<h3>Participio</h3><p>' + esc(v.participio || '—') + '</p>' +
     '</div>';
@@ -1081,7 +1122,7 @@ function openVerbDetail(inf) {
   }
 
   html += '<div class="ex-actions">' +
-      '<button type="button" class="btn btn-primary" data-act="drill-from" data-inf="' + esc(v.inf) + '">🎲 Procvičit tvary</button>' +
+      '<button type="button" class="btn btn-primary" data-act="drill-from" data-inf="' + esc(v.inf) + '">🎲 Practise forms</button>' +
     '</div>';
 
   openModal(html);
@@ -1090,7 +1131,7 @@ function openVerbDetail(inf) {
 var drill = null;
 
 function startDrill(inf) {
-  if (!verbs.length) { toast('Slovesa nejsou k dispozici 😕'); return; }
+  if (!verbs.length) { toast('Verbs nejsou k dispozici 😕'); return; }
   var v = inf ? findVerb(inf) : pick(verbs);
   if (!v) return;
 
@@ -1113,19 +1154,19 @@ function startDrill(inf) {
 
 function renderDrill() {
   if (!drill) return;
-  var tenseLabel = drill.tense === 'presente' ? 'Presente' : 'Pretérito';
+  var tenseLabel = drill.tense === 'presente' ? 'Present' : 'Preterite';
   var html = '<div class="modal-head">' +
-      '<h2>🎲 Časování</h2>' +
-      '<button type="button" class="modal-close" data-act="modal-close" aria-label="Zavřít">✕</button>' +
+      '<h2>🎲 Conjugation</h2>' +
+      '<button type="button" class="modal-close" data-act="modal-close" aria-label="Close">✕</button>' +
     '</div>' +
-    '<p class="hint">' + esc((drill.verb.en || '') + (drill.verb.cz ? ' · ' + drill.verb.cz : '')) + '</p>' +
+    '<p class="hint">' + esc(drill.verb.en || '') + '</p>' +
     '<div class="drill-question">' + esc(drill.verb.inf) + ' · ' + esc(drill.person) +
       '<br><small>' + esc(tenseLabel) + '</small></div>' +
     '<input type="text" class="drill-input" id="drill-input" autocomplete="off" autocorrect="off" ' +
-      'autocapitalize="off" spellcheck="false" placeholder="napiš správný tvar" aria-label="Tvar slovesa">' +
+      'autocapitalize="off" spellcheck="false" placeholder="type the correct form" aria-label="Verb form">' +
     '<div class="ex-actions">' +
-      '<button type="button" class="btn btn-primary" data-act="drill-check">Ověřit</button>' +
-      '<button type="button" class="btn btn-ghost" data-act="drill-next">Další</button>' +
+      '<button type="button" class="btn btn-primary" data-act="drill-check">Check</button>' +
+      '<button type="button" class="btn btn-ghost" data-act="drill-next">Next</button>' +
     '</div>' +
     '<div class="ex-fb" id="drill-fb"></div>';
   openModal(html);
@@ -1143,12 +1184,12 @@ function checkDrill() {
   var fb = $('#drill-fb');
   if (fb) {
     fb.className = 'ex-fb show ' + (ok ? 'correct' : 'wrong');
-    fb.textContent = ok ? '✔ Správně!' : '✘ Špatně — správně: ' + drill.answer;
+    fb.textContent = ok ? '✔ Correct!' : '✘ Wrong — correct answer: ' + drill.answer;
   }
   if (ok) { addXP(3); saveState(); }
 }
 /* ============================================================
-   VÍC — nastavení, procházení slovíček, záloha
+   MORE — settings, word browser, backup
    ============================================================ */
 var WORDS_PER_PAGE = 50;
 var wordsShown = 0;
@@ -1161,7 +1202,7 @@ function renderMore() {
   if (tts) {
     tts.checked = state.settings.tts !== false;
     tts.disabled = !ttsSupported;
-    if (!ttsSupported) tts.closest('.setting-row').title = 'Prohlížeč nepodporuje hlasovou syntézu';
+    if (!ttsSupported) tts.closest('.setting-row').title = 'This browser does not support speech synthesis';
   }
 
   var goal = $('#set-goal');
@@ -1207,7 +1248,7 @@ function renderWordList(reset) {
   });
   wordsShown += slice.length;
 
-  setText('#words-count', 'Zobrazeno ' + fmt(wordsShown) + ' z ' + fmt(filtered.length) + ' slov');
+  setText('#words-count', 'Showing ' + fmt(wordsShown) + ' of ' + fmt(filtered.length) + ' words');
 
   var more = $('#btn-words-more');
   if (more) { if (wordsShown < filtered.length) show(more); else hide(more); }
@@ -1219,12 +1260,12 @@ function openWordCard(rank) {
 
   var c = state.cards[w.rank];
   var status = c
-    ? 'Naučeno · box ' + (c.box || 0) + ' · další opakování ' + c.due
-    : 'Zatím nenaučeno';
+    ? 'Learned · box ' + (c.box || 0) + ' · next review ' + c.due
+    : 'Not learned yet';
 
   var html = '<div class="modal-head">' +
       '<h2>' + esc(String(w.es).toLowerCase()) + '</h2>' +
-      '<button type="button" class="modal-close" data-act="modal-close" aria-label="Zavřít">✕</button>' +
+      '<button type="button" class="modal-close" data-act="modal-close" aria-label="Close">✕</button>' +
     '</div>' +
     '<p class="card-sub" style="text-align:left;margin-bottom:10px">' + esc(w.en) + '</p>' +
     '<div class="card-example">' +
@@ -1235,7 +1276,7 @@ function openWordCard(rank) {
 
   if (ttsOn()) {
     html += '<div class="ex-actions"><button type="button" class="btn btn-ghost" ' +
-      'data-act="speak" data-text="' + esc(w.es) + '">🔊 Přehrát</button></div>';
+      'data-act="speak" data-text="' + esc(w.es) + '">🔊 Play</button></div>';
   }
 
   openModal(html);
@@ -1247,14 +1288,14 @@ function exportProgress() {
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'spanish2000-pokrok-' + todayStr() + '.json';
+    a.download = 'spanish2000-progress-' + todayStr() + '.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
-    toast('Pokrok exportován ⬇');
+    toast('Progress exported ⬇');
   } catch (e) {
-    toast('Export se nepovedl 😕');
+    toast('Export failed 😕');
   }
 }
 
@@ -1263,7 +1304,7 @@ function importProgress(file) {
   reader.onload = function () {
     try {
       var p = JSON.parse(String(reader.result));
-      if (!p || typeof p !== 'object' || !p.cards) throw new Error('chybí "cards"');
+      if (!p || typeof p !== 'object' || !p.cards) throw new Error('missing "cards"');
 
       state.cards = p.cards || {};
       state.grammarDone = p.grammarDone || {};
@@ -1281,17 +1322,17 @@ function importProgress(file) {
       applyTheme();
       renderMore();
       renderHome();
-      toast('Pokrok načten ⬆');
+      toast('Progress loaded ⬆');
     } catch (e) {
-      toast('Import se nepovedl: ' + e.message, 4000);
+      toast('Import failed: ' + e.message, 4000);
     }
   };
-  reader.onerror = function () { toast('Soubor se nepodařilo přečíst 😕'); };
+  reader.onerror = function () { toast('Could not read the file 😕'); };
   reader.readAsText(file);
 }
 
 function resetProgress() {
-  if (!window.confirm('Opravdu smazat veškerý pokrok? Tuto akci nelze vrátit.')) return;
+  if (!window.confirm('Delete all progress? This cannot be undone.')) return;
   var theme = state.settings.theme || 'auto';
   state = defaultState();
   state.settings.theme = theme;
@@ -1300,7 +1341,7 @@ function resetProgress() {
   renderMore();
   renderHome();
   renderLearnStart();
-  toast('Pokrok smazán 🗑');
+  toast('Progress deleted 🗑');
 }
 /* ============================================================
    OVLÁDÁNÍ, START A TESTY
@@ -1313,7 +1354,12 @@ function onDocumentClick(e) {
   var act = el.getAttribute('data-act');
 
   if (act === 'modal-close') { closeModal(); return; }
-  if (act === 'speak') { speak(el.getAttribute('data-text')); return; }
+  if (act === 'speak') {
+    if (!ttsSupported) { toast('This browser does not support speech synthesis.'); return; }
+    if (!ttsOn()) { toast('Pronunciation is turned off in Settings.'); return; }
+    if (!speak(el.getAttribute('data-text'))) toast('Could not play the pronunciation.');
+    return;
+  }
   if (act === 'verb-open') { openVerbDetail(el.getAttribute('data-inf')); return; }
   if (act === 'word-open') { openWordCard(el.getAttribute('data-rank')); return; }
   if (act === 'drill-from') { startDrill(el.getAttribute('data-inf')); return; }
@@ -1452,7 +1498,7 @@ function listen(sel, evt, fn) {
   var el = $(sel);
   if (el) el.addEventListener(evt, fn);
 }
-/* ---------------- Testy (spusť s ?test=1) ---------------- */
+/* ---------------- Tests (run with ?test=1) ---------------- */
 function runTests() {
   var results = [];
   function t(name, cond) { results.push({ name: name, ok: !!cond }); }
@@ -1464,36 +1510,36 @@ function runTests() {
   t('addDays("2024-01-15", 1) === "2024-01-16"', addDays('2024-01-15', 1) === '2024-01-16');
   t('addDays("2024-01-15", 3) === "2024-01-18"', addDays('2024-01-15', 3) === '2024-01-18');
 
-  storageEnabled = false;                 // testy nesmí přepsat uložený stav
+  storageEnabled = false;                 // tests must not overwrite the saved state
   var backup = state;
 
   state = defaultState();
   state.cards[1] = { box: 0, due: todayStr(), seen: 0, ok: 0 };
   answerCorrect(1);
-  t('Leitner: správně na boxu 0 → box 1', state.cards[1].box === 1);
-  t('Leitner: správně → due = dnes + 1', state.cards[1].due === addDays(todayStr(), 1));
+  t('Leitner: correct on box 0 → box 1', state.cards[1].box === 1);
+  t('Leitner: correct → due = today + 1', state.cards[1].due === addDays(todayStr(), 1));
 
   state.cards[2] = { box: 3, due: todayStr(), seen: 0, ok: 0 };
   answerWrong(2);
-  t('Leitner: špatně na boxu 3 → box 0', state.cards[2].box === 0);
-  t('Leitner: špatně → due = dnes', state.cards[2].due === todayStr());
+  t('Leitner: wrong on box 3 → box 0', state.cards[2].box === 0);
+  t('Leitner: wrong → due = today', state.cards[2].due === todayStr());
 
   state = defaultState();
   state.streak = 5;
   state.lastDay = addDays(todayStr(), -1);
   touchStreak();
-  t('Streak: lastDay = včera → +1', state.streak === 6);
+  t('Streak: lastDay = yesterday → +1', state.streak === 6);
 
   state.streak = 5;
   state.lastDay = addDays(todayStr(), -2);
   touchStreak();
-  t('Streak: lastDay = předevčírem → 1', state.streak === 1);
+  t('Streak: lastDay = two days ago → 1', state.streak === 1);
 
   state = backup;
   storageEnabled = true;
 
-  t('words.json: délka > 1900', words.length > 1900);
-  t('words.json: každý záznam má es, en, ex_es, ex_en',
+  t('words.json: length > 1900', words.length > 1900);
+  t('words.json: every entry has es, en, ex_es, ex_en',
     words.every(function (w) { return !!(w.es && w.en && w.ex_es && w.ex_en); }));
 
   var okCount = results.filter(function (r) { return r.ok; }).length;
@@ -1511,9 +1557,9 @@ function runTests() {
   return results;
 }
 
-/* Skryje vše, co má v HTML atribut [hidden]. Chráníme se tím proti tomu,
-   kdyby v prohlížeči zůstalo v cache staré CSS bez [hidden]{display:none!important}
-   a naše .btn/.modal display pravidla by skryté prvky zobrazila. */
+/* Hides everything that carries the [hidden] attribute in the HTML. This guards
+   against a stale cached CSS without [hidden]{display:none!important}, where our
+   .btn/.modal display rules would make hidden elements visible. */
 function applyHiddenStyles() {
   $$('[hidden]').forEach(function (el) { el.style.display = 'none'; });
 }
@@ -1521,14 +1567,14 @@ function applyHiddenStyles() {
 /* ---------------- Start aplikace ---------------- */
 function init() {
   loadState();
-  touchStreak();          // jednou za den: streak + reset denního pokroku
+  touchStreak();          // once a day: streak + reset of the daily progress
   applyHiddenStyles();
   applyTheme();
   wire();
 
-  // window.appReady čeká sync.js, aby nesynchronizoval dřív, než jsou data načtená
+  // window.appReady is awaited by sync.js so it does not sync before data is loaded
   window.appReady = loadData().then(function () {
-    if (!words.length) toast('Slovíček se nepodařilo načíst 😕', 6000);
+    if (!words.length) toast('Could not load the vocabulary 😕', 6000);
     renderHome();
     renderLearnStart();
     if (location.search.indexOf('test=1') !== -1) runTests();
@@ -1544,15 +1590,14 @@ if (document.readyState === 'loading') {
 
 /* ============================================================
    SLOUČENÍ POKROKU (pro cloudovou synchronizaci)
-   Pravidlo: nikdy nepřepisovat naslepo — o pokrok nesmí přijít
-   ani jedno zařízení.
+   Rule: never overwrite blindly — neither device may lose progress.
    ============================================================ */
 function mergeProgress(local, remote) {
   var L = local || defaultState();
   var R = remote || defaultState();
   var out = defaultState();
 
-  // cards: u každého ranku ponech záznam, který je „více procvičený“
+  // cards: for each rank keep the record that is "more practised"
   var ranks = {};
   Object.keys(L.cards || {}).forEach(function (r) { ranks[r] = 1; });
   Object.keys(R.cards || {}).forEach(function (r) { ranks[r] = 1; });
@@ -1566,14 +1611,14 @@ function mergeProgress(local, remote) {
     out.cards[r] = (Number(a.box) || 0) >= (Number(b.box) || 0) ? a : b;
   });
 
-  // grammarDone: sjednocení
+  // grammarDone: union
   Object.keys(L.grammarDone || {}).forEach(function (k) { out.grammarDone[k] = true; });
   Object.keys(R.grammarDone || {}).forEach(function (k) { out.grammarDone[k] = true; });
 
-  // xp: maximum (součet by dvojitě počítal stejné session)
+  // xp: maximum (a sum would double-count the same session)
   out.xp = Math.max(Number(L.xp) || 0, Number(R.xp) || 0);
 
-  // denní série: použij záznam s novějším lastDay
+  // daily streak: use the record with the newer lastDay
   var lDay = L.lastDay || '', rDay = R.lastDay || '';
   var winner = rDay > lDay ? R : L;
   out.lastDay = winner.lastDay || '';
@@ -1582,7 +1627,7 @@ function mergeProgress(local, remote) {
     ? Math.max(Number(L.doneToday) || 0, Number(R.doneToday) || 0)
     : (Number(winner.doneToday) || 0);
 
-  // nastavení: vyhrává lokální zařízení
+  // settings: the local device wins
   out.settings = {
     tts: !(L.settings && L.settings.tts === false),
     newPerSession: Number(L.settings && L.settings.newPerSession) || 10,
@@ -1597,22 +1642,22 @@ function mergeProgress(local, remote) {
 function renderAll() {
   applyTheme();
   renderHome();
-  if (!session.active) renderLearnStart();   // nesmí přerušit běžící session
+  if (!session.active) renderLearnStart();   // must not interrupt a running session
   renderGrammar();
   renderVerbs();
   renderMore();
 }
 
-// Aplikuje stav z cloudu (sloučený s lokálním) bez zbytečných push cyklů.
+// Applies cloud state (merged with local) without needless push cycles.
 function applyRemoteState(remote) {
   var merged = mergeProgress(state, remote);
   state = merged;
-  saveState(true);          // silent → neodesílat hned zpět
+  saveState(true);          // silent → do not push straight back
   renderAll();
   return merged;
 }
 
-// Přístup z konzole pro ladění
+// Console access for debugging
 window.app = {
   state: function () { return state; },
   words: function () { return words; },
@@ -1622,9 +1667,9 @@ window.app = {
   runTests: runTests
 };
 
-// Most pro sync.js (cloudová synchronizace)
+// Bridge for sync.js (cloud sync)
 window.S2000 = {
-  onLocalSave: null,                       // nastaví sync.js
+  onLocalSave: null,                       // set by sync.js
   getState: function () { return state; },
   snapshot: function () { return JSON.parse(JSON.stringify(state)); },
   merge: mergeProgress,

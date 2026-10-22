@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -28,7 +28,7 @@
     <section id="tab-home" class="tab-panel active" role="tabpanel" aria-labelledby="btn-home">
       <header class="tab-header">
         <h1>Spanish 2000</h1>
-        <button type="button" class="theme-btn" aria-label="Přepnout světlý a tmavý režim"></button>
+        <button type="button" class="theme-btn" aria-label="Switch between light and dark mode"></button>
       </header>
       <main class="tab-content">
         <p class="greeting" id="greeting">Ahoj!</p>
@@ -38,21 +38,21 @@
             <div class="stat-icon">🔥</div>
             <div>
               <div class="stat-value" id="streak-value">0</div>
-              <div class="stat-label">dní v řadě</div>
+              <div class="stat-label">day streak</div>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">⭐</div>
             <div>
               <div class="stat-value" id="xp-value">0 XP</div>
-              <div class="stat-label">Úroveň <span id="level-value">1</span></div>
+              <div class="stat-label">Level <span id="level-value">1</span></div>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">🎯</div>
             <div>
               <div class="stat-value" id="goal-value">0 / 20</div>
-              <div class="stat-label">Denní cíl</div>
+              <div class="stat-label">Daily goal</div>
             </div>
           </div>
         </div>
@@ -64,10 +64,10 @@
 
         <div class="action-buttons">
           <button type="button" class="btn btn-primary btn-large" id="btn-review">
-            <span>🔁</span> <span>Opakovat (<span id="review-count">0</span>)</span>
+            <span>🔁</span> <span>Review (<span id="review-count">0</span>)</span>
           </button>
           <button type="button" class="btn btn-secondary btn-large" id="btn-new">
-            <span>✨</span> <span>Nová slova (<span id="new-count">10</span>)</span>
+            <span>✨</span> <span>New words (<span id="new-count">10</span>)</span>
           </button>
         </div>
 
@@ -76,22 +76,22 @@
           <div class="stats-row">
             <div class="stat-item">
               <span class="stat-number" id="learned-count">0</span>
-              <span class="stat-desc">naučeno z 1991</span>
+              <span class="stat-desc">learned of 1,991</span>
             </div>
             <div class="stat-item">
               <span class="stat-number" id="coverage-percent">0 %</span>
-              <span class="stat-desc">pokrytí mluvené řeči</span>
+              <span class="stat-desc">spoken-language coverage</span>
             </div>
           </div>
           <div class="box-wrap">
-            <div class="box-distribution" id="box-distribution" aria-label="Rozložení karet podle boxů"></div>
+            <div class="box-distribution" id="box-distribution" aria-label="Card distribution across boxes"></div>
             <div class="box-legend" id="box-legend"></div>
           </div>
           <table class="coverage-table">
-            <caption>Pokrytí běžné řeči (podle knihy)</caption>
+            <caption>Everyday speech coverage (per the book)</caption>
             <tbody>
-              <tr><th>Prvních 1 000 slov</th><td>≈ 87,8 %</td></tr>
-              <tr><th>Prvních 2 000 slov</th><td>≈ 92,7 %</td></tr>
+              <tr><th>First 1,000 words</th><td>≈ 87.8%</td></tr>
+              <tr><th>First 2,000 words</th><td>≈ 92.7%</td></tr>
             </tbody>
           </table>
         </div>
@@ -99,26 +99,26 @@
     </section>
     <section id="tab-learn" class="tab-panel" role="tabpanel" aria-labelledby="btn-learn" hidden>
       <header class="tab-header">
-        <h1>Učit se</h1>
-        <button type="button" class="btn btn-ghost" id="btn-end-session" hidden>✕ Ukončit</button>
+        <h1>Learn</h1>
+        <button type="button" class="btn btn-ghost" id="btn-end-session" hidden>✕ End</button>
       </header>
       <main class="tab-content">
 
         <div class="session-start" id="session-start">
-          <h2>Vyber si, co chceš dělat</h2>
+          <h2>What would you like to do?</h2>
           <div class="session-options">
             <button type="button" class="btn btn-primary btn-session" data-mode="review">
               <span class="session-icon">🔁</span>
               <span class="session-text">
-                <strong>Opakovat <span id="review-desc"></span></strong>
-                <small>Slova, která jsou na řadě podle SRS</small>
+                <strong>Review <span id="review-desc"></span></strong>
+                <small>Words that are due for review (SRS)</small>
               </span>
             </button>
             <button type="button" class="btn btn-secondary btn-session" data-mode="new">
               <span class="session-icon">✨</span>
               <span class="session-text">
-                <strong>Nová slova <span id="new-desc"></span></strong>
-                <small>Nejčastější slova, která ještě neumíš</small>
+                <strong>New words <span id="new-desc"></span></strong>
+                <small>The most common words you have not learned yet</small>
               </span>
             </button>
           </div>
@@ -134,18 +134,18 @@
           <div class="card-container" id="card-container"></div>
           <div class="answer-area" id="answer-area"></div>
           <div class="feedback" id="feedback" aria-live="assertive" hidden></div>
-          <button type="button" class="btn btn-primary btn-large" id="btn-next" hidden>Další</button>
+          <button type="button" class="btn btn-primary btn-large" id="btn-next" hidden>Next</button>
         </div>
 
         <div class="session-summary" id="session-summary" hidden>
-          <h2>Hotovo! 🎉</h2>
+          <h2>All done! 🎉</h2>
           <div class="summary-stats">
-            <div><strong id="summary-correct">0</strong><small>správně</small></div>
-            <div><strong id="summary-wrong">0</strong><small>špatně</small></div>
+            <div><strong id="summary-correct">0</strong><small>correct</small></div>
+            <div><strong id="summary-wrong">0</strong><small>wrong</small></div>
             <div><strong id="summary-xp">+0</strong><small>XP</small></div>
           </div>
-          <button type="button" class="btn btn-primary btn-large" id="btn-summary-home">Zpět na Domů</button>
-          <button type="button" class="btn btn-ghost btn-large" id="btn-summary-again">Ještě jednou</button>
+          <button type="button" class="btn btn-primary btn-large" id="btn-summary-home">Back to Home</button>
+          <button type="button" class="btn btn-ghost btn-large" id="btn-summary-again">One more round</button>
         </div>
 
       </main>
@@ -153,24 +153,24 @@
 
     <section id="tab-grammar" class="tab-panel" role="tabpanel" aria-labelledby="btn-grammar" hidden>
       <header class="tab-header">
-        <h1>Gramatika</h1>
+        <h1>Grammar</h1>
         <span class="header-progress" id="grammar-progress"></span>
       </header>
       <main class="tab-content">
         <div class="search-box">
-          <input type="search" id="grammar-search" placeholder="Hledat lekci…" aria-label="Hledat gramatickou lekci">
+          <input type="search" id="grammar-search" placeholder="Search lessons…" aria-label="Search grammar lessons">
         </div>
         <div class="accordion" id="grammar-accordion"></div>
       </main>
     </section>
     <section id="tab-verbs" class="tab-panel" role="tabpanel" aria-labelledby="btn-verbs" hidden>
       <header class="tab-header">
-        <h1>Slovesa</h1>
-        <button type="button" class="btn btn-ghost" id="btn-verb-drill">🎲 Procvičit</button>
+        <h1>Verbs</h1>
+        <button type="button" class="btn btn-ghost" id="btn-verb-drill">🎲 Practise</button>
       </header>
       <main class="tab-content">
         <div class="search-box">
-          <input type="search" id="verbs-search" placeholder="Hledat sloveso (španělsky / anglicky / česky)…" aria-label="Hledat sloveso">
+          <input type="search" id="verbs-search" placeholder="Search verbs (Spanish / English)…" aria-label="Search verbs">
         </div>
         <div class="verbs-list" id="verbs-list"></div>
       </main>
@@ -178,87 +178,87 @@
 
     <section id="tab-more" class="tab-panel" role="tabpanel" aria-labelledby="btn-more" hidden>
       <header class="tab-header">
-        <h1>Víc</h1>
-        <button type="button" class="theme-btn" aria-label="Přepnout světlý a tmavý režim"></button>
+        <h1>More</h1>
+        <button type="button" class="theme-btn" aria-label="Switch between light and dark mode"></button>
       </header>
       <main class="tab-content">
 
         <div class="panel">
-          <h2>Účet a synchronizace</h2>
+          <h2>Account & sync</h2>
           <div id="sync-body">
-            <p class="hint">Načítám…</p>
+            <p class="hint">Loading…</p>
           </div>
         </div>
 
         <div class="panel">
-          <h2>Nastavení</h2>
+          <h2>Settings</h2>
           <label class="setting-row">
-            <span>Režim zobrazení</span>
+            <span>Appearance</span>
             <select id="set-theme">
-              <option value="auto">Podle systému</option>
-              <option value="light">Světlý</option>
-              <option value="dark">Tmavý</option>
+              <option value="auto">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
             </select>
           </label>
           <label class="setting-row">
-            <span>Výslovnost (TTS)</span>
+            <span>Pronunciation (TTS)</span>
             <input type="checkbox" id="set-tts">
           </label>
           <label class="setting-row">
-            <span>Denní cíl (slov)</span>
+            <span>Daily goal (words)</span>
             <input type="number" id="set-goal" min="5" max="200" step="5" inputmode="numeric">
           </label>
           <label class="setting-row">
-            <span>Nových slov za session</span>
+            <span>New words per session</span>
             <input type="number" id="set-new" min="5" max="30" step="5" inputmode="numeric">
           </label>
         </div>
 
         <div class="panel">
-          <h2>Procházet slovíčka</h2>
+          <h2>Browse vocabulary</h2>
           <div class="search-box">
-            <input type="search" id="words-search" placeholder="Hledat (španělsky / anglicky)…" aria-label="Hledat slovíčko">
+            <input type="search" id="words-search" placeholder="Search (Spanish / English)…" aria-label="Search vocabulary">
           </div>
           <label class="setting-row">
             <span>Filtr</span>
             <select id="words-filter">
-              <option value="all">Všechna</option>
-              <option value="learned">Naučená</option>
-              <option value="new">Nenaučená</option>
+              <option value="all">All</option>
+              <option value="learned">Learned</option>
+              <option value="new">Not learned</option>
             </select>
           </label>
           <p class="hint" id="words-count"></p>
           <div class="word-list" id="word-list"></div>
-          <button type="button" class="btn btn-ghost" id="btn-words-more" hidden>Načíst další</button>
+          <button type="button" class="btn btn-ghost" id="btn-words-more" hidden>Load more</button>
         </div>
 
         <div class="panel">
-          <h2>Záloha a reset</h2>
-          <button type="button" class="btn btn-secondary btn-large" id="btn-export">⬇ Exportovat pokrok (JSON)</button>
-          <button type="button" class="btn btn-secondary btn-large" id="btn-import">⬆ Importovat pokrok</button>
+          <h2>Backup & reset</h2>
+          <button type="button" class="btn btn-secondary btn-large" id="btn-export">⬇ Export progress (JSON)</button>
+          <button type="button" class="btn btn-secondary btn-large" id="btn-import">⬆ Import progress</button>
           <input type="file" id="import-file" accept="application/json,.json" hidden>
-          <button type="button" class="btn btn-danger btn-large" id="btn-reset">🗑 Resetovat pokrok</button>
-          <p class="hint">Pokrok je uložený jen v tomto zařízení (localStorage).</p>
+          <button type="button" class="btn btn-danger btn-large" id="btn-reset">🗑 Reset progress</button>
+          <p class="hint">Progress is stored only on this device (localStorage).</p>
         </div>
 
       </main>
     </section>
 
-    <nav class="bottom-nav" role="tablist" aria-label="Hlavní navigace">
+    <nav class="bottom-nav" role="tablist" aria-label="Main navigation">
       <button id="btn-home" type="button" role="tab" aria-selected="true" aria-controls="tab-home" class="nav-btn active">
-        <span class="nav-icon">🏠</span><span class="nav-label">Domů</span>
+        <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
       </button>
       <button id="btn-learn" type="button" role="tab" aria-selected="false" aria-controls="tab-learn" class="nav-btn">
-        <span class="nav-icon">📚</span><span class="nav-label">Učit</span>
+        <span class="nav-icon">📚</span><span class="nav-label">Learn</span>
       </button>
       <button id="btn-grammar" type="button" role="tab" aria-selected="false" aria-controls="tab-grammar" class="nav-btn">
-        <span class="nav-icon">📖</span><span class="nav-label">Gramatika</span>
+        <span class="nav-icon">📖</span><span class="nav-label">Grammar</span>
       </button>
       <button id="btn-verbs" type="button" role="tab" aria-selected="false" aria-controls="tab-verbs" class="nav-btn">
-        <span class="nav-icon">🔤</span><span class="nav-label">Slovesa</span>
+        <span class="nav-icon">🔤</span><span class="nav-label">Verbs</span>
       </button>
       <button id="btn-more" type="button" role="tab" aria-selected="false" aria-controls="tab-more" class="nav-btn">
-        <span class="nav-icon">⚙️</span><span class="nav-label">Víc</span>
+        <span class="nav-icon">⚙️</span><span class="nav-label">More</span>
       </button>
     </nav>
 
@@ -272,17 +272,17 @@
 
   <script src="./app.js"></script>
   <script src="./firebase-config.js"></script>
-  <!-- sync.js je schválně BĚŽNÝ skript, ne modul: dynamické import()
-       funguje i v klasických skriptech a odpadá tím chybový stav
-       "Importing a module script failed", který padá ve starších
-       prohlížečích a ve WebView (Instagram/Facebook/Messenger). -->
+  <!-- sync.js is intentionally a PLAIN script, not a module: dynamic import()
+       works in classic scripts too and it removes the "Importing a module
+       script failed" failure mode seen in older browsers and WebViews
+       (Instagram / Facebook / Messenger in-app browsers). -->
   <script src="./sync.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
         navigator.serviceWorker.register('./sw.js').catch(function (e) { console.warn(e); });
-        // Když se aktivuje nová verze service workeru, jednou obnov stránku,
-        // aby uživatel neviděl zastaralou verzi z cache.
+        // When a new service worker version activates, reload once so the
+        // user does not keep seeing a stale cached version.
         var reloaded = false;
         navigator.serviceWorker.addEventListener('controllerchange', function () {
           if (reloaded) return;

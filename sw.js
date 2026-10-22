@@ -1,4 +1,4 @@
-const CACHE_NAME = 'es-v8';
+const CACHE_NAME = 'es-v9';
 const ASSETS = [
   './',
   './index.html',
@@ -25,14 +25,14 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   const req = event.request;
 
-  // Cizí původ (např. Firebase SDK z gstatic.com) necháváme prohlížeči.
-  // Kdyby ho service worker odchytával, může na některých prohlížečích
-  // selhat načtení dynamického modulu ("Importing a module script failed").
+  // Cross-origin (e.g. the Firebase SDK from gstatic.com) is left to the browser.
+  // If the service worker intercepted it, dynamic module loading could fail
+  // on some browsers ("Importing a module script failed").
   let sameOrigin = false;
   try { sameOrigin = new URL(req.url).origin === self.location.origin; } catch (e) { sameOrigin = false; }
   if (!sameOrigin) return;
 
-  // Cache-first jen pro čtení; ostatní metody (např. POST) na síť.
+  // Cache-first for GET only; other methods (e.g. POST) go to the network.
   if (req.method !== 'GET') return;
 
   event.respondWith(
