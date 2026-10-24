@@ -4,7 +4,9 @@
 'use strict';
 
 var STORAGE_KEY = 'es_state_v1';
-var INTERVALS = [0, 1, 3, 7, 16, 35];   // dny podle boxu (Leitner)
+// Days per Leitner box. Boxes 6–7 keep 2,000 mature words from needing ~60 reviews a day.
+var INTERVALS = [0, 1, 3, 7, 16, 35, 90, 180];
+var MAX_BOX = INTERVALS.length - 1;
 var REVIEW_LIMIT = 30;                  // max cards per review session
 var QUIZ_EVERY = 5;                     // mini quiz after every 5 new words
 var XP_CORRECT = 10;
@@ -23,6 +25,25 @@ function enKey(s) {
   return normalize(String(s == null ? '' : s).replace(/\([^)]*\)/g, ' '));
 }
 
+function editDistance(a, b) {
+  var prev = [], cur, i, j;
+  for (j = 0; j <= b.length; j++) prev[j] = j;
+  for (i = 1; i <= a.length; i++) {
+    cur = [i];
+    for (j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    }
+    prev = cur;
+  }
+  return prev[b.length];
+}
+
+// A small typo in a longer answer (already normalized) should not reset a card to box 0.
+function isTypo(input, answer) {
+  if (answer.length < 4 || input === answer) return false;
+  return editDistance(input, answer) <= (answer.length >= 12 ? 2 : 1);
+}
+
 function pad2(n) { return n < 10 ? '0' + n : '' + n; }
 
 // Local date (not UTC) in the form YYYY-MM-DD
@@ -38,7 +59,7 @@ function addDays(dateStr, days) {
   return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
 }
 
-function fmt(n) { return Number(n).toLocaleString('en-US'); }
+function fmt(n) { return Number(n).toLocaleString('cs-CZ'); }
 
 function esc(s) {
   return String(s == null ? '' : s)
@@ -61,12 +82,14 @@ function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function defaultState() {
   return {
     cards: {},          // { rank: { box, due, seen, ok } }
+    situationCards: {}, // phrase-level SRS records from real-life conversations
     xp: 0,
     streak: 0,
     lastDay: '',
     dailyGoal: 20,
     doneToday: 0,
-    grammarDone: {},    // { lessonId: true }
+    grammarDone: {},    // { lessonId: "YYYY-MM-DD" completed (older saves: true) }
+    lastNewDay: '',     // day the last new-words session was finished (today's plan)
     settings: { tts: true, newPerSession: 10, theme: 'auto' },
     updatedAt: 0        // ms timestamp of the last local change (for sync)
   };
@@ -76,6 +99,7 @@ var state = defaultState();
 var words = [];
 var grammar = [];
 var verbs = [];
+var situations = [];
 
 function loadState() {
   try {
@@ -84,10 +108,12 @@ function loadState() {
     var p = JSON.parse(raw);
     var s = defaultState();
     s.cards = p.cards && typeof p.cards === 'object' ? p.cards : {};
+    s.situationCards = p.situationCards && typeof p.situationCards === 'object' ? p.situationCards : {};
     s.grammarDone = p.grammarDone && typeof p.grammarDone === 'object' ? p.grammarDone : {};
     s.xp = Number(p.xp) || 0;
     s.streak = Number(p.streak) || 0;
     s.lastDay = typeof p.lastDay === 'string' ? p.lastDay : '';
+    s.lastNewDay = typeof p.lastNewDay === 'string' ? p.lastNewDay : '';
     s.dailyGoal = Number(p.dailyGoal) || 20;
     s.doneToday = Number(p.doneToday) || 0;
     s.settings = {
@@ -150,7 +176,15 @@ function touchStreak() {
   else state.streak = 1;                            // pauza
   state.lastDay = today;
   state.doneToday = 0;
-  saveState();
+}
+
+function addDailyProgress(count) {
+  touchStreak();
+  state.doneToday = (state.doneToday || 0) + (Number(count) || 1);
+}
+
+function dailyProgress() {
+  return state.lastDay === todayStr() ? (Number(state.doneToday) || 0) : 0;
 }
 
 function addXP(n) { state.xp += n; }
@@ -198,7 +232,7 @@ function answerCorrect(rank) {
   var c = ensureCard(rank);
   c.seen += 1;
   c.ok += 1;
-  c.box = Math.min(c.box + 1, 5);
+  c.box = Math.min(c.box + 1, MAX_BOX);
   c.due = addDays(todayStr(), INTERVALS[c.box]);
 }
 
@@ -220,10 +254,10 @@ function coveragePercent() {
 }
 
 function boxCounts() {
-  var d = [0, 0, 0, 0, 0, 0];
+  var d = INTERVALS.map(function () { return 0; });
   Object.keys(state.cards).forEach(function (r) {
     var b = state.cards[r].box || 0;
-    if (b >= 0 && b <= 5) d[b] += 1;
+    if (b >= 0 && b <= MAX_BOX) d[b] += 1;
   });
   return d;
 }
@@ -285,22 +319,72 @@ function speak(text) {
   }
 }
 
+/* ---------------- Speech recognition (speaking practice) ---------------- */
+var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+var recognizer = null;
+
+// Listens for one Spanish reply, puts it in the answer box and checks it.
+function startMic(btn) {
+  var s = session.steps[session.idx];
+  if (!SpeechRec || !s || s.done) return;
+  if (recognizer) { recognizer.stop(); return; }   // second tap = stop listening
+  var r = recognizer = new SpeechRec();
+  r.lang = 'es-ES';
+  r.interimResults = false;
+  r.maxAlternatives = 5;
+  btn.classList.add('listening');
+  btn.setAttribute('aria-pressed', 'true');
+  r.onresult = function (e) {
+    var heard = Array.prototype.map.call(e.results[0], function (a) { return a.transcript; });
+    var accepted = [s.answer].concat(s.alternatives || []).map(s.keyFn);
+    var best = heard.filter(function (t) { return accepted.indexOf(s.keyFn(t)) !== -1; })[0] || heard[0];
+    var inp = $('#session-input');
+    if (inp && best && session.steps[session.idx] === s && !s.done) { inp.value = best; handleWriteSubmit(); }
+  };
+  r.onerror = function (e) {
+    toast(e.error === 'not-allowed' || e.error === 'service-not-allowed'
+      ? 'Allow microphone access to practise speaking.'
+      : 'I didn’t catch that — try again or type it.');
+  };
+  r.onend = function () {
+    recognizer = null;
+    btn.classList.remove('listening');
+    btn.setAttribute('aria-pressed', 'false');
+  };
+  try { r.start(); } catch (e) { r.onend(); }
+}
+
 /* ---------------- Loading data ---------------- */
 function fetchJson(url) {
   return fetch(url).then(function (r) {
-    if (!r.ok) throw new Error('HTTP ' + r.status + ' pro ' + url);
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' for ' + url);
     return r.json();
   });
 }
 
+// The book's PDF extraction moved the end of ~250 Spanish examples to the start of
+// ex_en ("… lo lejos que" / "queda. My problem…"). Move that fragment back.
+var SPLIT_TAIL = /^(.+?[.!?…]["”»]?)\s+(?=[A-ZÁÉÍÓÚÑ¿¡"“‘'])/;
+function repairExample(w) {
+  if (!/^[a-záéíóúñü]/.test(w.ex_en || '')) return w;
+  var m = SPLIT_TAIL.exec(w.ex_en);
+  if (m) {
+    w.ex_es = String(w.ex_es || '').trim() + ' ' + m[1];
+    w.ex_en = w.ex_en.slice(m[0].length);
+  }
+  return w;
+}
+
 function loadData() {
   return Promise.all([
-    fetchJson('./words.json').then(function (d) { words = Array.isArray(d) ? d : []; })
+    fetchJson('./words.json').then(function (d) { words = Array.isArray(d) ? d.map(repairExample) : []; })
       .catch(function (e) { console.error(e); words = []; }),
     fetchJson('./grammar.json').then(function (d) { grammar = Array.isArray(d) ? d : []; })
       .catch(function (e) { console.error(e); grammar = []; }),
     fetchJson('./verbs.json').then(function (d) { verbs = Array.isArray(d) ? d : []; })
-      .catch(function (e) { console.error(e); verbs = []; })
+      .catch(function (e) { console.error(e); verbs = []; }),
+    fetchJson('./situations.json').then(function (d) { situations = Array.isArray(d) ? d : []; })
+      .catch(function (e) { console.error(e); situations = []; })
   ]);
 }
 /* ---------------- DOM helpers ---------------- */
@@ -382,16 +466,14 @@ function greetingText() {
 
 /* ---------------- Home ---------------- */
 function renderHome() {
-  // NOTE: touchStreak() is called only once at app start (in init()),
-  // otherwise it would wipe today progress on every Home render.
-
   var g = $('#greeting');
   if (g) g.textContent = greetingText() + '! 👋';
 
   setText('#streak-value', fmt(state.streak));
   setText('#xp-value', fmt(state.xp) + ' XP');
   setText('#level-value', fmt(level()));
-  setText('#goal-value', state.doneToday + ' / ' + state.dailyGoal);
+  setText('#goal-value', fmt(dailyProgress()) + ' / ' + fmt(state.dailyGoal));
+  renderPlan();
 
   var lp = $('#level-fill');
   if (lp) lp.style.width = levelPercent() + '%';
@@ -444,11 +526,89 @@ function renderHome() {
       });
     }
   }
-  saveState();
+}
+
+/* ---------------- Today's plan: one guided path through the day ---------------- */
+function situationKeys(sit) {
+  return (sit.turns || []).map(function (_, i) { return sit.id + ':' + i; });
+}
+
+// A due conversation first, then the first one not fully practised, else the first.
+function planSituation() {
+  var list = orderedSituations();
+  return list.filter(function (sit) {
+    return situationKeys(sit).some(function (k) { return situationCardIsDue(state.situationCards[k]); });
+  })[0] || list.filter(function (sit) {
+    return !situationKeys(sit).every(function (k) { return state.situationCards[k]; });
+  })[0] || list[0] || null;
+}
+
+function planLesson() {
+  var open = grammar.filter(function (l) { return !state.grammarDone[l.id]; });
+  return open.filter(function (l) { return GRAMMAR_CORE_IDS[l.id]; })[0] || open[0] || null;
+}
+
+function todayPlan() {
+  var t = todayStr();
+  var due = dueCards().length;
+  var upcoming = newWordList(state.settings.newPerSession || 10);
+  var sit = planSituation();
+  var lesson = planLesson();
+  var talked = Object.keys(state.situationCards || {}).some(function (k) {
+    return state.situationCards[k].rewardedDay === t;
+  });
+  var studied = Object.keys(state.grammarDone || {}).some(function (k) { return state.grammarDone[k] === t; });
+  var newDone = state.lastNewDay === t || !upcoming.length;
+  return [
+    { id: 'review', done: due === 0,
+      title: due ? 'Review ' + fmt(Math.min(due, REVIEW_LIMIT)) + ' words' : 'Review words',
+      detail: due ? 'Recall them just before you would forget' : 'Nothing due — your memory is up to date',
+      run: function () { showTab('learn'); startSession('review'); } },
+    { id: 'new', done: newDone,
+      title: upcoming.length && !newDone ? 'Learn ' + upcoming.length + ' new words' : 'New words',
+      detail: newDone ? (upcoming.length ? 'Done for today ✓' : 'You have met every word 🎉')
+        : 'Next up: ' + upcoming.slice(0, 3).map(function (w) { return String(w.es).toLowerCase(); }).join(', ') + '…',
+      run: function () { showTab('learn'); startSession('new'); } },
+    { id: 'talk', done: talked || !sit,
+      title: sit && !talked ? 'Talk: ' + sit.title : 'Conversation',
+      detail: talked ? 'Done for today ✓' : (sit ? 'Say ' + sit.turns.length + ' real replies out loud' : ''),
+      run: function () { if (sit) { showTab('learn'); startSession('situation', sit.id); } } },
+    { id: 'grammar', done: studied || !lesson,
+      title: lesson && !studied ? 'Grammar: ' + lesson.title : 'Grammar lesson',
+      detail: studied ? 'Done for today ✓' : (lesson ? 'Short explanation, then practice' : 'Every lesson complete 🎉'),
+      run: function () { if (lesson) openLesson(lesson.id); } }
+  ];
+}
+
+var planSteps = [];
+
+function renderPlan() {
+  var list = $('#plan-list');
+  if (!list) return;
+  planSteps = todayPlan();
+  var next = planSteps.filter(function (p) { return !p.done; })[0];
+  list.innerHTML = planSteps.map(function (p) {
+    return '<li><button type="button" class="plan-step' + (p.done ? ' done' : '') + (p === next ? ' next' : '') +
+      '" data-act="plan" data-step="' + p.id + '" aria-label="' + esc(p.title + '. ' + p.detail + (p.done ? '. Done.' : '')) + '">' +
+      '<span class="plan-check" aria-hidden="true">' + (p.done ? '✓' : '') + '</span>' +
+      '<span class="plan-text"><span class="plan-title">' + esc(p.title) + '</span>' +
+      '<span class="plan-detail">' + esc(p.detail) + '</span></span></button></li>';
+  }).join('');
+  var doneN = planSteps.length - planSteps.filter(function (p) { return !p.done; }).length;
+  setText('#plan-count', doneN + ' / ' + planSteps.length + ' done');
+  setText('#plan-next-label', next ? 'Start: ' + next.title : 'Plan complete 🎉 One more conversation?');
+}
+
+function runPlanStep(id) {
+  var step = planSteps.filter(function (p) { return p.id === id; })[0];
+  if (step) { step.run(); return; }
+  showTab('learn');                         // plan complete → let them pick a conversation
+  var section = $('.situations-section');
+  if (section && section.scrollIntoView) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function boxColor(i) {
-  return ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e', '#0ea5e9'][i] || 'var(--border)';
+  return ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e', '#0ea5e9', '#6366f1', '#a855f7'][i] || 'var(--border)';
 }
 
 function setText(sel, text) {
@@ -553,15 +713,94 @@ function stepListen(w, label) {
   };
 }
 
+// Hear the whole example sentence, type the missing word: listening + spelling in context.
+function stepDictation(w, label) {
+  if (!ttsOn() || !findWordInExample(w.ex_es || '', w.es).found) return null;
+  return {
+    type: 'write', dictation: true, rank: w.rank, label: label, word: w,
+    sub: 'Listen and type the missing word', speak: w.ex_es,
+    answer: String(w.es).toLowerCase(), keyFn: normalize
+  };
+}
+
 function findWordByRank(rank) {
   for (var i = 0; i < words.length; i++) if (words[i].rank === rank) return words[i];
   return null;
 }
 
+function findSituation(id) {
+  for (var i = 0; i < situations.length; i++) if (situations[i].id === id) return situations[i];
+  return null;
+}
+
+function normalizePhrase(s) {
+  return normalize(s).replace(/[.,;:!?¡¿…'"“”‘’]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function situationCardIsDue(card) {
+  return !!(card && card.due && card.due <= todayStr() && card.rewardedDay !== todayStr());
+}
+
+function situationDueDate(situation) {
+  var due = [];
+  (situation.turns || []).forEach(function (_, i) {
+    var card = state.situationCards[situation.id + ':' + i];
+    if (card && card.due && (card.due > todayStr() || card.rewardedDay !== todayStr())) due.push(card.due);
+  });
+  if (!due.length) return '';
+  due.sort();
+  return due[0];
+}
+
+// Due phrases first, then the original (easiest-first) order.
+function orderedSituations() {
+  return situations.slice().sort(function (a, b) {
+    var ad = situationDueDate(a), bd = situationDueDate(b);
+    var ar = (a.turns || []).some(function (_, i) { return situationCardIsDue(state.situationCards[a.id + ':' + i]); });
+    var br = (b.turns || []).some(function (_, i) { return situationCardIsDue(state.situationCards[b.id + ':' + i]); });
+    if (ar !== br) return ar ? -1 : 1;
+    if (ar && br && ad !== bd) return ad < bd ? -1 : 1;
+    return situations.indexOf(a) - situations.indexOf(b);
+  });
+}
+
+function renderSituationList() {
+  var list = $('#situation-list');
+  if (!list) return;
+  if (!situations.length) {
+    list.innerHTML = '<div class="situation-empty">Conversation practice could not be loaded. Check that situations.json is available, then refresh the app.</div>';
+    return;
+  }
+  list.innerHTML = orderedSituations().map(function (situation) {
+    var due = situationDueDate(situation);
+    var dueNow = (situation.turns || []).some(function (_, i) {
+      return situationCardIsDue(state.situationCards[situation.id + ':' + i]);
+    });
+    var practiced = (situation.turns || []).filter(function (_, i) {
+      return !!state.situationCards[situation.id + ':' + i];
+    }).length;
+    var isComplete = practiced === (situation.turns || []).length;
+    var allPractisedToday = isComplete && (situation.turns || []).every(function (_, i) {
+      return state.situationCards[situation.id + ':' + i].rewardedDay === todayStr();
+    });
+    var stateLabel = dueNow ? 'PHRASES DUE' : (allPractisedToday ? 'PRACTISED TODAY' : (isComplete ? 'IN PROGRESS' : (practiced ? 'CONTINUE' : 'NEW')));
+    var next = dueNow ? 'Review phrases' : (allPractisedToday ? (due ? 'Next review ' + due : 'Reviewed today') :
+      (due ? 'Next review ' + due : (practiced ? 'Continue · ' + practiced + ' of ' + situation.turns.length : situation.turns.length + ' short replies')));
+    return '<button type="button" class="situation-card" data-act="situation-start" data-id="' + esc(situation.id) + '">' +
+      '<span class="situation-card-top"><span class="situation-title">' + esc(situation.title) + '</span>' +
+      '<span class="situation-state' + (dueNow ? ' due' : '') + '">' + stateLabel + '</span></span>' +
+      '<span class="situation-setting">' + esc(situation.setting || '') + '</span>' +
+      '<span class="situation-goal">' + esc(situation.goal || '') + '</span>' +
+      '<span class="situation-card-bottom"><span>' + esc(next) + ' · ' + esc(String(situation.turns.length)) + ' turns</span>' +
+      '<span class="situation-level">' + esc(situation.level || 'A1') + '　→</span></span>' +
+      '</button>';
+  }).join('');
+}
+
 var session = {
   active: false, mode: null, steps: [], baseTotal: 0, idx: 0,
-  results: {}, skipped: {}, counted: {}, requeued: {},
-  correct: 0, wrong: 0, xp: 0, finished: false
+  results: {}, skipped: {}, counted: {}, requeued: {}, hints: {},
+  correct: 0, wrong: 0, xp: 0, finished: false, situationId: null, rewardEligible: true
 };
 
 function buildNewSteps() {
@@ -584,28 +823,49 @@ function buildReviewSteps() {
   due.forEach(function (c) {
     var w = findWordByRank(c.rank);
     if (!w) return;
-    var modes = ['es-en', 'en-es'];
-    if (findWordInExample(w.ex_es || '', w.es).found) modes.push('fill');
-    if (ttsOn()) modes.push('listen');
-    var mode = pick(modes), st = null;
-    if (mode === 'es-en') st = stepChoiceEsEn(w, 'Review');
-    else if (mode === 'en-es') st = stepWriteEnEs(w, 'Review');
-    else if (mode === 'fill') st = stepFill(w, 'Review');
-    else st = stepListen(w, 'Review');
-    if (st) steps.push(st);
+    // Young cards: recognise it. Settled cards: produce it (harder recall sticks longer).
+    var modes = c.box <= 1 ? ['es-en', 'listen', 'fill'] : ['en-es', 'fill', 'dictation', 'listen'];
+    var builders = { 'es-en': stepChoiceEsEn, 'en-es': stepWriteEnEs, fill: stepFill, listen: stepListen, dictation: stepDictation };
+    var st = null;
+    shuffle(modes).some(function (m) { st = builders[m](w, 'Review'); return !!st; });
+    steps.push(st || stepChoiceEsEn(w, 'Review'));
   });
   return steps;
 }
 
-function startSession(mode) {
-  var steps = (mode === 'review') ? buildReviewSteps() : buildNewSteps();
+function buildSituationSteps(id) {
+  var situation = findSituation(id);
+  if (!situation || !Array.isArray(situation.turns)) return null;
+  return situation.turns.map(function (turn, i) {
+    var phrase = String(turn.answer || '').trim();
+    var firstWords = phrase.split(/\s+/).slice(0, 2).join(' ');
+    return {
+      type: 'dialogue', rank: situation.id + ':' + i, label: situation.title,
+      situation: situation, partner: turn.partner, prompt: turn.prompt,
+      speak: /^\[/.test(turn.partner) ? '' : turn.partner,   // "[They repeat…]" is a stage direction, not Spanish
+      hint: firstWords + (phrase.split(/\s+/).length > 2 ? '…' : ''),
+      meaning: turn.meaning || '', note: turn.note || '', alternatives: turn.alternatives || [],
+      word: { es: phrase, en: turn.meaning || '' }, answer: phrase, keyFn: normalizePhrase
+    };
+  });
+}
+
+function startSession(mode, situationId) {
+  var steps = mode === 'review' ? buildReviewSteps() :
+    (mode === 'situation' ? buildSituationSteps(situationId) : buildNewSteps());
   if (!steps || !steps.length) {
-    toast(mode === 'review' ? 'Nothing to review right now 🎉' : 'You have learned every word 🎉');
+    toast(mode === 'review' ? 'Nothing to review right now 🎉' :
+      (mode === 'situation' ? 'This conversation is not available right now.' : 'You have learned every word 🎉'));
     return;
   }
   session.active = true;
   session.finished = false;
   session.mode = mode;
+  session.situationId = situationId || null;
+  session.rewardEligible = mode !== 'situation' || steps.some(function (step) {
+    var card = state.situationCards[step.rank];
+    return (!card || !card.due || card.due <= todayStr()) && (!card || card.rewardedDay !== todayStr());
+  });
   session.steps = steps;
   session.baseTotal = steps.length;
   session.idx = 0;
@@ -613,6 +873,7 @@ function startSession(mode) {
   session.skipped = {};
   session.counted = {};
   session.requeued = {};
+  session.hints = {};
   session.correct = 0;
   session.wrong = 0;
   session.xp = 0;
@@ -640,7 +901,9 @@ function renderStep() {
 
   var fillEl = $('#session-progress-fill');
   if (fillEl) fillEl.style.width = Math.round(done / total * 100) + '%';
-  setText('#session-progress-label', Math.min(done + 1, total) + ' / ' + total);
+  setText('#session-progress-label', s.label === 'Quick retry'
+    ? 'Reviewing missed phrases'
+    : Math.min(done + 1, total) + ' / ' + total);
   setText('#phase-indicator', s.label || '');
 
   hide($('#feedback'));
@@ -648,29 +911,61 @@ function renderStep() {
 
   var cardEl = $('#card-container');
   var ansEl = $('#answer-area');
+  if (cardEl) cardEl.classList.toggle('conversation-card', s.type === 'dialogue');
   cardEl.innerHTML = cardHtml(s);
   ansEl.innerHTML = answerHtml(s);
 
-  if (s.type === 'write') {
+  if (s.type === 'write' || s.type === 'dialogue') {
     var inp = $('#session-input');
     if (inp) inp.focus();
   }
-  if (s.type === 'listen') speak(s.speak);
+  if (s.speak) speak(s.speak);
+  else if (s.type === 'intro') speak(s.word.es);
+}
+
+// After an answer, show the word inside its example sentence (replacing a blanked one).
+function revealContext(s) {
+  var card = $('#card-container');
+  if (!card || !s.word || !s.word.ex_es) return;
+  var blank = (s.fill || s.dictation) && $('.card-example', card);
+  if (blank) blank.outerHTML = exampleBlockHtml(s.word);
+  else card.insertAdjacentHTML('beforeend', exampleBlockHtml(s.word));
+}
+
+function speakerBtn(text, label) {
+  if (!ttsOn() || !text) return '';
+  return ' <button type="button" class="speaker-btn" data-act="speak" data-text="' + esc(text) +
+    '" aria-label="' + esc(label) + '" title="' + esc(label) + '">🔊</button>';
+}
+
+// The word in its sentence, with audio for the whole sentence — shown when meeting a word and after every answer.
+function exampleBlockHtml(w) {
+  return '<div class="card-example">' +
+    '<div class="es">' + exampleEsHtml(w, false) + speakerBtn(w.ex_es, 'Play the sentence') + '</div>' +
+    '<div class="en">' + esc(w.ex_en || '') + '</div>' +
+  '</div>';
 }
 
 function cardHtml(s) {
   var w = s.word;
 
+  if (s.type === 'dialogue') {
+    return '<div class="conversation-kicker">' + esc(s.situation.title) + ' · YOUR TURN</div>' +
+      '<div class="conversation-partner"><div class="conversation-partner-label">THE OTHER PERSON</div>' +
+      '<div class="conversation-partner-line">' + esc(s.partner) + speakerBtn(s.speak, 'Hear it again') + '</div></div>' +
+      '<p class="conversation-cue">' + esc(s.prompt) + '</p>';
+  }
+
   if (s.type === 'intro') {
-    var btn = ttsOn()
-      ? ' <button type="button" class="speaker-btn" data-act="speak" data-text="' + esc(w.es) + '">🔊</button>'
-      : '';
-    return '<div class="card-word">' + esc(String(w.es).toLowerCase()) + '</div>' +
+    return '<div class="card-word">' + esc(String(w.es).toLowerCase()) + speakerBtn(w.es, 'Play the word') + '</div>' +
       '<div class="card-sub">' + esc(w.en) + '</div>' +
-      '<div class="card-example">' +
-        '<div class="es">' + exampleEsHtml(w, false) + btn + '</div>' +
-        '<div class="en">' + esc(w.ex_en || '') + '</div>' +
-      '</div>';
+      exampleBlockHtml(w);
+  }
+
+  if (s.dictation) {
+    return '<div class="card-sub">' + esc(s.sub) + '</div>' +
+      '<div class="card-example"><div class="es">' + exampleEsHtml(w, true) + speakerBtn(w.ex_es, 'Play the sentence again') + '</div>' +
+      '<div class="en">' + esc(w.ex_en || '') + '</div></div>';
   }
 
   if (s.type === 'listen') {
@@ -701,8 +996,21 @@ function answerHtml(s) {
     return '<div class="input-group">' +
       '<input type="text" id="session-input" autocomplete="off" autocorrect="off" ' +
       'autocapitalize="off" spellcheck="false" placeholder="write it in Spanish" aria-label="Your answer">' +
-      '<button type="button" class="btn btn-primary" data-act="submit">Odeslat</button>' +
+      '<button type="button" class="btn btn-primary" data-act="submit">Submit</button>' +
       '</div>';
+  }
+
+  if (s.type === 'dialogue') {
+    var mic = SpeechRec
+      ? '<button type="button" class="btn btn-mic" data-act="mic" aria-pressed="false" aria-label="Say your reply out loud" title="Say it out loud">🎤</button>'
+      : '';
+    return '<div class="conversation-actions"><span class="hint">' +
+      (SpeechRec ? 'Say it out loud 🎤 or type it.' : 'Try to recall the whole phrase first.') + '</span>' +
+      '<button type="button" class="hint-action" data-act="show-hint">Need a hint?</button></div>' +
+      '<p class="conversation-hint" id="conversation-hint" hidden>Starts with: <strong>' + esc(s.hint) + '</strong></p>' +
+      '<div class="input-group"><input type="text" id="session-input" autocomplete="off" autocorrect="off" ' +
+      'autocapitalize="off" spellcheck="false" lang="es" placeholder="Your reply in Spanish" aria-label="Write your reply in Spanish">' +
+      mic + '<button type="button" class="btn btn-primary" data-act="submit">Check</button></div>';
   }
 
   var html = '<div class="options-grid">';
@@ -723,8 +1031,15 @@ function showFeedback(kind, text) {
 
 function recordAnswer(s, ok) {
   var r = session.results[s.rank] || (session.results[s.rank] = { ok: 0, bad: 0 });
-  if (ok) { r.ok += 1; session.correct += 1; session.xp += XP_CORRECT; }
-  else { r.bad += 1; session.wrong += 1; session.xp += XP_WRONG; }
+  var phraseCard = session.mode === 'situation' && state.situationCards[s.rank];
+  var rewardPhrase = session.mode !== 'situation' || !phraseCard ||
+    ((!phraseCard.due || phraseCard.due <= todayStr()) && phraseCard.rewardedDay !== todayStr());
+  if (ok) {
+    r.ok += 1;
+    session.correct += 1;
+    if (rewardPhrase && !(session.mode === 'situation' && session.hints[s.rank])) session.xp += XP_CORRECT;
+  }
+  else { r.bad += 1; session.wrong += 1; if (rewardPhrase) session.xp += XP_WRONG; }
 
   if (!ok) requeueCard(s.rank);
 
@@ -737,25 +1052,55 @@ function recordAnswer(s, ok) {
   var last = (session.idx + 1 >= session.steps.length) && !remaining;
   setText('#btn-next', last ? 'Finish' : 'Next');
   show($('#btn-next'));
+  $('#btn-next').scrollIntoView({ block: 'nearest', behavior: 'smooth' });   // the context sentence can push it below the fold
 }
 
 function requeueCard(rank) {
   if (session.requeued[rank]) return;
+  if (session.mode === 'situation') {
+    var current = session.steps[session.idx];
+    if (!current) return;
+    session.requeued[rank] = 1;
+    var retry = Object.assign({}, current, { done: false, label: 'Quick retry' });
+    session.steps.push(retry);
+    return;
+  }
   var w = findWordByRank(rank);
   if (!w) return;
   session.requeued[rank] = 1;
-  session.steps.push(stepChoiceEsEn(w, 'Znovu'));
+  session.steps.push(stepChoiceEsEn(w, 'Again'));
 }
 
 function applySrs(rank) {
   var r = session.results[rank];
   if (!r) return;
-  ensureCard(rank);
-  if (r.ok > r.bad) answerCorrect(rank);
-  else answerWrong(rank);
+  if (session.mode === 'situation') {
+    if (!state.situationCards) state.situationCards = {};
+    var phraseCard = state.situationCards[rank] || (state.situationCards[rank] = {
+      box: 0, due: todayStr(), seen: 0, ok: 0
+    });
+    var phraseDue = !phraseCard.due || phraseCard.due <= todayStr();
+    var phraseReviewEligible = phraseDue && phraseCard.rewardedDay !== todayStr();
+    if (phraseReviewEligible) {
+      phraseCard.seen += 1;
+      phraseCard.rewardedDay = todayStr();
+      if (r.ok > r.bad && !session.hints[rank]) {
+        phraseCard.ok += 1;
+        phraseCard.box = Math.min((Number(phraseCard.box) || 0) + 1, MAX_BOX);
+        phraseCard.due = addDays(todayStr(), INTERVALS[phraseCard.box]);
+      } else {
+        phraseCard.box = 0;
+        phraseCard.due = todayStr();
+      }
+    }
+  } else {
+    ensureCard(rank);
+    if (r.ok > r.bad) answerCorrect(rank);
+    else answerWrong(rank);
+  }
   if (!session.counted[rank]) {
     session.counted[rank] = 1;
-    state.doneToday = (state.doneToday || 0) + 1;
+    if (session.mode !== 'situation' || phraseReviewEligible) addDailyProgress(1);
   }
   saveState();
 }
@@ -777,6 +1122,7 @@ function handleOptionClick(index) {
   if (ok) showFeedback('correct', 'Correct! 🎉');
   else showFeedback('wrong', 'Wrong — correct answer: ' + s.answer);
   if (ttsOn()) speak(s.word.es);
+  revealContext(s);
 
   recordAnswer(s, ok);
 }
@@ -789,13 +1135,39 @@ function handleWriteSubmit() {
   if (!normalize(inp.value)) { inp.focus(); return; }
   s.done = true;
 
-  var ok = s.keyFn(inp.value) === s.keyFn(s.answer);
+  var normalizedInput = s.keyFn(inp.value);
+  var accepted = [s.answer].concat(s.alternatives || []).map(s.keyFn);
+  var typo = accepted.indexOf(normalizedInput) === -1 &&
+    accepted.some(function (answer) { return isTypo(normalizedInput, answer); });
+  var ok = typo || accepted.indexOf(normalizedInput) !== -1;
   inp.disabled = true;
   inp.classList.add(ok ? 'correct' : 'wrong');
 
-  if (ok) showFeedback('correct', 'Correct! 🎉 (' + s.answer + ')');
+  if (s.type === 'dialogue') {
+    if (typo) showFeedback('correct', 'Almost! Watch the spelling: ' + s.answer + ' — ' + s.meaning);
+    else if (ok) showFeedback('correct', 'Good recall! ' + s.answer + ' — ' + s.meaning);
+    else showFeedback('wrong', 'Try this natural reply: ' + s.answer + ' — ' + s.meaning);
+    var card = $('#card-container');
+    if (card && s.note) {
+      var note = document.createElement('p');
+      note.className = 'conversation-note';
+      note.textContent = s.note;
+      card.appendChild(note);
+    }
+    if (card && ttsOn()) {
+      var replay = document.createElement('button');
+      replay.type = 'button';
+      replay.className = 'btn btn-ghost conversation-replay';
+      replay.setAttribute('data-act', 'speak');
+      replay.setAttribute('data-text', s.answer);
+      replay.textContent = '🔊 Hear the phrase again';
+      card.appendChild(replay);
+    }
+  } else if (typo) showFeedback('correct', 'Almost! Watch the spelling: ' + s.answer);
+  else if (ok) showFeedback('correct', 'Correct! 🎉 (' + s.answer + ')');
   else showFeedback('wrong', 'Wrong — correct answer: ' + s.answer);
   if (ttsOn()) speak(s.word.es);
+  revealContext(s);
 
   recordAnswer(s, ok);
 }
@@ -820,7 +1192,9 @@ function finishSession() {
   session.finished = true;
   session.active = false;
 
-  var gained = session.xp + XP_SESSION;
+  var completionBonus = session.mode === 'situation' && !session.rewardEligible ? 0 : XP_SESSION;
+  var gained = session.xp + completionBonus;
+  if (session.mode === 'new') state.lastNewDay = todayStr();
   addXP(gained);
   saveState();
 
@@ -828,8 +1202,26 @@ function finishSession() {
   hide($('#btn-end-session'));
   show($('#session-summary'));
 
-  setText('#summary-correct', fmt(session.correct));
-  setText('#summary-wrong', fmt(session.wrong));
+  if (session.mode === 'situation') {
+    setText('#summary-title', 'You kept the conversation going. 🎉');
+    var unassisted = Object.keys(session.results).filter(function (rank) {
+      return session.results[rank].bad === 0 && !session.hints[rank];
+    }).length;
+    var practiceMessage = unassisted + ' of ' + session.baseTotal + ' replies came to you without a hint. Missed phrases returned before you finished; hinted phrases are due for review again today.';
+    if (!session.rewardEligible) practiceMessage += ' This early practice kept the phrases fresh without moving their review dates.';
+    setText('#summary-message', practiceMessage);
+    setText('#summary-correct', fmt(unassisted));
+    setText('#summary-wrong', fmt(session.baseTotal - unassisted));
+    setText('#summary-correct-label', 'without hint');
+    setText('#summary-wrong-label', 'needed help');
+  } else {
+    setText('#summary-title', 'All done! 🎉');
+    setText('#summary-message', 'A little practice today makes tomorrow’s recall easier.');
+    setText('#summary-correct', fmt(session.correct));
+    setText('#summary-wrong', fmt(session.wrong));
+    setText('#summary-correct-label', 'correct');
+    setText('#summary-wrong-label', 'wrong');
+  }
   setText('#summary-xp', '+' + fmt(gained));
 
   renderHome();
@@ -849,6 +1241,13 @@ function quitSession() {
 }
 
 function renderLearnStart() {
+  if (session.active) {
+    hide($('#session-start'));
+    hide($('#session-summary'));
+    show($('#session-active'));
+    show($('#btn-end-session'));
+    return;
+  }
   hide($('#session-active'));
   hide($('#session-summary'));
   hide($('#btn-end-session'));
@@ -872,6 +1271,7 @@ function renderLearnStart() {
   $$('.btn-session').forEach(function (b) {
     b.disabled = (b.dataset.mode === 'review') ? (due === 0) : (newAvail === 0);
   });
+  renderSituationList();
 }
 /* ============================================================
    GRAMMAR
@@ -928,44 +1328,76 @@ function findLesson(id) {
   for (var i = 0; i < grammar.length; i++) if (grammar[i].id === id) return grammar[i];
   return null;
 }
+
+var GRAMMAR_CORE_IDS = {
+  'articles-gender': true, 'plural-nouns': true, 'ser-estar': true,
+  'present-regular': true, 'irregular-essentials': true, 'hay-estar': true,
+  'ir-a-futuro': true, 'reflexive-verbs': true, 'gustar': true,
+  'por-para': true, 'negation-questions': true, 'preterito-perfecto': true
+};
+var grammarView = 'core';
+
 function renderGrammar() {
   var acc = $('#grammar-accordion');
   if (!acc) return;
 
   var search = $('#grammar-search');
   var q = normalize(search ? search.value : '');
-  var doneCount = 0;
-  Object.keys(state.grammarDone || {}).forEach(function (k) { if (state.grammarDone[k]) doneCount += 1; });
-  setText('#grammar-progress', doneCount + ' / ' + grammar.length + ' done');
+  var visible = grammar.filter(function (lesson) {
+    return grammarView === 'more' ? !GRAMMAR_CORE_IDS[lesson.id] : !!GRAMMAR_CORE_IDS[lesson.id];
+  });
+  var doneCount = visible.filter(function (lesson) { return !!state.grammarDone[lesson.id]; }).length;
+  setText('#grammar-progress', doneCount + ' / ' + visible.length + ' complete');
+  setText('#grammar-level-hint', grammarView === 'core'
+    ? 'Work through these essentials in order. Each lesson has a short explanation and practice.'
+    : 'These topics build on the foundations and are useful as you move toward B1.');
+  $$('.grammar-level-btn').forEach(function (button) {
+    var active = button.getAttribute('data-level') === grammarView;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
 
   acc.innerHTML = '';
-  grammar.forEach(function (lesson) {
+  visible.forEach(function (lesson) {
     if (q && normalize(lesson.title).indexOf(q) === -1 && normalize(lesson.text).indexOf(q) === -1) return;
 
     var done = !!(state.grammarDone && state.grammarDone[lesson.id]);
+    var lessonLevel = GRAMMAR_CORE_IDS[lesson.id] ? 'A1–A2' : 'A2–B1';
     var body = '<p>' + mdHtml(lesson.text) + '</p>';
     if (lesson.table) body += tableHtml(lesson.table);
     if (lesson.exercises) {
       lesson.exercises.forEach(function (ex, ei) { body += exerciseHtml(ex, ei); });
     }
-    body += '<div class="ex-actions"><button type="button" class="btn btn-ghost" data-act="lesson-done">' +
-      (done ? '↺ Mark as not done' : '✔ Mark as done (+15 XP)') + '</button></div>';
+    body += '<div class="ex-actions"><button type="button" class="btn btn-ghost" data-act="lesson-done"' +
+      (done ? ' disabled' : '') + '>' +
+      (done ? '✅ Lesson complete' : '✔ Complete after practice (+15 XP)') + '</button></div>';
 
     var item = document.createElement('div');
     item.className = 'acc-item';
     item.dataset.id = lesson.id;
     item.innerHTML =
       '<div class="acc-head">' +
-        '<button type="button" class="acc-check" data-act="lesson-done" aria-label="Mark lesson as done">' +
+        '<button type="button" class="acc-check" data-act="lesson-done" aria-label="Mark lesson as done"' +
+          (done ? ' disabled' : '') + '>' +
           (done ? '✅' : '⬜') + '</button>' +
         '<button type="button" class="acc-toggle" data-act="toggle">' +
           '<span class="acc-title">' + esc(lesson.title) + '</span>' +
+          '<span class="lesson-level">' + lessonLevel + '</span>' +
           '<span class="acc-caret">▾</span>' +
         '</button>' +
       '</div>' +
       '<div class="acc-body">' + body + '</div>';
     acc.appendChild(item);
   });
+}
+
+function openLesson(id) {
+  grammarView = GRAMMAR_CORE_IDS[id] ? 'core' : 'more';
+  var search = $('#grammar-search');
+  if (search) search.value = '';
+  showTab('grammar');
+  var item = $('.acc-item[data-id="' + id + '"]');
+  if (item) { item.classList.add('open'); item.scrollIntoView({ block: 'start' }); }
 }
 
 function exFeedback(box, ok, why) {
@@ -978,13 +1410,15 @@ function exFeedback(box, ok, why) {
 function toggleLessonDone(item) {
   var id = item.dataset.id;
   if (!state.grammarDone) state.grammarDone = {};
-  if (state.grammarDone[id]) {
-    delete state.grammarDone[id];
-  } else {
-    state.grammarDone[id] = true;
-    addXP(15);
-    toast('Lesson complete! +15 XP 🎉');
-  }
+  if (state.grammarDone[id]) return;
+  var untried = $$('.exercise', item).some(function (exercise) {
+    return !$('.ex-fb', exercise) || !$('.ex-fb', exercise).classList.contains('show');
+  });
+  if (untried) { toast('Try each exercise before completing the lesson.'); return; }
+  state.grammarDone[id] = todayStr();
+  addDailyProgress(1);
+  addXP(15);
+  toast('Lesson complete! +15 XP 🎉');
   saveState();
   renderGrammar();
   renderHome();
@@ -1131,7 +1565,7 @@ function openVerbDetail(inf) {
 var drill = null;
 
 function startDrill(inf) {
-  if (!verbs.length) { toast('Verbs nejsou k dispozici 😕'); return; }
+  if (!verbs.length) { toast('Verbs are not available right now.'); return; }
   var v = inf ? findVerb(inf) : pick(verbs);
   if (!v) return;
 
@@ -1145,7 +1579,7 @@ function startDrill(inf) {
     var person = pick(PERSONS);
     var form = (v[tense] || {})[person];
     if (form) {
-      drill = { verb: v, tense: tense, person: person, answer: form };
+      drill = { verb: v, tense: tense, person: person, answer: form, rewarded: false };
       renderDrill();
       return;
     }
@@ -1186,7 +1620,14 @@ function checkDrill() {
     fb.className = 'ex-fb show ' + (ok ? 'correct' : 'wrong');
     fb.textContent = ok ? '✔ Correct!' : '✘ Wrong — correct answer: ' + drill.answer;
   }
-  if (ok) { addXP(3); saveState(); }
+  if (ok && !drill.rewarded) {
+    drill.rewarded = true;
+    inp.disabled = true;
+    addDailyProgress(1);
+    addXP(3);
+    saveState();
+    renderHome();
+  }
 }
 /* ============================================================
    MORE — settings, word browser, backup
@@ -1307,10 +1748,12 @@ function importProgress(file) {
       if (!p || typeof p !== 'object' || !p.cards) throw new Error('missing "cards"');
 
       state.cards = p.cards || {};
+      state.situationCards = p.situationCards && typeof p.situationCards === 'object' ? p.situationCards : {};
       state.grammarDone = p.grammarDone || {};
       state.xp = Number(p.xp) || 0;
       state.streak = Number(p.streak) || 0;
       state.lastDay = typeof p.lastDay === 'string' ? p.lastDay : '';
+      state.lastNewDay = typeof p.lastNewDay === 'string' ? p.lastNewDay : '';
       state.doneToday = Number(p.doneToday) || 0;
       state.dailyGoal = Number(p.dailyGoal) || state.dailyGoal;
       if (p.settings) {
@@ -1354,6 +1797,16 @@ function onDocumentClick(e) {
   var act = el.getAttribute('data-act');
 
   if (act === 'modal-close') { closeModal(); return; }
+  if (act === 'situation-start') { startSession('situation', el.getAttribute('data-id')); return; }
+  if (act === 'plan') { runPlanStep(el.getAttribute('data-step')); return; }
+  if (act === 'show-hint') {
+    var hint = $('#conversation-hint');
+    if (hint) show(hint);
+    var current = session.steps[session.idx];
+    if (current) session.hints[current.rank] = true;
+    el.disabled = true;
+    return;
+  }
   if (act === 'speak') {
     if (!ttsSupported) { toast('This browser does not support speech synthesis.'); return; }
     if (!ttsOn()) { toast('Pronunciation is turned off in Settings.'); return; }
@@ -1386,6 +1839,7 @@ function onDocumentClick(e) {
   if (act === 'know') { handleKnow(); return; }
   if (act === 'continue') { nextStep(); return; }
   if (act === 'submit') { handleWriteSubmit(); return; }
+  if (act === 'mic') { startMic(el); return; }
   if (act === 'option') { handleOptionClick(Number(el.getAttribute('data-index'))); return; }
 }
 
@@ -1400,7 +1854,14 @@ function onKeydown(e) {
   if (tag === 'input' || tag === 'textarea' || tag === 'select') {
     if (e.key === 'Enter') {
       var id = e.target.id;
-      if (id === 'session-input') { e.preventDefault(); handleWriteSubmit(); }
+      if (id === 'session-input') {
+        e.preventDefault();
+        var current = session.steps[session.idx];
+        if (current && current.done) {
+          var next = $('#btn-next');
+          if (next && !next.hasAttribute('hidden')) next.click();
+        } else handleWriteSubmit();
+      }
       else if (id === 'drill-input') { e.preventDefault(); checkDrill(); }
       else if (e.target.classList && e.target.classList.contains('ex-input')) {
         e.preventDefault();
@@ -1440,6 +1901,10 @@ function wire() {
 
   listen('#btn-review', 'click', function () { showTab('learn'); startSession('review'); });
   listen('#btn-new', 'click', function () { showTab('learn'); startSession('new'); });
+  listen('#btn-plan-next', 'click', function () {
+    var next = planSteps.filter(function (p) { return !p.done; })[0];
+    runPlanStep(next ? next.id : null);
+  });
 
   $$('.btn-session').forEach(function (b) {
     b.addEventListener('click', function () { startSession(b.getAttribute('data-mode')); });
@@ -1449,10 +1914,17 @@ function wire() {
   listen('#btn-next', 'click', nextStep);
   listen('#btn-summary-home', 'click', function () { showTab('home'); });
   listen('#btn-summary-again', 'click', function () {
-    startSession(session.mode === 'review' ? 'review' : 'new');
+    if (session.mode === 'situation') startSession('situation', session.situationId);
+    else startSession(session.mode === 'review' ? 'review' : 'new');
   });
 
   listen('#grammar-search', 'input', renderGrammar);
+  $$('.grammar-level-btn').forEach(function (button) {
+    button.addEventListener('click', function () {
+      grammarView = this.getAttribute('data-level') === 'more' ? 'more' : 'core';
+      renderGrammar();
+    });
+  });
   listen('#verbs-search', 'input', renderVerbs);
   listen('#words-search', 'input', function () { renderWordList(true); });
   listen('#words-filter', 'change', function () { renderWordList(true); });
@@ -1509,6 +1981,12 @@ function runTests() {
   t('enKey("The (Feminine)") === "the"', enKey('The (Feminine)') === 'the');
   t('addDays("2024-01-15", 1) === "2024-01-16"', addDays('2024-01-15', 1) === '2024-01-16');
   t('addDays("2024-01-15", 3) === "2024-01-18"', addDays('2024-01-15', 3) === '2024-01-18');
+  t('isTypo: one wrong letter in "gracias" accepted', isTypo('grasias', 'gracias'));
+  t('isTypo: short words must be exact', !isTypo('la', 'lo') && !isTypo('mas', 'mes'));
+  t('isTypo: two errors in a short word rejected', !isTypo('grasia', 'gracias'));
+  var fixed = repairExample({ ex_es: 'Mi problema es lo lejos que', ex_en: 'queda. My problem is how far it is.' });
+  t('repairExample moves the split tail back', fixed.ex_es === 'Mi problema es lo lejos que queda.' && fixed.ex_en === 'My problem is how far it is.');
+  t('repairExample leaves good examples alone', repairExample({ ex_es: 'Hola.', ex_en: 'Hi.' }).ex_es === 'Hola.');
 
   storageEnabled = false;                 // tests must not overwrite the saved state
   var backup = state;
@@ -1523,6 +2001,15 @@ function runTests() {
   answerWrong(2);
   t('Leitner: wrong on box 3 → box 0', state.cards[2].box === 0);
   t('Leitner: wrong → due = today', state.cards[2].due === todayStr());
+
+  state.cards[3] = { box: MAX_BOX, due: todayStr(), seen: 0, ok: 0 };
+  answerCorrect(3);
+  t('Leitner: top box stays at ' + MAX_BOX + ', due in 180 days', state.cards[3].box === MAX_BOX && state.cards[3].due === addDays(todayStr(), 180));
+
+  var m = mergeProgress({ grammarDone: { a: true, b: '2026-01-02' }, lastNewDay: '2026-01-01' },
+    { grammarDone: { a: '2026-01-03' }, lastNewDay: '2026-01-05' });
+  t('merge keeps grammar completion dates and newest lastNewDay',
+    m.grammarDone.a === '2026-01-03' && m.grammarDone.b === '2026-01-02' && m.lastNewDay === '2026-01-05');
 
   state = defaultState();
   state.streak = 5;
@@ -1567,7 +2054,6 @@ function applyHiddenStyles() {
 /* ---------------- Start aplikace ---------------- */
 function init() {
   loadState();
-  touchStreak();          // once a day: streak + reset of the daily progress
   applyHiddenStyles();
   applyTheme();
   wire();
@@ -1611,9 +2097,26 @@ function mergeProgress(local, remote) {
     out.cards[r] = (Number(a.box) || 0) >= (Number(b.box) || 0) ? a : b;
   });
 
-  // grammarDone: union
-  Object.keys(L.grammarDone || {}).forEach(function (k) { out.grammarDone[k] = true; });
-  Object.keys(R.grammarDone || {}).forEach(function (k) { out.grammarDone[k] = true; });
+  // Situation phrase reviews: preserve the more practised copy per phrase.
+  var phraseKeys = {};
+  Object.keys(L.situationCards || {}).forEach(function (k) { phraseKeys[k] = 1; });
+  Object.keys(R.situationCards || {}).forEach(function (k) { phraseKeys[k] = 1; });
+  Object.keys(phraseKeys).forEach(function (k) {
+    var a = (L.situationCards || {})[k], b = (R.situationCards || {})[k];
+    if (a && !b) { out.situationCards[k] = a; return; }
+    if (b && !a) { out.situationCards[k] = b; return; }
+    var as = Number(a.seen) || 0, bs = Number(b.seen) || 0;
+    if (as !== bs) { out.situationCards[k] = as > bs ? a : b; return; }
+    out.situationCards[k] = (Number(a.box) || 0) >= (Number(b.box) || 0) ? a : b;
+  });
+
+  // grammarDone: union, keeping the completion date when either side has one
+  [L.grammarDone || {}, R.grammarDone || {}].forEach(function (g) {
+    Object.keys(g).forEach(function (k) {
+      if (typeof out.grammarDone[k] !== 'string') out.grammarDone[k] = typeof g[k] === 'string' ? g[k] : true;
+    });
+  });
+  out.lastNewDay = (L.lastNewDay || '') > (R.lastNewDay || '') ? L.lastNewDay : (R.lastNewDay || '');
 
   // xp: maximum (a sum would double-count the same session)
   out.xp = Math.max(Number(L.xp) || 0, Number(R.xp) || 0);
@@ -1663,6 +2166,7 @@ window.app = {
   words: function () { return words; },
   grammar: function () { return grammar; },
   verbs: function () { return verbs; },
+  situations: function () { return situations; },
   session: function () { return session; },
   runTests: runTests
 };

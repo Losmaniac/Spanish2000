@@ -1,0 +1,226 @@
+[
+  {
+    "id": "meet-someone",
+    "title": "Meeting someone",
+    "setting": "At a language exchange",
+    "level": "A1",
+    "goal": "Introduce yourself, say where you are from, and keep the conversation going.",
+    "turns": [
+      {"partner": "Hola, ¿cómo te llamas?", "prompt": "Say hello and give your name: My name is Ana.", "answer": "Hola, me llamo Ana.", "alternatives": ["Hola, soy Ana."], "meaning": "Hi, my name is Ana.", "note": "Me llamo literally means “I call myself.” Soy Ana is also a natural introduction."},
+      {"partner": "¡Encantado de conocerte!", "prompt": "Say: Nice to meet you too.", "answer": "Mucho gusto.", "alternatives": ["Igualmente."], "meaning": "Nice to meet you. / Likewise.", "note": "Mucho gusto is a simple, widely understood reply."},
+      {"partner": "¿De dónde eres?", "prompt": "Say: I’m from Canada.", "answer": "Soy de Canadá.", "alternatives": [], "meaning": "I’m from Canada.", "note": "Use ser de to say where you are from."},
+      {"partner": "¿A qué te dedicas?", "prompt": "Say: I work in a hotel.", "answer": "Trabajo en un hotel.", "alternatives": [], "meaning": "I work in a hotel.", "note": "Trabajo is the present-tense yo form of trabajar."},
+      {"partner": "¿Hablas español?", "prompt": "Say: A little. I’m learning.", "answer": "Un poco. Estoy aprendiendo.", "alternatives": ["Un poco, estoy aprendiendo español."], "meaning": "A little. I’m learning.", "note": "Estoy aprendiendo describes what you are doing right now."}
+    ]
+  },
+  {
+    "id": "at-the-cafe",
+    "title": "At a café",
+    "setting": "Ordering a drink and paying",
+    "level": "A1",
+    "goal": "Order politely, ask for the bill, and understand a common question.",
+    "turns": [
+      {"partner": "Buenos días. ¿Qué desea?", "prompt": "Order a coffee with milk, please.", "answer": "Un café con leche, por favor.", "alternatives": [], "meaning": "A coffee with milk, please.", "note": "Por favor makes the order polite. In Spain, café con leche is a common order."},
+      {"partner": "¿Algo más?", "prompt": "Say: Nothing else, thank you.", "answer": "Nada más, gracias.", "alternatives": [], "meaning": "Nothing else, thank you.", "note": "Nada más means “nothing more.”"},
+      {"partner": "¿Para tomar aquí o para llevar?", "prompt": "Say: To have here, please.", "answer": "Para tomar aquí, por favor.", "alternatives": ["Para aquí, por favor."], "meaning": "To have here, please.", "note": "Para llevar means “to go / takeaway.”"},
+      {"partner": "Son tres euros, por favor.", "prompt": "Ask: How much is it?", "answer": "¿Cuánto es?", "alternatives": [], "meaning": "How much is it?", "note": "Listen for cuánto with its accent: it is a question word."},
+      {"partner": "Aquí tiene. Gracias.", "prompt": "Say: Thank you. See you later.", "answer": "Gracias. Hasta luego.", "alternatives": ["Muchas gracias. Hasta luego."], "meaning": "Thank you. See you later.", "note": "Hasta luego is a friendly everyday goodbye."}
+    ]
+  },
+  {
+    "id": "at-the-restaurant",
+    "title": "At a restaurant",
+    "setting": "Getting a table and ordering dinner",
+    "level": "A1",
+    "goal": "Ask for a table, order food, and request the check.",
+    "turns": [
+      {"partner": "Buenas noches. ¿Tiene reserva?", "prompt": "Say: No, we don’t have a reservation.", "answer": "No, no tenemos reserva.", "alternatives": [], "meaning": "No, we don’t have a reservation.", "note": "Spanish commonly repeats no: one before the verb and one in the reply."},
+      {"partner": "¿Para cuántas personas?", "prompt": "Say: A table for two, please.", "answer": "Una mesa para dos, por favor.", "alternatives": [], "meaning": "A table for two, please.", "note": "Mesa is feminine, so use una."},
+      {"partner": "¿Qué van a tomar?", "prompt": "Say: I’d like the fish, please.", "answer": "Quisiera el pescado, por favor.", "alternatives": ["Quiero el pescado, por favor.", "Me gustaría el pescado, por favor."], "meaning": "I’d like the fish, please.", "note": "Quisiera is a polite way to say “I would like.”"},
+      {"partner": "¿Algo para beber?", "prompt": "Say: Water, without ice, please.", "answer": "Agua, sin hielo, por favor.", "alternatives": ["Quiero agua sin hielo, por favor."], "meaning": "Water, without ice, please.", "note": "Agua is feminine, but takes el in the singular: el agua fría."},
+      {"partner": "¿Desea algo más?", "prompt": "Ask for the bill, please.", "answer": "La cuenta, por favor.", "alternatives": ["¿Me trae la cuenta, por favor?"], "meaning": "The bill, please.", "note": "La cuenta is the bill/check. In Spain, it is not usually called factura at a restaurant."}
+    ]
+  },
+  {
+    "id": "ask-directions",
+    "title": "Finding your way",
+    "setting": "Asking someone on the street",
+    "level": "A1",
+    "goal": "Ask where a place is and follow simple directions.",
+    "turns": [
+      {"partner": "¿Puedo ayudarle?", "prompt": "Ask politely: Where is the train station?", "answer": "¿Dónde está la estación de tren?", "alternatives": [], "meaning": "Where is the train station?", "note": "Use estar for the location of a specific place."},
+      {"partner": "Está cerca de aquí.", "prompt": "Ask: Is it far?", "answer": "¿Está lejos?", "alternatives": ["¿Está muy lejos?"], "meaning": "Is it far? / Is it very far?", "note": "Lejos means “far”; cerca means “near.”"},
+      {"partner": "Siga todo recto.", "prompt": "Check: Do I go straight ahead?", "answer": "¿Sigo todo recto?", "alternatives": ["¿Voy todo recto?"], "meaning": "Do I go straight ahead?", "note": "Todo recto is a common way to say “straight ahead.”"},
+      {"partner": "Sí, y luego gire a la izquierda.", "prompt": "Ask: Is it on the left?", "answer": "¿Está a la izquierda?", "alternatives": [], "meaning": "Is it on the left?", "note": "A la izquierda means “on the left”; a la derecha means “on the right.”"},
+      {"partner": "Sí, justo allí. ¡Buen viaje!", "prompt": "Say: Thank you for your help.", "answer": "Gracias por su ayuda.", "alternatives": ["Muchas gracias por ayudarme."], "meaning": "Thank you for your help.", "note": "Gracias por is followed by a noun or an infinitive: gracias por ayudarme."}
+    ]
+  },
+  {
+    "id": "at-the-market",
+    "title": "At the market",
+    "setting": "Buying fruit from a stall",
+    "level": "A1",
+    "goal": "Ask for an amount, check the price, and pay naturally.",
+    "turns": [
+      {"partner": "Buenos días. ¿Qué le pongo?", "prompt": "Ask for a kilo of apples, please.", "answer": "Un kilo de manzanas, por favor.", "alternatives": [], "meaning": "A kilo of apples, please.", "note": "After a quantity, Spanish often uses de: un kilo de…"},
+      {"partner": "¿Algo más?", "prompt": "Say: Half a kilo of oranges.", "answer": "Medio kilo de naranjas.", "alternatives": [], "meaning": "Half a kilo of oranges.", "note": "Medio agrees with the masculine kilo."},
+      {"partner": "¿Quiere una bolsa?", "prompt": "Say: No, thank you. I have a bag.", "answer": "No, gracias. Tengo una bolsa.", "alternatives": [], "meaning": "No, thank you. I have a bag.", "note": "Tengo is the irregular yo form of tener."},
+      {"partner": "Son cinco euros.", "prompt": "Ask: Can I pay by card?", "answer": "¿Puedo pagar con tarjeta?", "alternatives": [], "meaning": "Can I pay by card?", "note": "Puedo is the yo form of poder: o changes to ue."},
+      {"partner": "Sí, claro.", "prompt": "Say: Perfect. Here you are.", "answer": "Perfecto. Aquí tiene.", "alternatives": ["Muy bien. Aquí tiene."], "meaning": "Perfect. Here you are.", "note": "Aquí tiene is a polite way to hand something to someone."}
+    ]
+  },
+  {
+    "id": "at-the-hotel",
+    "title": "Checking into a hotel",
+    "setting": "Arriving at reception",
+    "level": "A1–A2",
+    "goal": "Check in, give your name, and ask about breakfast and Wi-Fi.",
+    "turns": [
+      {"partner": "Buenas tardes. ¿En qué puedo ayudarle?", "prompt": "Say: I have a reservation.", "answer": "Tengo una reserva.", "alternatives": ["Tengo una reserva a mi nombre."], "meaning": "I have a reservation.", "note": "Tener means “to have”; its yo form is tengo."},
+      {"partner": "¿A nombre de quién?", "prompt": "Say: It’s under the name Novak.", "answer": "A nombre de Novak.", "alternatives": ["La reserva está a nombre de Novak."], "meaning": "Under the name Novak.", "note": "A nombre de is the standard phrase for a booking under someone’s name."},
+      {"partner": "¿Me permite su pasaporte?", "prompt": "Say: Of course. Here it is.", "answer": "Claro. Aquí lo tiene.", "alternatives": ["Por supuesto. Aquí tiene."], "meaning": "Of course. Here it is.", "note": "Lo refers to the masculine passport: el pasaporte."},
+      {"partner": "El desayuno es de siete a diez.", "prompt": "Ask: Is breakfast included?", "answer": "¿Está incluido el desayuno?", "alternatives": ["¿El desayuno está incluido?"], "meaning": "Is breakfast included?", "note": "Incluido agrees with desayuno, which is masculine."},
+      {"partner": "Sí. La clave del wifi está en la habitación.", "prompt": "Ask: What is the Wi-Fi password?", "answer": "¿Cuál es la contraseña del wifi?", "alternatives": ["¿Cuál es la clave del wifi?"], "meaning": "What is the Wi-Fi password?", "note": "Cuál es asks for a specific piece of information."}
+    ]
+  },
+  {
+    "id": "on-the-train",
+    "title": "Taking the train",
+    "setting": "At the station ticket office",
+    "level": "A1–A2",
+    "goal": "Buy a ticket, ask about the platform, and confirm the time.",
+    "turns": [
+      {"partner": "Buenos días. ¿Adónde va?", "prompt": "Say: I’m going to Seville.", "answer": "Voy a Sevilla.", "alternatives": [], "meaning": "I’m going to Seville.", "note": "Voy is the yo form of ir."},
+      {"partner": "¿Solo ida o ida y vuelta?", "prompt": "Say: A return ticket, please.", "answer": "Ida y vuelta, por favor.", "alternatives": [], "meaning": "A return ticket, please.", "note": "Ida y vuelta means “there and back.”"},
+      {"partner": "¿A qué hora quiere salir?", "prompt": "Say: At ten in the morning.", "answer": "A las diez de la mañana.", "alternatives": [], "meaning": "At ten in the morning.", "note": "Use a la with one o’clock and a las with other hours."},
+      {"partner": "El tren sale del andén cuatro.", "prompt": "Ask: Which platform did you say?", "answer": "¿De qué andén ha dicho?", "alternatives": ["¿Qué andén ha dicho?"], "meaning": "Which platform did you say?", "note": "Andén means “platform.” Asking again is a useful real-world skill."},
+      {"partner": "Del andén cuatro. Buen viaje.", "prompt": "Say: Thank you. Have a good day.", "answer": "Gracias. Que tenga un buen día.", "alternatives": ["Gracias, igualmente."], "meaning": "Thank you. Have a good day.", "note": "Que tenga is a polite wish using the subjunctive; igualmente means “you too.”"}
+    ]
+  },
+  {
+    "id": "when-you-dont-understand",
+    "title": "When you don’t understand",
+    "setting": "Keeping a conversation going",
+    "level": "A1",
+    "goal": "Ask someone to repeat, slow down, or explain a word.",
+    "turns": [
+      {"partner": "[They speak quickly in Spanish.]", "prompt": "Say: Sorry, I don’t understand.", "answer": "Perdón, no entiendo.", "alternatives": ["Lo siento, no entiendo."], "meaning": "Sorry, I don’t understand.", "note": "No goes directly before the verb entiendo."},
+      {"partner": "Claro, no hay problema.", "prompt": "Ask: Can you repeat that, please?", "answer": "¿Puede repetirlo, por favor?", "alternatives": ["¿Puedes repetirlo, por favor?", "¿Puede repetir, por favor?"], "meaning": "Can you repeat it, please?", "note": "Puede is polite; puedes is informal. The lo in repetirlo means “it.”"},
+      {"partner": "Sí, por supuesto.", "prompt": "Ask: Can you speak more slowly?", "answer": "¿Puede hablar más despacio?", "alternatives": ["¿Puedes hablar más despacio?"], "meaning": "Can you speak more slowly?", "note": "Más despacio means “more slowly.”"},
+      {"partner": "[They repeat the sentence.]", "prompt": "Say: I understand now, thank you.", "answer": "Ahora entiendo, gracias.", "alternatives": ["Ya entiendo, gracias."], "meaning": "I understand now, thank you.", "note": "Ahora means “now”; ya can mean “now” or “already.”"},
+      {"partner": "¡Muy bien!", "prompt": "Ask: What does “despacio” mean?", "answer": "¿Qué significa “despacio”?", "alternatives": ["¿Qué quiere decir “despacio”?"], "meaning": "What does “despacio” mean?", "note": "¿Qué significa…? is a handy way to ask what a word means."}
+    ]
+  },
+  {
+    "id": "making-plans",
+    "title": "Making plans with a friend",
+    "setting": "A message from a friend",
+    "level": "A1–A2",
+    "goal": "Accept an invitation, agree on a time and place, and say goodbye.",
+    "turns": [
+      {"partner": "¿Qué haces este fin de semana?", "prompt": "Say: Nothing special. Why?", "answer": "Nada especial. ¿Por qué?", "alternatives": ["Nada especial, ¿por qué?"], "meaning": "Nothing special. Why?", "note": "Por qué (two words, accent) asks why; porque (one word) means because."},
+      {"partner": "¿Quieres ir al cine el sábado?", "prompt": "Say: Yes, I would love to!", "answer": "¡Sí, me encantaría!", "alternatives": ["¡Sí, con mucho gusto!"], "meaning": "Yes, I would love to!", "note": "Me encantaría (I would love to) sounds warmer than a plain sí."},
+      {"partner": "¡Genial! ¿A qué hora quedamos?", "prompt": "Suggest: At seven?", "answer": "¿A las siete?", "alternatives": ["¿Quedamos a las siete?"], "meaning": "At seven?", "note": "Quedar means to arrange to meet. Times use la/las: a la una, a las siete."},
+      {"partner": "Perfecto. ¿Dónde nos vemos?", "prompt": "Say: In front of the cinema.", "answer": "Delante del cine.", "alternatives": ["Enfrente del cine.", "En la puerta del cine."], "meaning": "In front of the cinema.", "note": "de + el always contracts to del."},
+      {"partner": "Vale, ¡hasta el sábado!", "prompt": "Say: See you!", "answer": "¡Nos vemos!", "alternatives": ["¡Hasta el sábado!", "Hasta luego."], "meaning": "See you!", "note": "Nos vemos (literally “we see each other”) is a friendly everyday goodbye."}
+    ]
+  },
+  {
+    "id": "small-talk",
+    "title": "Small talk with a neighbour",
+    "setting": "On the stairs at home",
+    "level": "A1–A2",
+    "goal": "Talk about the weather, work, and your weekend.",
+    "turns": [
+      {"partner": "¡Qué calor hace hoy!", "prompt": "Agree: Yes, it is very hot.", "answer": "Sí, hace mucho calor.", "alternatives": [], "meaning": "Yes, it is very hot.", "note": "Weather uses hacer: hace calor, hace frío, hace sol."},
+      {"partner": "¿Qué tal el trabajo?", "prompt": "Say: Fine, but I am very busy.", "answer": "Bien, pero estoy muy ocupado.", "alternatives": ["Bien, pero estoy muy ocupada."], "meaning": "Fine, but I am very busy.", "note": "Estar ocupado/a means to be busy: a temporary state, so estar."},
+      {"partner": "¿Y qué hiciste el fin de semana?", "prompt": "Say: I went to the beach with my family.", "answer": "Fui a la playa con mi familia.", "alternatives": [], "meaning": "I went to the beach with my family.", "note": "Fui is the preterite of ir — and of ser. Context tells you which."},
+      {"partner": "¡Qué bien! ¿Y qué tal el agua?", "prompt": "Say: It was a bit cold.", "answer": "Estaba un poco fría.", "alternatives": [], "meaning": "It was a bit cold.", "note": "The imperfect estaba describes how something was. Fría agrees with el agua, which is feminine."},
+      {"partner": "Bueno, me voy. ¡Que tengas un buen día!", "prompt": "Say: Same to you!", "answer": "¡Igualmente!", "alternatives": ["¡Tú también!"], "meaning": "Same to you! / Likewise!", "note": "Igualmente is the easiest reply to any good wish."}
+    ]
+  },
+  {
+    "id": "at-the-pharmacy",
+    "title": "At the pharmacy",
+    "setting": "Feeling unwell",
+    "level": "A1–A2",
+    "goal": "Describe a simple symptom, answer questions, and understand instructions.",
+    "turns": [
+      {"partner": "Hola, buenas tardes. ¿Qué necesita?", "prompt": "Say: I have a headache.", "answer": "Me duele la cabeza.", "alternatives": ["Tengo dolor de cabeza."], "meaning": "I have a headache.", "note": "Doler works like gustar: me duele + the body part with la/el, not mi."},
+      {"partner": "¿Desde cuándo le duele?", "prompt": "Say: Since yesterday.", "answer": "Desde ayer.", "alternatives": [], "meaning": "Since yesterday.", "note": "¿Desde cuándo…? asks how long something has been going on."},
+      {"partner": "¿Tiene fiebre?", "prompt": "Say: No, but I am very tired.", "answer": "No, pero estoy muy cansado.", "alternatives": ["No, pero estoy muy cansada."], "meaning": "No, but I am very tired.", "note": "Use cansada if you are a woman. Tired is a state, so estar."},
+      {"partner": "Tome una pastilla cada ocho horas.", "prompt": "Ask: Do I take it with food?", "answer": "¿La tomo con comida?", "alternatives": ["¿Hay que tomarla con comida?"], "meaning": "Do I take it with food?", "note": "La replaces la pastilla and goes before the verb."},
+      {"partner": "Sí, mejor después de comer.", "prompt": "Say: Thanks. How much is it?", "answer": "Gracias. ¿Cuánto es?", "alternatives": ["Gracias, ¿cuánto cuesta?"], "meaning": "Thanks. How much is it?", "note": "¿Cuánto es? asks for the total you have to pay."}
+    ]
+  },
+  {
+    "id": "buying-clothes",
+    "title": "Buying clothes",
+    "setting": "In a clothes shop",
+    "level": "A1–A2",
+    "goal": "Browse, ask for a size, try something on, and buy it.",
+    "turns": [
+      {"partner": "Hola, ¿le puedo ayudar en algo?", "prompt": "Say: I am just looking, thanks.", "answer": "Solo estoy mirando, gracias.", "alternatives": ["Estoy mirando, gracias."], "meaning": "I am just looking, thanks.", "note": "The standard way to tell a shop assistant you are browsing."},
+      {"partner": "Muy bien. Si necesita algo, me dice.", "prompt": "Ask: Do you have this shirt in a medium?", "answer": "¿Tiene esta camisa en la talla mediana?", "alternatives": ["¿Tiene esta camisa en talla mediana?", "¿Tiene esta camisa en la talla M?"], "meaning": "Do you have this shirt in a medium?", "note": "Talla is the size of clothes; for shoes say número."},
+      {"partner": "Sí, aquí tiene.", "prompt": "Ask: Can I try it on?", "answer": "¿Me la puedo probar?", "alternatives": ["¿Puedo probármela?", "¿Puedo probarla?"], "meaning": "Can I try it on?", "note": "Probarse means to try on. La refers to la camisa."},
+      {"partner": "Claro, los probadores están al fondo. ¿Qué tal le queda?", "prompt": "Say: It is a bit big.", "answer": "Me queda un poco grande.", "alternatives": ["Me está un poco grande."], "meaning": "It is a bit big (on me).", "note": "Quedar describes fit: me queda bien, grande, pequeña."},
+      {"partner": "Aquí tiene una talla más pequeña. ¿Mejor?", "prompt": "Say: Yes, perfect. I will take it.", "answer": "Sí, perfecto. Me la llevo.", "alternatives": ["Sí, perfecta. Me la llevo.", "Perfecto, me la llevo."], "meaning": "Yes, perfect. I will take it.", "note": "Me lo/la llevo (I will take it) is the natural phrase when you decide to buy."}
+    ]
+  },
+  {
+    "id": "taking-a-taxi",
+    "title": "Taking a taxi",
+    "setting": "Going to the airport",
+    "level": "A1",
+    "goal": "Give a destination, ask how long it takes, and pay.",
+    "turns": [
+      {"partner": "Buenas noches. ¿Adónde vamos?", "prompt": "Say: To the airport, please.", "answer": "Al aeropuerto, por favor.", "alternatives": [], "meaning": "To the airport, please.", "note": "a + el always contracts to al."},
+      {"partner": "¿A qué terminal?", "prompt": "Say: Terminal two.", "answer": "A la terminal dos.", "alternatives": ["Terminal dos.", "La terminal dos."], "meaning": "Terminal two.", "note": "Terminal is feminine: la terminal."},
+      {"partner": "Muy bien. Hay bastante tráfico hoy.", "prompt": "Ask: How long will it take?", "answer": "¿Cuánto tardamos?", "alternatives": ["¿Cuánto tiempo tardamos?", "¿Cuánto se tarda?"], "meaning": "How long will it take (us)?", "note": "Tardar means to take time."},
+      {"partner": "Unos veinte minutos.", "prompt": "Ask: Can I pay by card?", "answer": "¿Puedo pagar con tarjeta?", "alternatives": [], "meaning": "Can I pay by card?", "note": "Pagar con tarjeta = by card; en efectivo = in cash."},
+      {"partner": "Sí, claro. Ya hemos llegado. Son treinta euros.", "prompt": "Say: Here you are. Keep the change.", "answer": "Aquí tiene. Quédese con el cambio.", "alternatives": ["Tome. Quédese con el cambio."], "meaning": "Here you are. Keep the change.", "note": "Quédese is the polite (usted) command of quedarse."}
+    ]
+  },
+  {
+    "id": "at-the-doctor",
+    "title": "At the doctor’s",
+    "setting": "A short appointment",
+    "level": "A2",
+    "goal": "Explain how long you have been ill, mention an allergy, and ask a follow-up question.",
+    "turns": [
+      {"partner": "Buenos días, siéntese. ¿Qué le pasa?", "prompt": "Say: I have had a cough for three days.", "answer": "Tengo tos desde hace tres días.", "alternatives": ["Llevo tres días con tos."], "meaning": "I have had a cough for three days.", "note": "Present tense + desde hace + time = something that started in the past and is still going on."},
+      {"partner": "¿Le duele la garganta?", "prompt": "Say: Yes, a lot, especially at night.", "answer": "Sí, mucho, sobre todo por la noche.", "alternatives": ["Sí, mucho, especialmente por la noche."], "meaning": "Yes, a lot, especially at night.", "note": "Por la noche = at night; sobre todo = especially."},
+      {"partner": "¿Es alérgico a algún medicamento?", "prompt": "Say: Yes, to penicillin.", "answer": "Sí, a la penicilina.", "alternatives": ["Sí, soy alérgico a la penicilina.", "Sí, soy alérgica a la penicilina."], "meaning": "Yes, to penicillin.", "note": "Ser alérgico/a a… = to be allergic to…"},
+      {"partner": "Bien. Le voy a recetar un jarabe.", "prompt": "Ask: Do I have to come back?", "answer": "¿Tengo que volver?", "alternatives": ["¿Necesito volver?"], "meaning": "Do I have to come back?", "note": "Tener que + infinitive = to have to."},
+      {"partner": "Solo si no mejora en una semana.", "prompt": "Say: Understood. Thank you very much.", "answer": "Entendido. Muchas gracias.", "alternatives": ["De acuerdo, muchas gracias.", "Vale, muchas gracias."], "meaning": "Understood. Thank you very much.", "note": "Entendido, de acuerdo and vale all confirm that you understood."}
+    ]
+  },
+  {
+    "id": "booking-by-phone",
+    "title": "Booking a table by phone",
+    "setting": "Calling a restaurant",
+    "level": "A2",
+    "goal": "Make a reservation: day, number of people, time, and name.",
+    "turns": [
+      {"partner": "Restaurante El Puerto, ¿dígame?", "prompt": "Say: Hello, I would like to book a table.", "answer": "Hola, quería reservar una mesa.", "alternatives": ["Hola, me gustaría reservar una mesa.", "Hola, quiero reservar una mesa."], "meaning": "Hello, I would like to book a table.", "note": "Quería (imperfect) sounds softer and more polite than quiero."},
+      {"partner": "Muy bien. ¿Para cuándo?", "prompt": "Say: For tomorrow night.", "answer": "Para mañana por la noche.", "alternatives": [], "meaning": "For tomorrow night.", "note": "Mañana por la noche = tomorrow night; mañana por la mañana = tomorrow morning."},
+      {"partner": "¿Para cuántas personas?", "prompt": "Say: For four people.", "answer": "Para cuatro personas.", "alternatives": [], "meaning": "For four people.", "note": "Para introduces who or when the booking is for."},
+      {"partner": "¿A qué hora les viene bien?", "prompt": "Say: At nine, if possible.", "answer": "A las nueve, si es posible.", "alternatives": ["A las nueve, si puede ser."], "meaning": "At nine, if possible.", "note": "Si es posible / si puede ser make a request softer."},
+      {"partner": "Perfecto. ¿A nombre de quién?", "prompt": "Say: Under the name Martín.", "answer": "A nombre de Martín.", "alternatives": [], "meaning": "Under the name Martín.", "note": "A nombre de… = under the name of…"}
+    ]
+  },
+  {
+    "id": "airport-check-in",
+    "title": "Checking in at the airport",
+    "setting": "At the check-in desk",
+    "level": "A2",
+    "goal": "Hand over documents, check a bag, choose a seat, and ask about boarding.",
+    "turns": [
+      {"partner": "Buenos días. Su pasaporte, por favor.", "prompt": "Say: Here you are.", "answer": "Aquí tiene.", "alternatives": ["Aquí está.", "Tome."], "meaning": "Here you are.", "note": "Aquí tiene is what you say when handing something over."},
+      {"partner": "¿Va a facturar equipaje?", "prompt": "Say: Yes, one suitcase.", "answer": "Sí, una maleta.", "alternatives": [], "meaning": "Yes, one suitcase.", "note": "Facturar = to check in luggage; equipaje de mano = hand luggage."},
+      {"partner": "¿Prefiere ventanilla o pasillo?", "prompt": "Say: Window, please.", "answer": "Ventanilla, por favor.", "alternatives": [], "meaning": "Window, please.", "note": "Ventanilla is the window seat; pasillo is the aisle."},
+      {"partner": "Su vuelo sale por la puerta doce.", "prompt": "Ask: What time does boarding start?", "answer": "¿A qué hora empieza el embarque?", "alternatives": ["¿A qué hora es el embarque?"], "meaning": "What time does boarding start?", "note": "Embarque = boarding; embarcar = to board."},
+      {"partner": "A las diez y media. ¡Buen viaje!", "prompt": "Say: Thank you, have a good day.", "answer": "Gracias, que tenga un buen día.", "alternatives": ["Gracias, igualmente."], "meaning": "Thank you, have a good day.", "note": "Que tenga… uses the subjunctive — learn it as a fixed polite wish."}
+    ]
+  }
+]

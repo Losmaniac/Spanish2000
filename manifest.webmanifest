@@ -1,7 +1,7 @@
 {
   "name": "Spanish 2000",
   "short_name": "Spanish 2000",
-  "description": "Learn Spanish vocabulary with spaced repetition",
+  "description": "Build useful Spanish with spaced repetition, real conversations, and grammar practice.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#fafafa",

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'es-v9';
+const CACHE_NAME = 'es-v15';
 const ASSETS = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const ASSETS = [
   './words.json',
   './grammar.json',
   './verbs.json',
+  './situations.json',
   './icon-192.png',
   './icon-512.png'
 ];
@@ -17,7 +18,8 @@ const ASSETS = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(ASSETS))
+      // cache: 'reload' bypasses the HTTP cache, or a new version could precache stale files
+      .then(cache => cache.addAll(ASSETS.map(url => new Request(url, { cache: 'reload' }))))
       .then(() => self.skipWaiting())
   );
 });

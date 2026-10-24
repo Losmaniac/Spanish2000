@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="./manifest.webmanifest">
@@ -31,7 +31,14 @@
         <button type="button" class="theme-btn" aria-label="Switch between light and dark mode"></button>
       </header>
       <main class="tab-content">
-        <p class="greeting" id="greeting">Ahoj!</p>
+        <p class="greeting" id="greeting">Hello!</p>
+
+        <section class="daily-practice" aria-labelledby="daily-practice-title">
+          <div class="daily-practice-topline"><span class="eyebrow">TODAY’S PLAN</span><span class="plan-count" id="plan-count"></span></div>
+          <h2 id="daily-practice-title">About 15 minutes of Spanish you can use</h2>
+          <ol class="plan-list" id="plan-list"></ol>
+          <button type="button" class="btn btn-light" id="btn-plan-next"><span id="plan-next-label">Start</span> <span aria-hidden="true">→</span></button>
+        </section>
 
         <div class="stats-grid">
           <div class="stat-card">
@@ -52,7 +59,7 @@
             <div class="stat-icon">🎯</div>
             <div>
               <div class="stat-value" id="goal-value">0 / 20</div>
-              <div class="stat-label">Daily goal</div>
+              <div class="stat-label">Practice goal</div>
             </div>
           </div>
         </div>
@@ -72,7 +79,7 @@
         </div>
 
         <div class="stats-detail">
-          <h2>Statistiky</h2>
+          <h2>Statistics</h2>
           <div class="stats-row">
             <div class="stat-item">
               <span class="stat-number" id="learned-count">0</span>
@@ -80,7 +87,7 @@
             </div>
             <div class="stat-item">
               <span class="stat-number" id="coverage-percent">0 %</span>
-              <span class="stat-desc">spoken-language coverage</span>
+              <span class="stat-desc">estimated speech coverage</span>
             </div>
           </div>
           <div class="box-wrap">
@@ -105,7 +112,7 @@
       <main class="tab-content">
 
         <div class="session-start" id="session-start">
-          <h2>What would you like to do?</h2>
+          <h2>Choose your next practice</h2>
           <div class="session-options">
             <button type="button" class="btn btn-primary btn-session" data-mode="review">
               <span class="session-icon">🔁</span>
@@ -123,6 +130,15 @@
             </button>
           </div>
           <p class="hint" id="learn-hint"></p>
+
+          <section class="situations-section" aria-labelledby="situations-title">
+            <div class="section-heading">
+              <div><p class="eyebrow">USEFUL SPANISH</p><h2 id="situations-title">Practice real conversations</h2></div>
+              <span class="section-note">5 turns · recall, then say or type</span>
+            </div>
+            <p class="section-intro">Read the situation, recall your reply in Spanish and say it out loud (or type it), then hear a natural model. Missed phrases return before you finish.</p>
+            <div class="situation-grid" id="situation-list"></div>
+          </section>
         </div>
 
         <div class="session-active" id="session-active" hidden>
@@ -138,10 +154,11 @@
         </div>
 
         <div class="session-summary" id="session-summary" hidden>
-          <h2>All done! 🎉</h2>
+          <h2 id="summary-title">All done! 🎉</h2>
+          <p class="summary-message" id="summary-message"></p>
           <div class="summary-stats">
-            <div><strong id="summary-correct">0</strong><small>correct</small></div>
-            <div><strong id="summary-wrong">0</strong><small>wrong</small></div>
+            <div><strong id="summary-correct">0</strong><small id="summary-correct-label">correct</small></div>
+            <div><strong id="summary-wrong">0</strong><small id="summary-wrong-label">wrong</small></div>
             <div><strong id="summary-xp">+0</strong><small>XP</small></div>
           </div>
           <button type="button" class="btn btn-primary btn-large" id="btn-summary-home">Back to Home</button>
@@ -157,6 +174,11 @@
         <span class="header-progress" id="grammar-progress"></span>
       </header>
       <main class="tab-content">
+        <div class="grammar-level-tabs" role="group" aria-label="Choose your grammar level">
+          <button type="button" class="grammar-level-btn active" data-level="core" aria-pressed="true">A1–A2 foundations</button>
+          <button type="button" class="grammar-level-btn" data-level="more" aria-pressed="false">More grammar · A2–B1</button>
+        </div>
+        <p class="grammar-level-hint" id="grammar-level-hint">Work through these essentials in order. Each lesson has a short explanation and practice.</p>
         <div class="search-box">
           <input type="search" id="grammar-search" placeholder="Search lessons…" aria-label="Search grammar lessons">
         </div>
@@ -205,7 +227,7 @@
             <input type="checkbox" id="set-tts">
           </label>
           <label class="setting-row">
-            <span>Daily goal (words)</span>
+            <span>Daily goal (practice items)</span>
             <input type="number" id="set-goal" min="5" max="200" step="5" inputmode="numeric">
           </label>
           <label class="setting-row">
@@ -220,7 +242,7 @@
             <input type="search" id="words-search" placeholder="Search (Spanish / English)…" aria-label="Search vocabulary">
           </div>
           <label class="setting-row">
-            <span>Filtr</span>
+            <span>Filter</span>
             <select id="words-filter">
               <option value="all">All</option>
               <option value="learned">Learned</option>
